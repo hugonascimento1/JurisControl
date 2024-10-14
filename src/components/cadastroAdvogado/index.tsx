@@ -22,55 +22,60 @@ export default function CadastrarAdvogado() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                    <DialogTitle>Cadastrar Advogado</DialogTitle>
+                    <DialogTitle className="flex justify-center items-center font-bold text-[#030430]">Cadastrar Advogado</DialogTitle>
                     <DialogDescription>
                         {/* Adicione um novo advogado a câmara */}
                     </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
+                    <div className="grid gap-4 py-4 mx-3">
+                        <div className="">
                             <Label htmlFor="name" className="text-right">
                             Nome
                             </Label>
                             <Input
                             id="name"
+                            type="text"
                             // defaultValue="Pedro Duarte"
-                            className="col-span-3"
+                            className="col-span-3  mt-2"
                             />
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="username" className="text-right">
+                        <div className="">
+                            <Label htmlFor="registroOAB" className="text-right">
                             Registro OAB
                             </Label>
                             <Input
-                            id="username"
+                            id=""
+                            type="text"
                             // defaultValue="@peduarte"
-                            className="col-span-3"
+                            className="col-span-3 mt-2"
                             />
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="username" className="text-right">
+                        <div className="">
+                            <Label htmlFor="cpf" className="text-right">
                             CPF
                             </Label>
                             <Input
-                            id="username"
+                            id="cpf"
+                            type="text"
                             // defaultValue="@peduarte"
-                            className="col-span-3"
+                            className="col-span-3 mt-2"
                             />
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="username" className="text-right">
+                        <div className="">
+                            <Label htmlFor="password" className="text-right">
                             Senha 
                             </Label>
                             <Input
-                            id="username"
+                            id="password"
+                            type="password"
                             // defaultValue="@peduarte"
-                            className="col-span-3"
+                            className="col-span-3 mt-2"
                             />
                         </div>
                     </div>
-                    <DialogFooter>
-                    <Button type="submit">Salvar</Button>
+                    <DialogFooter className="flex flex-row justify-end gap-2 mr-3">
+                        <Button variant="outline">Cancelar</Button>    
+                        <Button type="submit" className="">Salvar</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

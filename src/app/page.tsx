@@ -7,7 +7,7 @@ import Logo from "@/components/logo-text-icon";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col p-6">
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-[#030430] p-4 md:h-52">
+      <div className="flex h-20 shrink-0 items-end rounded-lg bg-[#030430] p-4 h-52">
         <Logo />
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
