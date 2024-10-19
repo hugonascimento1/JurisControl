@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { 
     Card,
@@ -20,9 +22,19 @@ import ChartOverview from "@/components/chart";
 import Advogados from "@/components/advogados";
 import NavBar from "@/components/navbar";
 import CadastrarAdvogado from "@/components/cadastroAdvogado";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+
+    const router = useRouter();
+
+    const handleClick = () => {
+        router.push('/dashboard/advogados')
+    };
+
     return (
+
+
         <main>
             {/* <div className="flex w-screen h-50 bg-primary py-5 mb-4">
                 <h1 className="text-white font-bold text-xl ml-10">Painel Central</h1>
@@ -33,13 +45,13 @@ export default function Page() {
                     <CadastrarAdvogado />
                 }
                 botaoMenu={
-                    <Button size="icon" variant="outline" className="bg-[#030430] hover:bg-gray-500">
+                    <Button onClick={handleClick} size="icon" variant="outline" className="bg-[#030430] hover:bg-gray-500">
                         <MenuIcon className="text-white" />
                     </Button>
                 } 
             />
 
-            <section className="grid md:grid-cols-4 grid-cols-2 gap-4 m-2">
+            <section className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 m-2">
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-start">
@@ -96,8 +108,7 @@ export default function Page() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                            Rodrigues e Moura advogados associados.
-                            <p className="text-3xl font-bold"></p>
+                            <h1 className="text-xl font-bold text-yellow-600">Rodrigues e Moura advogados associados.</h1>
                     </CardContent>
                 </Card>
             </section>
