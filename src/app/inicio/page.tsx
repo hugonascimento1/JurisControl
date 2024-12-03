@@ -1,5 +1,6 @@
 import { FileText, CalendarDaysIcon, FilePlus2, MenuIcon } from "lucide-react";
 import Link from "next/link";  
+import Image from "next/image";
 
 export default function Page() {
     return (
@@ -21,8 +22,17 @@ export default function Page() {
                 </h1>
             </div>
 
+            <div className="flex justify-center mt-6 md:w-50 md:h-30">
+                <Image
+                    src="/logo-escritorio.png"
+                    width={426}
+                    height={175}
+                    alt="logo escritorio"
+                />
+            </div>
+
             
-            <div className="flex justify-center space-x-20 mt-10">
+            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-10">
                 
                 <Link href="/processos"> {/* Adicionando rota para o card de Processos */}
                     <div className="w-40 h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer">
