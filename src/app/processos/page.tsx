@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -108,8 +108,7 @@ const processos: Info[] = [
 
 const itemsPag = 9;
 
-export default function Page({ info }: { info: Info[] }) {
-
+export default function Page() {
   const [proxPag, setProxPag] = useState(1);
 
   const totalPages = Math.ceil(processos.length / itemsPag);
@@ -159,7 +158,6 @@ export default function Page({ info }: { info: Info[] }) {
       {processos && processos.length > 0 ?
         <div className="grid grid-cols-1 md:grid-cols-3">
           {paginatedData.map((processos: Info, index: number) => {
-
             const caso = (proxPag - 1) * itemsPag + index + 1;
             const status = processos.status || "Indefinido";
             const reclamante = processos.reclamante || "Sem anexo";
