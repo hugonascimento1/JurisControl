@@ -10,6 +10,7 @@ import Link from "next/link";
 
 import VisualizarCaso from "@/components/visualizarCaso";
 import NavBar from "@/components/navbar";
+import AdicionarProcesso from "@/components/adicionarProcessos";
 
 interface Info {
   caso: number;
@@ -143,14 +144,16 @@ export default function Page() {
       />
       <div className="flex justify-between m-8 mb-16">
         <div className="flex items-center justify-center">
-          <Input icon={
-            <Button variant="ghost" size="icon" className="pt-1 hover:bg-transparent focus:ring-0">
-              <Search style={{ width: "28px", height: "28px" }} className="text-gray-500"></Search>
-            </Button>
-          } className="md:w-[400px] px-14 py-4 text-xl text-start h-12 bg-[#D9D9D9]" placeholder="Buscar Processo..." />
+          <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-transparent focus:ring-0">
+            <Search className="text-gray-500"></Search>
+          </Button>
+          <Input
+              className="md:w-[400px] text-start"
+              placeholder="Buscar Processo..."
+          />
         </div>
         <Button className="bg-green-600 hover:bg-green-900 gap-2 p-6 text-base">
-          Adicionar Novo
+          <AdicionarProcesso />
           <CirclePlus size="icon" style={{ width: "25px", height: "25px" }} className="text-white" />
         </Button>
       </div>
@@ -186,7 +189,7 @@ export default function Page() {
                       <p className="text-[#030430] font-semibold">Reclamado: <span className="font-light">{reclamado}</span></p>
                       <div className="flex justify-between text-[#030430]">
                         <p className="text-[#030430] font-semibold">Data Início: <span className="font-light">{data}</span></p>
-                        <span className="underline cursor-pointer"><VisualizarCaso /></span>
+                        <span className="underline cursor-pointer"><VisualizarCaso nrProcesso={caso} /></span>
                       </div>
                     </div>
                   </CardContent>

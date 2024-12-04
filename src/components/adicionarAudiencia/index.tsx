@@ -19,7 +19,7 @@ export default function AdicionarAudiencia() {
                 <DialogTrigger asChild>
                     <p>Criar Audiência</p>
                 </DialogTrigger>
-                <DialogContent className="flex flex-col items-center h-2/4 w-2/4">
+                <DialogContent className="flex flex-col items-center h-2/4 w-1/4">
                     <DialogTitle className="text-center text-xl font-semibold mb-3">Adicionar Processo</DialogTitle>
                     <div className="">
                         <div className="flex flex-row justify-around mb-2">

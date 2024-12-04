@@ -20,7 +20,7 @@ export default function AdicionarProcesso() {
                 <DialogTrigger asChild>
                     <p>Adicionar Processo</p>
                 </DialogTrigger>
-                <DialogContent className="flex flex-col w-[90%] max-w-6xl h-[95%] p-8">
+                <DialogContent className="flex flex-col w-[45%] max-w-6xl h-[95%] p-8">
                     <DialogTitle className="text-center text-xl font-semibold mb-3">Adicionar Processo</DialogTitle>
                     <div className="">
                         <div className="flex flex-row justify-around mb-2">
