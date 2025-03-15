@@ -3,11 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ScaleIcon } from "lucide-react";
 import Logo from "@/components/logo-text-icon";
+import Desktopmobile from "../../public/desktop-mobile.png";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col p-6">
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-[#030430] p-4">
+      <div className="flex h-32 shrink-0 items-end rounded-lg bg-[#030430] p-4">
         <Logo />
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
@@ -22,12 +23,12 @@ export default function Home() {
           </Link>
         </div>
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-          {/* <Image 
-            src={""}
+          <Image 
+            src={Desktopmobile}
             alt="imagem sistema"
-            width={}
-            height={}
-          /> */}
+            width={652}
+            height={400}
+          />
         </div>
       </div>
     </main>
