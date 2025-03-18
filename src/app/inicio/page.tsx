@@ -1,7 +1,7 @@
 'use client'
 
 import { FileTextIcon, CalendarDaysIcon, FilePlus2, MenuIcon, FolderOpenIcon } from "lucide-react";
-import Link from "next/link";  
+import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/components/logo-text-icon";
 // import { useRouter } from "next/navigation";
@@ -21,10 +21,11 @@ export default function Page() {
                 </button>
             </header>
 
-            <div className="flex justify-center mt-6">
-                <h1 className="text-gray-600 text-2xl font-bold text-center">
-                    Bem-vindo ao JurisControl, [Nome Advogado]
-                </h1>
+            <div className="flex flex-col items-center justify-center mt-6">
+                <p className="text-gray-600 text-xl font-bold text-center">
+                    Bem-vindo ao JurisControl,
+                </p>
+                <p className="text-gray-600">[Nome Advogado]</p>
             </div>
 
             <div className="flex justify-center mt-6 md:w-50 md:h-30">
@@ -36,28 +37,30 @@ export default function Page() {
                 />
             </div>
 
-            
-            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-20">
 
-                <Link href="inicio/processos"> {/* Adicionando rota para o card de Processos */}
-                    <div className="w-60 h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer">
-                        <FileTextIcon size={48} /> 
-                        <p className="mt-2 text-lg font-semibold">Processos</p> 
-                    </div>
+            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-20 mb-20">
+                <Link
+                    href="inicio/processos"
+                    className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
+                >
+                    <FileTextIcon size={48} />
+                    <p className="mt-2 text-lg font-semibold">Processos</p>
                 </Link>
 
-                <Link href="/agenda"> {/* Adicionando rota para o card de Agenda */}
-                    <div className="w-60 h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer">
-                        <CalendarDaysIcon size={48} /> 
-                        <p className="mt-2 text-lg font-semibold">Agenda</p> 
-                    </div>
+                <Link
+                    href="/agenda"
+                    className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
+                >
+                    <CalendarDaysIcon size={48} />
+                    <p className="mt-2 text-lg font-semibold">Agenda</p>
                 </Link>
 
-                <Link href="/expediente"> {/* Adicionando rota para o card de Expediente */}
-                    <div className="w-60 h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer">
-                        <FolderOpenIcon size={48} /> 
-                        <p className="mt-2 text-lg font-semibold">Modelos</p> 
-                    </div>
+                <Link
+                    href="/expediente"
+                    className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
+                >
+                    <FolderOpenIcon size={48} />
+                    <p className="mt-2 text-lg font-semibold">Modelos</p>
                 </Link>
             </div>
         </main>
