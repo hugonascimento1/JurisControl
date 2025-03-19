@@ -11,6 +11,7 @@ import Link from "next/link";
 import VisualizarCaso from "@/components/visualizarCaso";
 import NavBar from "@/components/navbar";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useRouter } from "next/navigation";
 
 interface Info {
   numeroProcesso: string;
@@ -127,6 +128,7 @@ const processos: Info[] = [
 const itemsPag = 5;
 
 export default function Page() {
+  const router = useRouter();
   const [proxPag, setProxPag] = useState(1);
 
   const totalPages = Math.ceil(processos.length / itemsPag);
@@ -141,6 +143,10 @@ export default function Page() {
     (proxPag - 1) * itemsPag,
     proxPag * itemsPag
   );
+
+  const handleCadastroProcesso = () => {
+    router.push('/inicio/processos/cadastro-processo')
+  }
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -168,8 +174,10 @@ export default function Page() {
             </Button>
           } className="md:w-[400px] pl-14 py-4 text-xl text-start h-10 bg-[#D9D9D9]" placeholder="Buscar Processo..." />
         </div>
-        <Button className="bg-green-600 hover:bg-green-900 gap-2 p-6 text-base">
-          Adicionar
+        <Button
+          onClick={handleCadastroProcesso}
+          className="bg-green-600 hover:bg-green-900 gap-2 p-6 text-base">
+          Cadastrar novo
           <CirclePlus size="icon" style={{ width: "25px", height: "25px" }} className="text-white" />
         </Button>
       </div>
