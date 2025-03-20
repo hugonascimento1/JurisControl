@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 /* Algumas informações importantes:
     No SELETOR DE TRIBUNAL deve ser feita a logica para o funcionamento 
@@ -30,29 +31,29 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 
 export default function Page() {
     return (
-        <div className=" flex flex-col justify-center items-center mb-7">
+        <div className="flex flex-col justify-center items-center mb-7">
             <NavBar nome="Cadstro de processo" />
 
-            <Card className=" w-11/12">
-                <CardHeader className=" bg-[#030430] text-white h-16 rounded-t-lg mb-6 justify-center items-start">
+            <Card className="w-11/12">
+                <CardHeader className="bg-[#030430] h-16 justify-center rounded-t-lg text-white items-start mb-6">
                     <CardTitle className="text-xl">Preencha as informações do processo</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col justify-center items-center gap-3">
-                        <Card className=" w-full">
-                            <CardHeader className=" bg-[#030430] text-white h-14 rounded-t-lg justify-center items-start">
+                    <div className="flex flex-col justify-center gap-3 items-center">
+                        <Card className="w-full">
+                            <CardHeader className="bg-[#030430] justify-center rounded-t-lg text-white items-start">
                                 <CardTitle className="text-lg">Entrada de dados</CardTitle>
-                                {/* <CardDescription> nesta seção você deve informar o tribunal e o número do processo para buscarmos os dados do PJe</CardDescription> */}
+                                <CardDescription className="text-gray-200">Selecione o tribunal, insira o número do processo e clique em carregar dados.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className=" mt-5">
-
+                                <div className="flex flex-col gap-6 mt-5">
                                     {/* Parte 1 */}
-                                    <div className=" flex flex-col md:flex-row gap-4 justify-start items-center">
-                                        <div className=" flex flex-col justify-center items-start gap-2">
-                                            <Label htmlFor="text" className=" text-base">Tribunal</Label>
+                                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2">
+                                        {/* Tribunal */}
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Tribunal</Label>
                                             <Select>
-                                                <SelectTrigger className="w-[180px] md:min-w-[400px]">
+                                                <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Escolha um Tribunal" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -68,69 +69,122 @@ export default function Page() {
                                             </Select>
                                         </div>
 
-                                        <div className=" flex flex-col justify-center items-start gap-2">
-                                            <Label htmlFor="text" className=" text-base">Número</Label>
+                                        {/* Número */}
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Número</Label>
                                             <Input
                                                 type="text"
-                                                placeholder="número do processo"
-                                                className="w-[180px] md:min-w-[400px]"
+                                                placeholder="Número do processo"
+                                                className="w-full"
                                             />
                                         </div>
 
-                                        <Button variant="secondary" className=" bg-gray-300 text-gray-600">
-                                            Carregar dados do processo
-                                        </Button>
-                                    </div>
-
-                                    {/* Parte 2 */}
-                                    <div className=" flex flex-col md:flex-row gap-4 justify-start items-center mt-5">
-                                        <div className=" flex flex-col justify-center items-start gap-2">
-                                            <Label htmlFor="text" className=" text-base">Classe</Label>
+                                        {/* Classe */}
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Classe</Label>
                                             <Input
                                                 type="text"
                                                 placeholder="Ex: Execução Fiscal"
-                                                className="w-[180px] md:min-w-[400px]"
+                                                className="w-full"
                                             />
                                         </div>
 
-                                        <div className=" flex flex-col justify-center items-start gap-2">
-                                            <Label htmlFor="text" className=" text-base">Data/Hora Última Atuali.</Label>
-                                            <Input
-                                                type="text"
-                                                placeholder=""
-                                                className="w-[180px] md:min-w-[400px]"
-                                            />
-                                        </div>
-
-                                        <div className=" flex flex-col justify-center items-start gap-2">
-                                            <Label htmlFor="text" className=" text-base">Data Ajuizamento</Label>
-                                            <Input
-                                                type="text"
-                                                placeholder=""
-                                                className="w-[180px] md:min-w-[400px]"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Parte 3 */}
-                                    <div className=" flex flex-col md:flex-row gap-4 justify-start items-center mt-5">
-                                        
-                                        <div className=" flex flex-col justify-center items-start gap-2">
-                                            <Label htmlFor="text" className=" text-base">Assuntos</Label>
+                                        {/* Assuntos */}
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Assuntos</Label>
                                             <Input
                                                 type="text"
                                                 placeholder="Ex: Dívida Ativa (Execução Fiscal)"
-                                                className="w-[180px] md:min-w-[400px]"
+                                                className="w-full"
                                             />
                                         </div>
 
+                                        {/* Data/Hora Última Atualização */}
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Data/Hora Última Atuali.</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder=""
+                                                className="w-full"
+                                            />
+                                        </div>
+
+                                        {/* Data Ajuizamento */}
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Data Ajuizamento</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder=""
+                                                className="w-full"
+                                            />
+                                        </div>
                                     </div>
+
+                                    {/* Div tabela */}
+                                    <div className="flex flex-col h-[200px] gap-2 overflow-y-auto">
+                                        <Label className="text-base">Movimentos</Label>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Movimentos</TableHead>
+                                                    <TableHead>Data/Hora</TableHead>
+                                                    <TableHead>Complemento</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell>Distribuição</TableCell>
+                                                    <TableCell>21/08/2017 10:05</TableCell>
+                                                    <TableCell>Tipo de distribuição: Sorteio</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>Conclusão</TableCell>
+                                                    <TableCell>16/02/2018 17:57</TableCell>
+                                                    <TableCell>Tipo de conclusão: Para despacho</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>Documento</TableCell>
+                                                    <TableCell>17/09/2019 08:51</TableCell>
+                                                    <TableCell>Tipo de documento: Mandado</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>Expedição de documento</TableCell>
+                                                    <TableCell>17/09/2019 08:51</TableCell>
+                                                    <TableCell>Tipo de documento: Mandado</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>Expedição de documento</TableCell>
+                                                    <TableCell>17/09/2019 08:51</TableCell>
+                                                    <TableCell>Tipo de documento: Aviso de recebimento (AR)</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell>Documento</TableCell>
+                                                    <TableCell>27/09/2019 10:40</TableCell>
+                                                    <TableCell>Tipo de documento: Certidão</TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+
+                                    {/* Parte 2 */}
+                                    {/* <div className="flex flex-col justify-start gap-4 items-center md:flex-row mt-5">
+
+                                        
+
+                                    </div> */}
+
+                                    {/* Parte 3 */}
+                                    {/* <div className="flex flex-col gap-4 md:flex-row">
+
+                    
+                                    </div> */}
+
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className=" w-full">
-                            <CardHeader className="bg-[#030430] text-white h-14 rounded-t-lg justify-center items-start">
+                        <Card className="w-full">
+                            <CardHeader className="bg-[#030430] h-14 justify-center rounded-t-lg text-white items-start">
                                 <CardTitle className="text-lg">Detalhamento do Processo</CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -139,12 +193,16 @@ export default function Page() {
                         </Card>
                     </div>
 
-                    <div className="flex flex-row gap-2 mt-5 justify-end items-center">
-                        <Button variant="outline" className=" bg-gray-200 w-24 h-11">Cancelar</Button>
-                        <Button className="w-24 h-11 bg-green-600">Salvar</Button>
+                    <div className="flex flex-row justify-end gap-2 items-center mt-5">
+                        <Button variant="outline" className="bg-gray-200 h-11 w-24">Cancelar</Button>
+                        <Button className="bg-green-600 h-11 w-24">Salvar</Button>
                     </div>
                 </CardContent>
             </Card>
         </div>
     )
 }
+
+{/* <Button variant="secondary" className="bg-gray-300 text-gray-600">
+                                            Carregar dados do processo
+                                        </Button> */}
