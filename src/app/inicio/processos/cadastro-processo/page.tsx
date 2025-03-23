@@ -1,3 +1,5 @@
+'use client'
+
 import NavBar from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ChevronLeftIcon, Trash2Icon } from "lucide-react"
+import Link from "next/link"
+import React, { useState } from "react"
 
 /* Algumas informações importantes:
     No SELETOR DE TRIBUNAL deve ser feita a logica para o funcionamento 
@@ -30,9 +35,30 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 */
 
 export default function Page() {
+    const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const newFiles = Array.from(event.target.files);
+            setUploadedFiles([...uploadedFiles, ...newFiles]);
+        }
+    };
+
+    const handleRemoveFile = (index: number) => {
+        setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
+    };
+
     return (
         <div className="flex flex-col justify-center items-center mb-7">
-            <NavBar nome="Cadstro de processo" />
+            <NavBar
+                nome="Cadstro de processo"
+                botaoVoltar={
+                    <Link className="p-0 m-0 flex items-center" href="/inicio">
+                        <Button size="icon" className="bg-[#030430] hover:bg-gray-500">
+                            <ChevronLeftIcon style={{ width: "35px", height: "35px" }} className=""></ChevronLeftIcon>
+                        </Button>
+                    </Link>
+                } />
 
             <Card className="w-11/12">
                 <CardHeader className="bg-[#030430] h-16 justify-center rounded-t-lg text-white items-start mb-6">
@@ -41,15 +67,15 @@ export default function Page() {
                 <CardContent>
                     <div className="flex flex-col justify-center gap-3 items-center">
                         <Card className="w-full">
-                            <CardHeader className="bg-[#030430] justify-center rounded-t-lg text-white items-start">
+                            <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
                                 <CardTitle className="text-lg">Entrada de dados</CardTitle>
-                                <CardDescription className="text-gray-200">Selecione o tribunal, insira o número do processo e clique em carregar dados.</CardDescription>
+                                {/* <CardDescription className="text-gray-200">Selecione o tribunal, insira o número do processo e clique em carregar dados.</CardDescription> */}
                             </CardHeader>
                             <CardContent>
                                 <div className="flex flex-col gap-6 mt-5">
-                                    {/* Parte 1 */}
+
                                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2">
-                                        {/* Tribunal */}
+
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Tribunal</Label>
                                             <Select>
@@ -69,7 +95,6 @@ export default function Page() {
                                             </Select>
                                         </div>
 
-                                        {/* Número */}
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Número</Label>
                                             <Input
@@ -79,7 +104,6 @@ export default function Page() {
                                             />
                                         </div>
 
-                                        {/* Classe */}
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Classe</Label>
                                             <Input
@@ -89,7 +113,6 @@ export default function Page() {
                                             />
                                         </div>
 
-                                        {/* Assuntos */}
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Assuntos</Label>
                                             <Input
@@ -99,28 +122,25 @@ export default function Page() {
                                             />
                                         </div>
 
-                                        {/* Data/Hora Última Atualização */}
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Data/Hora Última Atuali.</Label>
                                             <Input
-                                                type="text"
+                                                type="datetime-local"
                                                 placeholder=""
                                                 className="w-full"
                                             />
                                         </div>
 
-                                        {/* Data Ajuizamento */}
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Data Ajuizamento</Label>
                                             <Input
-                                                type="text"
+                                                type="datetime-local"
                                                 placeholder=""
                                                 className="w-full"
                                             />
                                         </div>
                                     </div>
 
-                                    {/* Div tabela */}
                                     <div className="flex flex-col h-[200px] gap-2 overflow-y-auto">
                                         <Label className="text-base">Movimentos</Label>
                                         <Table>
@@ -132,7 +152,7 @@ export default function Page() {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                <TableRow>
+                                                {/* <TableRow>
                                                     <TableCell>Distribuição</TableCell>
                                                     <TableCell>21/08/2017 10:05</TableCell>
                                                     <TableCell>Tipo de distribuição: Sorteio</TableCell>
@@ -161,23 +181,10 @@ export default function Page() {
                                                     <TableCell>Documento</TableCell>
                                                     <TableCell>27/09/2019 10:40</TableCell>
                                                     <TableCell>Tipo de documento: Certidão</TableCell>
-                                                </TableRow>
+                                                </TableRow> */}
                                             </TableBody>
                                         </Table>
                                     </div>
-
-                                    {/* Parte 2 */}
-                                    {/* <div className="flex flex-col justify-start gap-4 items-center md:flex-row mt-5">
-
-                                        
-
-                                    </div> */}
-
-                                    {/* Parte 3 */}
-                                    {/* <div className="flex flex-col gap-4 md:flex-row">
-
-                    
-                                    </div> */}
 
                                 </div>
                             </CardContent>
@@ -188,7 +195,184 @@ export default function Page() {
                                 <CardTitle className="text-lg">Detalhamento do Processo</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                Atributos Opcionais do processo
+                                <div className="flex flex-col gap-6 mt-5">
+                                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 sm:grid-cols-2">
+
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Autor</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Nome do autor"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Advogado do Autor</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Nome do Advogado do autor"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Réu</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Nome do réu"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Advogado Réu</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Nome do Advogado do réu"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">CPF</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="CPF do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Telefone</Label>
+                                            <Input
+                                                type="tel" 
+                                                id="phone" 
+                                                name="phone" 
+                                                // pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+                                                placeholder="Telefone do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Email</Label>
+                                            <Input
+                                                type="email"
+                                                placeholder="Email do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">CEP</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="CEP do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Rua</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Rua do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Número</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Número da casa do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Bairro</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Bairro do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Cidade</Label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Cidade do cliente"
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="text" className="text-base">Estado</Label>
+                                            <Select>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Escolha um Estado" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Estado</SelectLabel>
+                                                        <SelectItem value="ac">Acre</SelectItem>
+                                                        <SelectItem value="al">Alagoas</SelectItem>
+                                                        <SelectItem value="ap">Amapá</SelectItem>
+                                                        <SelectItem value="am">Amazonas</SelectItem>
+                                                        <SelectItem value="ba">Bahia</SelectItem>
+                                                        <SelectItem value="ce">Ceará</SelectItem>
+                                                        <SelectItem value="df">Distrito Federal</SelectItem>
+                                                        <SelectItem value="es">Espírito Santo</SelectItem>
+                                                        <SelectItem value="go">Goiás</SelectItem>
+                                                        <SelectItem value="ma">Maranhão</SelectItem>
+                                                        <SelectItem value="mt">Mato Grosso</SelectItem>
+                                                        <SelectItem value="ms">Mato Grosso do Sul</SelectItem>
+                                                        <SelectItem value="mg">Minas Gerais</SelectItem>
+                                                        <SelectItem value="pa">Pará</SelectItem>
+                                                        <SelectItem value="pb">Paraíba</SelectItem>
+                                                        <SelectItem value="pr">Paraná</SelectItem>
+                                                        <SelectItem value="pe">Pernambuco</SelectItem>
+                                                        <SelectItem value="pi">Piauí</SelectItem>
+                                                        <SelectItem value="rj">Rio de Janeiro</SelectItem>
+                                                        <SelectItem value="rn">Rio Grande do Norte</SelectItem>
+                                                        <SelectItem value="rs">Rio Grande do Sul</SelectItem>
+                                                        <SelectItem value="ro">Rondônia</SelectItem>
+                                                        <SelectItem value="rr">Roraima</SelectItem>
+                                                        <SelectItem value="sc">Santa Catarina</SelectItem>
+                                                        <SelectItem value="sp">São Paulo</SelectItem>
+                                                        <SelectItem value="se">Sergipe</SelectItem>
+                                                        <SelectItem value="to">Tocantins</SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="w-full">
+                            <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
+                                <CardTitle className="text-lg">Anexar Documentos</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-col gap-4 mt-5">
+                                    <div className="flex items-center gap-2">
+                                        <Input type="file" id="fileUpload" className="hidden" onChange={(e) => handleFileChange(e)} />
+                                        <Label htmlFor="fileUpload" className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded">
+                                            Selecionar Arquivo
+                                        </Label>
+                                    </div>
+                                    {uploadedFiles.length > 0 && (
+                                        <div>
+                                            <Label className="text-lg ">Arquivos Anexados:</Label>
+                                            <ul>
+                                                {uploadedFiles.map((file, index) => (
+                                                    <li key={index} className="flex items-center justify-between text-gray-600 mb-2">
+                                                        {file.name}
+                                                        <Button className="w-6 h-6" variant='outline' size='icon' onClick={() => handleRemoveFile(index)}>
+                                                            <Trash2Icon />
+                                                        </Button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -202,7 +386,3 @@ export default function Page() {
         </div>
     )
 }
-
-{/* <Button variant="secondary" className="bg-gray-300 text-gray-600">
-                                            Carregar dados do processo
-                                        </Button> */}
