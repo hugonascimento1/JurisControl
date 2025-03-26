@@ -4,16 +4,30 @@ import { FileTextIcon, CalendarDaysIcon, FilePlus2, MenuIcon, FolderOpenIcon } f
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/components/logo-text-icon";
-// import { useRouter } from "next/navigation";
-// import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
+    const router = useRouter()
+
+    const handleProcessPage = () => {
+        router.push('/inicio/processos');
+    }
+
+    const handleAgendaPage = () => {
+        router.push('/inicio/agenda')
+        // router.push('/agenda')
+    }
+
+    const handleModelsPage = () => {
+        router.push('/inicio/modelos')
+    }
+ 
+
     return (
-        <main className="h-screen bg-white">
+        <main className="min-h-screen pb-10">
             <header className="w-full h-24 bg-[#030430] flex justify-between items-center px-6 shadow-md">
                 <div className="flex items-center space-x-3">
-                    {/* <div className="w-8 h-8 bg-gray-400 rounded-full"></div>  */}
-                    {/* <h1 className="text-white font-bold text-xl">JurisControl</h1> */}
                     <Logo />
                 </div>
                 <button className="text-white hover:text-gray-300">
@@ -38,30 +52,30 @@ export default function Page() {
             </div>
 
 
-            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-20 mb-20">
-                <Link
-                    href="inicio/processos"
+            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-20 mx-5">
+                <Button
+                    onClick={handleProcessPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
                     <FileTextIcon size={48} />
                     <p className="mt-2 text-lg font-semibold">Processos</p>
-                </Link>
+                </Button>
 
-                <Link
-                    href="/agenda"
+                <Button
+                    onClick={handleAgendaPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
                     <CalendarDaysIcon size={48} />
                     <p className="mt-2 text-lg font-semibold">Agenda</p>
-                </Link>
+                </Button>
 
-                <Link
-                    href="/expediente"
+                <Button
+                    onClick={handleModelsPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
                     <FolderOpenIcon size={48} />
                     <p className="mt-2 text-lg font-semibold">Modelos</p>
-                </Link>
+                </Button>
             </div>
         </main>
     );

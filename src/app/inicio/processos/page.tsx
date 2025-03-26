@@ -8,7 +8,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { MenuIcon, ChevronLeft, Circle, Search, CirclePlus, BinocularsIcon } from "lucide-react";
 import Link from "next/link";
 
-import VisualizarCaso from "@/components/visualizarCaso";
+// import VisualizarCaso from "@/components/visualizarCaso";
 import NavBar from "@/components/navbar";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
@@ -231,7 +231,7 @@ export default function Page() {
       </div>
 
       {/* Paginação */}
-      <Pagination>
+      <Pagination className="mb-7">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
@@ -272,79 +272,3 @@ export default function Page() {
     </div>
   )
 }
-
-{/* {processos && processos.length > 0 ?
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          {paginatedData.map((processos: Info, index: number) => {
-            const caso = (proxPag - 1) * itemsPag + index + 1;
-            const status = processos.status || "Indefinido";
-            const reclamante = processos.reclamante || "Sem anexo";
-            const reclamado = processos.reclamado || "Sem anexo";
-            const data = processos.data || "Sem anexo";
-
-            const statusProcesso = processos.status === "Aberto"
-              ? "text-green-500" : processos.status === "Andamento"
-                ? "text-yellow-500" : processos.status === "Incompleto"
-                  ? "text-red-500" : "text-gray-500"
-            return (
-              <div className="w-full pl-5 pb-5 pr-5" key={index}>
-                <Card>
-                  <CardHeader className="">
-                    <CardTitle className="flex justify-between bg-[#030430] text-white px-4 py-1 rounded-tl-lg rounded-br-lg font-semibold leading-none tracking-tight text-base">
-                      Caso Nº {caso}
-                      <div className="flex flex-row items-center font-extralight italic">
-                        <Circle size={14} className={`${statusProcesso} fill-current mr-2`}></Circle>
-                        {status}
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-[#555555] font-light">
-                    <div>
-                      <p className="text-[#030430] font-semibold">Reclamante: <span className="font-light">{reclamante}</span></p>
-                      <p className="text-[#030430] font-semibold">Reclamado: <span className="font-light">{reclamado}</span></p>
-                      <div className="flex justify-between text-[#030430]">
-                        <p className="text-[#030430] font-semibold">Data Início: <span className="font-light">{data}</span></p>
-                        <span className="underline cursor-pointer"><VisualizarCaso /></span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )
-          })}
-        </div> : (
-          <div className="flex flex-col items-center m-20 text-[#030430] font-semibold">
-            <h1>Não há processos no momento</h1>
-            <p>Adicione para uma visualização</p>
-          </div>
-        )}
-
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={() => handlePageChange(proxPag - 1)}
-              className={proxPag === 1 || processos.length === 0 ? "cursor-not-allowed text-gray-400" : "cursor-pointer"}
-            />
-          </PaginationItem>
-          {[...Array(totalPages)].map((_, pageIndex) => (
-            <PaginationItem key={pageIndex}>
-              <PaginationLink
-                href="#"
-                onClick={() => handlePageChange(pageIndex + 1)}
-                className={proxPag === pageIndex + 1 ? "active" : "Sem mais processos"}
-              >
-                {pageIndex + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={() => handlePageChange(proxPag + 1)}
-              className={proxPag === totalPages || processos.length === 0 ? "cursor-not-allowed text-gray-400" : "cursor-pointer"}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination> */}

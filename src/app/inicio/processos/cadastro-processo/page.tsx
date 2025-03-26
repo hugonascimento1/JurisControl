@@ -1,41 +1,84 @@
 'use client'
 
+// mudar a logica para o cadastro de movimentos, colocar algo
+// como uma lista e poder ir adicionando mais um movimento
+// parecido com a logica para os anexos
+
+import React, { useEffect, useState } from "react"
+import Link from "next/link"
+
 import NavBar from "@/components/navbar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ChevronLeftIcon, Trash2Icon } from "lucide-react"
-import Link from "next/link"
-import React, { useState } from "react"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table"
+import {
+    ChevronLeftIcon,
+    Trash2Icon
+} from "lucide-react"
 
-/* Algumas informações importantes:
-    No SELETOR DE TRIBUNAL deve ser feita a logica para o funcionamento 
-    da API pois a API só funciona para a busca do processo e o endpoint 
-    do processo estiver correto, então, cada tribunal tem seu próprio 
-    endpoint para buscar os processos, e se o processo não pretence ao 
-    tribunal indicado ele não vai encontrar 
-*/
-
-/*O que a gente consegue pegar na API:
-
-- numeroProcesso > "072239914020178070001"
-- classe > nome > "Exceução fiscal"
-- ########## sistema > nome > "Pje"
-- ########## formato > nome > "Eletrônico"
-- tribunal > "TJDFT"
-- dataHoraUltimaAtualizacao > "2025-02-12T01:01:06.608582388Z"
-- dataAjuizamento > "2017-08-221T10:05:32.000Z"
-- movimentos > complementosTabelados > nome > "sorteio", descricao > "tipo_de_distribuicao_redistribuicao"
-- movinetos complementosTabelados > nome > "Distribuição", dataHora > "2017-08-21T10:05:32.000Z"
-- assuntos > nome > "Dívida Ativa (Execução Fiscal)"
-
-*/
+interface Tribunal {
+    id: number;
+    nome: string;
+    endpoint: string;
+}
 
 export default function Page() {
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    
+    const [tribunais, setTribunais] = useState<Tribunal[]>([]);
+    const [tribunalSelecionado, setTribunalSelecionado] = useState<string>('');
+
+    const [numeroProcesso, setNumeroProcesso] = useState<string>('');
+    const [classe, setClasse] = useState<string>('');
+    const [assuntos, setAssuntos] = useState<string>('');
+    const [dataHoraUltimaAtualizacao, setdataHoraUltimaAtualizacao] = useState<string>('');
+    const [dataAjuizamento, setdataAjuizamento] = useState<string>('');
+    const [movimentos, setMovimentos] = useState<any[]>([]);
+
+    const url = process.env.NEXT_PUBLIC_URL_TRIBUNAIS!;
+    const token = process.env.NEXT_PUBLIC_TOKEN_TRIBUNAIS;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                })
+                const data = await response.json();
+                setTribunais(data.results);
+            } catch (error) {
+                console.error('Erro ao buscar tribunais', error)
+            }
+        };
+
+        fetchData();
+    }, []); 
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -47,6 +90,34 @@ export default function Page() {
     const handleRemoveFile = (index: number) => {
         setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
     };
+
+    // const buscarDadosProcesso = async () => {
+    //     try {
+    //         const response = await fetch(tribunalSelecionado, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ numeroProcesso: numeroProcesso }).
+    //         });
+
+    //         if (!response.ok) {
+    //             throw new Error(`Erro na requisição: ${response.status}`);
+    //         }
+
+    //         const data = await response.json();
+    //         const processo = data.hits.hits[0]._source;
+
+    //         setClasse(processo.classe.nome);
+    //         setAssuntos(processo.assuntos.map((assunto) => assunto.nome).join(', '));
+    //         setdataHoraUltimaAtualizacao(processo.dataHoraUltimaAtualizacao);
+    //         setdataAjuizamento(processo.dataAjuizamento);
+    //         setMovimentos(processo.movimentos);
+    //     } catch (error) {
+    //         console.error('Erro ao buscar dados do processo:', error)
+    //         alert(error);
+    //     }
+    // };
 
     return (
         <div className="flex flex-col justify-center items-center mb-7">
@@ -78,67 +149,79 @@ export default function Page() {
 
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Tribunal</Label>
-                                            <Select>
+                                            <Select onValueChange={setTribunalSelecionado}>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Escolha um Tribunal" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         <SelectLabel>Tribunal</SelectLabel>
-                                                        <SelectItem value="tribunal1">Tribunal Superior do Trabalho</SelectItem>
-                                                        <SelectItem value="tribunal2">Tribunal Superior Eleitoral</SelectItem>
-                                                        <SelectItem value="tribunal3">Tribunal Superior de Justiça</SelectItem>
-                                                        <SelectItem value="tribunal4">Tribunal Superior Militar</SelectItem>
-                                                        <SelectItem value="tribunal5">Tribunal Superior do Trabalho</SelectItem>
+                                                        {tribunais.map((tribunal) => (
+                                                            <SelectItem className="text-black" key={tribunal.id} value={tribunal.endpoint}>
+                                                                {tribunal.nome}
+                                                            </SelectItem>
+                                                        ))}
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                         </div>
 
                                         <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">Número</Label>
+                                            <Label htmlFor="numeroProcesso" className="text-base">Número</Label>
                                             <Input
                                                 type="text"
+                                                id="numeroProcesso"
+                                                value={numeroProcesso}
+                                                onChange={(e) => setNumeroProcesso(e.target.value)}
                                                 placeholder="Número do processo"
                                                 className="w-full"
                                             />
                                         </div>
 
                                         <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">Classe</Label>
+                                            <Label htmlFor="classe" className="text-base">Classe</Label>
                                             <Input
                                                 type="text"
+                                                id="classe"
+                                                value={classe}
                                                 placeholder="Ex: Execução Fiscal"
                                                 className="w-full"
                                             />
                                         </div>
 
                                         <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">Assuntos</Label>
+                                            <Label htmlFor="assuntos" className="text-base">Assuntos</Label>
                                             <Input
                                                 type="text"
+                                                id="assuntos"
+                                                value={assuntos}
                                                 placeholder="Ex: Dívida Ativa (Execução Fiscal)"
                                                 className="w-full"
                                             />
                                         </div>
 
                                         <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">Data/Hora Última Atuali.</Label>
+                                            <Label htmlFor="dataHoraUltimaAtualizacao" className="text-base">Data/Hora Última Atuali.</Label>
                                             <Input
                                                 type="datetime-local"
+                                                id="dataHoraultimaAtualizacao"
+                                                value={dataHoraUltimaAtualizacao}
                                                 placeholder=""
                                                 className="w-full"
                                             />
                                         </div>
 
                                         <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">Data Ajuizamento</Label>
+                                            <Label htmlFor="dataAjuizamento" className="text-base">Data Ajuizamento</Label>
                                             <Input
                                                 type="datetime-local"
+                                                id="dataAjuizamento"
+                                                value={dataAjuizamento}
                                                 placeholder=""
                                                 className="w-full"
                                             />
                                         </div>
+
                                     </div>
 
                                     <div className="flex flex-col h-[200px] gap-2 overflow-y-auto">
@@ -146,13 +229,13 @@ export default function Page() {
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
-                                                    <TableHead>Movimentos</TableHead>
+                                                    <TableHead>Movimento</TableHead>
                                                     <TableHead>Data/Hora</TableHead>
                                                     <TableHead>Complemento</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {/* <TableRow>
+                                                <TableRow>
                                                     <TableCell>Distribuição</TableCell>
                                                     <TableCell>21/08/2017 10:05</TableCell>
                                                     <TableCell>Tipo de distribuição: Sorteio</TableCell>
@@ -181,9 +264,27 @@ export default function Page() {
                                                     <TableCell>Documento</TableCell>
                                                     <TableCell>27/09/2019 10:40</TableCell>
                                                     <TableCell>Tipo de documento: Certidão</TableCell>
-                                                </TableRow> */}
+                                                </TableRow>
                                             </TableBody>
                                         </Table>
+
+                                    </div>
+
+                                    <div className="flex flex-col gap-2 w-full sm:w-1/2 md:w-1/3">
+                                        <Label htmlFor="text" className="text-base">Status</Label>
+                                        <Select>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Status</SelectLabel>
+                                                    <SelectItem value="emAndamento">Em andamento ⏳</SelectItem>
+                                                    <SelectItem value="concluido">Concluído ✔️ </SelectItem>
+                                                    <SelectItem value="arquivado">Arquivado 🗳️</SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
 
                                 </div>
@@ -241,9 +342,9 @@ export default function Page() {
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Telefone</Label>
                                             <Input
-                                                type="tel" 
-                                                id="phone" 
-                                                name="phone" 
+                                                type="tel"
+                                                id="phone"
+                                                name="phone"
                                                 // pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
                                                 placeholder="Telefone do cliente"
                                                 className="w-full"
@@ -258,14 +359,6 @@ export default function Page() {
                                             />
                                         </div>
 
-                                        <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">CEP</Label>
-                                            <Input
-                                                type="text"
-                                                placeholder="CEP do cliente"
-                                                className="w-full"
-                                            />
-                                        </div>
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Rua</Label>
                                             <Input
@@ -358,7 +451,7 @@ export default function Page() {
                                     </div>
                                     {uploadedFiles.length > 0 && (
                                         <div>
-                                            <Label className="text-lg ">Arquivos Anexados:</Label>
+                                            <Label className="text-lg font-semibold">Arquivos Anexados:</Label>
                                             <ul>
                                                 {uploadedFiles.map((file, index) => (
                                                     <li key={index} className="flex items-center justify-between text-gray-600 mb-2">

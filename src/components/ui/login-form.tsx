@@ -54,7 +54,7 @@ export default function LoginForm() {
                     </div>
                 </div>
                 <Button 
-                    className="mt-5 text-base w-full bg-[#030430]"
+                    className="mt-5 text-base w-full h-11 bg-[#030430]"
                     type="submit"
                     onClick={handleLogin}
                 >
