@@ -13,7 +13,7 @@ import NavBar from "@/components/navbar";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 
-interface Info {
+export interface Info {
   numeroProcesso: string;
   nomeProcesso: string;
   ultimaAtualizacao: string;
@@ -23,7 +23,7 @@ interface Info {
   status: string;
 }
 
-const processos: Info[] = [
+export const processos: Info[] = [
   {
     numeroProcesso: "00008323520184013202",
     nomeProcesso: "Procedimento do Juizado Especial Cível",
@@ -218,7 +218,7 @@ export default function Page() {
                     {processo.status}
                   </TableCell>
                   <TableCell>
-                    <Link href={`/processo/${processo.numeroProcesso}`}>
+                    <Link href={`/inicio/processos/${processo.numeroProcesso}`}>
                       <Button variant="outline">
                         <BinocularsIcon />
                       </Button>
