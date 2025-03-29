@@ -131,15 +131,15 @@ export default function Page() {
                     </Link>
                 } />
 
-            <Card className="w-11/12">
-                <CardHeader className="bg-[#030430] h-16 justify-center rounded-t-lg text-white items-start mb-6">
+            <Card className="w-11/12 border-none">
+                {/* <CardHeader className="bg-[#030430] h-16 justify-center rounded-t-lg text-white items-start mb-6">
                     <CardTitle className="text-xl">Preencha as informações do processo</CardTitle>
-                </CardHeader>
+                </CardHeader> */}
                 <CardContent>
                     <div className="flex flex-col justify-center gap-3 items-center">
                         <Card className="w-full">
                             <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
-                                <CardTitle className="text-lg">Entrada de dados</CardTitle>
+                                <CardTitle className="text-lg">Informações do processo</CardTitle>
                                 {/* <CardDescription className="text-gray-200">Selecione o tribunal, insira o número do processo e clique em carregar dados.</CardDescription> */}
                             </CardHeader>
                             <CardContent>
@@ -150,7 +150,7 @@ export default function Page() {
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Tribunal</Label>
                                             <Select onValueChange={setTribunalSelecionado}>
-                                                <SelectTrigger className="w-full">
+                                                <SelectTrigger className="w-full border-gray-300 border-2">
                                                     <SelectValue placeholder="Escolha um Tribunal" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -174,7 +174,7 @@ export default function Page() {
                                                 value={numeroProcesso}
                                                 onChange={(e) => setNumeroProcesso(e.target.value)}
                                                 placeholder="Número do processo"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
 
@@ -185,7 +185,7 @@ export default function Page() {
                                                 id="classe"
                                                 value={classe}
                                                 placeholder="Ex: Execução Fiscal"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
 
@@ -196,7 +196,7 @@ export default function Page() {
                                                 id="assuntos"
                                                 value={assuntos}
                                                 placeholder="Ex: Dívida Ativa (Execução Fiscal)"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
 
@@ -207,7 +207,7 @@ export default function Page() {
                                                 id="dataHoraultimaAtualizacao"
                                                 value={dataHoraUltimaAtualizacao}
                                                 placeholder=""
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
 
@@ -218,7 +218,7 @@ export default function Page() {
                                                 id="dataAjuizamento"
                                                 value={dataAjuizamento}
                                                 placeholder=""
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
 
@@ -273,7 +273,7 @@ export default function Page() {
                                     <div className="flex flex-col gap-2 w-full sm:w-1/2 md:w-1/3">
                                         <Label htmlFor="text" className="text-base">Status</Label>
                                         <Select>
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="w-full border-gray-300 border-2">
                                                 <SelectValue placeholder="Status" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -304,7 +304,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Nome do autor"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -312,7 +312,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Nome do Advogado do autor"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -320,7 +320,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Nome do réu"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -328,7 +328,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Nome do Advogado do réu"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -336,7 +336,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="CPF do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -347,7 +347,7 @@ export default function Page() {
                                                 name="phone"
                                                 // pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
                                                 placeholder="Telefone do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2" 
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -355,7 +355,7 @@ export default function Page() {
                                             <Input
                                                 type="email"
                                                 placeholder="Email do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
 
@@ -364,7 +364,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Rua do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -372,7 +372,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Número da casa do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -380,7 +380,7 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Bairro do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
@@ -388,13 +388,13 @@ export default function Page() {
                                             <Input
                                                 type="text"
                                                 placeholder="Cidade do cliente"
-                                                className="w-full"
+                                                className="w-full border-gray-300 border-2"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Estado</Label>
                                             <Select>
-                                                <SelectTrigger className="w-full">
+                                                <SelectTrigger className="w-full border-gray-300 border-2">
                                                     <SelectValue placeholder="Escolha um Estado" />
                                                 </SelectTrigger>
                                                 <SelectContent>

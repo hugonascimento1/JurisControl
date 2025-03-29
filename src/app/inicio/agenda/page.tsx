@@ -11,14 +11,16 @@ import { useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment, { locales } from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import { ChevronLeftIcon } from "lucide-react";
+import Link from "next/link";
 
 const localizer = momentLocalizer(moment);
 
 interface Event {
-  title: string;
-  start: Date;
-  end: Date;
-  description: string;
+  titulo: string;
+  inicio: Date;
+  final: Date;
+  descricao: string;
 }
 
 
@@ -43,22 +45,29 @@ export default function Page() {
 
   const [eventos, setEventos] = useState<Event[]>([
     {
-      title: 'Reunião',
-      start: new Date(2025, 3, 26, 10, 0),
-      end: new Date(2025, 3, 27, 12, 0),
-      description: 'Reuião com meu cliente sobre o processo dele',
+      titulo: 'Reunião',
+      inicio: new Date(2025, 4, 26, 10, 0),
+      final: new Date(2025, 4, 27, 12, 0),
+      descricao: 'Reuião com meu cliente sobre o processo dele',
     },
     {
-      title: 'Almoço',
-      start: new Date(2025, 3, 29, 12, 0),
-      end: new Date(2025, 3, 31, 13, 0),
-      description: 'Reuião com meu cliente sobre o processo dele',
+      titulo: 'Almoço',
+      inicio: new Date(2025, 4, 29, 12, 0),
+      final: new Date(2025, 4, 31, 13, 0),
+      descricao: 'Reuião com meu cliente sobre o processo dele',
     },
   ]);
 
   return (
     <main className="h-screen flex flex-col">
       <NavBar
+        botaoVoltar={
+          <Link className="p-0 m-0 flex items-center" href="/inicio">
+            <Button size="icon" className="bg-[#030430] hover:bg-gray-500">
+              <ChevronLeftIcon style={{ width: "35px", height: "35px" }} className=""></ChevronLeftIcon>
+            </Button>
+          </Link>
+        }
         nome="Agenda"
         // botaoAdiconar={
         //   <Button size="icon" variant="outline" className="bg-green-500 hover:bg-green-600">
@@ -66,7 +75,7 @@ export default function Page() {
         //   </Button>
         // }
         botaoMenu
-        botaoVoltar
+
       />
 
       {/* Carrossel da Agenda */}
@@ -131,8 +140,8 @@ export default function Page() {
               <Calendar
                 localizer={localizer}
                 events={eventos}
-                startAccessor="start"
-                endAccessor="end"
+                startAccessor="inicio"
+                endAccessor="final"
                 culture="pt-BR"
               />
             </div>
