@@ -17,10 +17,10 @@ import Link from "next/link";
 const localizer = momentLocalizer(moment);
 
 interface Event {
-  titulo: string;
-  inicio: Date;
-  final: Date;
-  descricao: string;
+  title: string;
+  start: Date;
+  end: Date;
+  description: string;
 }
 
 
@@ -45,21 +45,21 @@ export default function Page() {
 
   const [eventos, setEventos] = useState<Event[]>([
     {
-      titulo: 'Reunião',
-      inicio: new Date(2025, 4, 26, 10, 0),
-      final: new Date(2025, 4, 27, 12, 0),
-      descricao: 'Reuião com meu cliente sobre o processo dele',
+      title: 'Reunião',
+      start: new Date(2025, 3, 26, 10, 0),
+      end: new Date(2025, 3, 27, 12, 0),
+      description: 'Reuião com meu cliente sobre o processo dele',
     },
     {
-      titulo: 'Almoço',
-      inicio: new Date(2025, 4, 29, 12, 0),
-      final: new Date(2025, 4, 31, 13, 0),
-      descricao: 'Reuião com meu cliente sobre o processo dele',
+      title: 'Almoço',
+      start: new Date(2025, 3, 29, 12, 0),
+      end: new Date(2025, 3, 31, 13, 0),
+      description: 'Reuião com meu cliente sobre o processo dele',
     },
   ]);
 
   return (
-    <main className="h-screen flex flex-col">
+    <div className="flex flex-col">
       <NavBar
         botaoVoltar={
           <Link className="p-0 m-0 flex items-center" href="/inicio">
@@ -69,28 +69,42 @@ export default function Page() {
           </Link>
         }
         nome="Agenda"
-        // botaoAdiconar={
-        //   <Button size="icon" variant="outline" className="bg-green-500 hover:bg-green-600">
-        //     <Plus className="text-white" />
-        //   </Button>
-        // }
         botaoMenu
-
       />
 
-      {/* Carrossel da Agenda */}
-      <div className="flex flex-col md:flex-row justify-center items-center gap-2 mx-5 h-full mb-5">
-        <Card className="w-full md:w-1/3 bg-gray-200 justify-content-start items-start">
+      <div className="flex flex-col-reverse md:flex-row justify-center items-center gap-2 mx-5 mt-2 mb-5">
+        <Card className="w-full md:w-1/3 flex flex-col h-[610px]">
           <CardHeader className="text-center">
-            <CardTitle>Adicionar Tarefa</CardTitle>
+            <CardTitle className="font-semibold">Adicionar Tarefa</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 flex flex-col">
             <div className="flex flex-col gap-2 mb-4">
               <Label className="text-base">Título</Label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="titulo"
+                className="border-gray-300 border-2"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 mb-4">
+              <Label className="text-base">Data início</Label>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="border-gray-300 border-2"
+              />
+            </div>
+            
+            <div className="flex flex-col gap-2 mb-4">
+              <Label className="text-base">Data final</Label>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="border-gray-300 border-2"
               />
             </div>
 
@@ -100,20 +114,11 @@ export default function Page() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Insira sua descrição."
+                className="border-gray-300 border-2"
               />
             </div>
 
-            <div className="flex flex-col gap-2 mb-4">
-              <Label className="text-base">Data</Label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-row gap-2 justify-end mt-5">
-              <Button type="submit">Salvar</Button>
+            <div className="flex flex-row gap-2 justify-end mt-auto">
               <Button
                 variant='outline'
                 type="button"
@@ -122,32 +127,34 @@ export default function Page() {
                   setDescription('');
                   setDate('');
                 }}
+                className="border-gray-300 border-2 shadow-md"
               >
                 Limpar
               </Button>
+              <Button type="submit" className="shadow-md">Salvar</Button>
             </div>
 
 
           </CardContent>
         </Card>
 
-        <Card className="w-full md:w-2/3 h-full">
-          <CardHeader>
-            <CardTitle>Calendario</CardTitle>
+        <Card className="w-full md:w-2/3 h-[610px]">
+          <CardHeader className="bg-[#030430] text-white mb-5 rounded-t-lg">
+            <CardTitle>Calendário</CardTitle>
           </CardHeader>
           <CardContent>
             <div style={{ height: 500 }}>
               <Calendar
                 localizer={localizer}
                 events={eventos}
-                startAccessor="inicio"
-                endAccessor="final"
+                startAccessor="start"
+                endAccessor="end"
                 culture="pt-BR"
               />
             </div>
           </CardContent>
         </Card>
       </div>
-    </main>
+    </div>
   );
 }
