@@ -46,14 +46,14 @@ export default function Page() {
   const [eventos, setEventos] = useState<Event[]>([
     {
       title: 'Reunião',
-      start: new Date(2025, 3, 26, 10, 0),
-      end: new Date(2025, 3, 27, 12, 0),
+      start: new Date(2025, 2, 26, 10, 0),
+      end: new Date(2025, 2, 27, 12, 0),
       description: 'Reuião com meu cliente sobre o processo dele',
     },
     {
       title: 'Almoço',
-      start: new Date(2025, 3, 29, 12, 0),
-      end: new Date(2025, 3, 31, 13, 0),
+      start: new Date(2025, 2, 29, 12, 0),
+      end: new Date(2025, 2, 31, 13, 0),
       description: 'Reuião com meu cliente sobre o processo dele',
     },
   ]);
@@ -74,7 +74,7 @@ export default function Page() {
 
       <div className="flex flex-col-reverse md:flex-row justify-center items-center gap-2 mx-5 mt-2 mb-5">
         <Card className="w-full md:w-1/3 flex flex-col h-[610px]">
-          <CardHeader className="text-center">
+          <CardHeader className="bg-[#030430] text-white mb-5 rounded-t-lg">
             <CardTitle className="font-semibold">Adicionar Tarefa</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col">
