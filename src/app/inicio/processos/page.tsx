@@ -59,10 +59,10 @@ export default function Page() {
       <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center m-8 mb-10 w-11/12">
         <div className="flex items-center justify-center">
           <Input icon={
-            <Button variant="ghost" size="icon" className="pt-1 hover:bg-transparent focus:ring-0">
-              <Search style={{ width: "20px", height: "20px" }} className="text-gray-500"></Search>
+            <Button variant="ghost" size="icon" className="pt-1 hover:bg-transparent shadow-none focus:ring-0">
+              <Search style={{ width: "20px", height: "20px" }} className="text-gray-500 "></Search>
             </Button>
-          } className="md:w-[400px] pl-14 py-4 text-xl text-start h-10 bg-[#D9D9D9]" placeholder="Buscar Processo..." />
+          } className="md:w-[400px] pl-14 py-4 text-xl text-start h-10 border-gray-300 border-2" placeholder="Buscar Processo..." />
         </div>
         <Button
           onClick={handleCadastroProcesso}

@@ -19,14 +19,14 @@ export function FullCalendario() {
     const events: Evento[] = [
         {
             title: 'Reunião',
-            start: '2024-06-10T10:00:00',
-            end: '2024-06-10T12:00:00',
+            start: '2025-04-10T10:00:00',
+            end: '2025-04-10T12:00:00',
             description: 'Reunião de planejamento do projeto.',
         },
         {
             title: 'Almoço',
-            start: '2024-06-15T12:00:00',
-            end: '2024-06-15T13:00:00',
+            start: '2025-04-15T12:00:00',
+            end: '2025-04-15T13:00:00',
             description: 'Almoço com a equipe.',
         },
     ]
@@ -35,7 +35,7 @@ export function FullCalendario() {
         return (
             <div style={{ backgroundColor: 'lightblue' }}>
                 <b>{eventInfo.event.title}</b>
-                <p>{eventInfo.event.extendedProps.description}</p>
+                <p className="whitespace-break-spaces">{eventInfo.event.extendedProps.description}</p>
                 <p>Início: {eventInfo.event.start ? formatDate(eventInfo.event.start.toISOString()) : 'N/A'}</p>
                 <p>Fim: {eventInfo.event.end ? formatDate(eventInfo.event.end.toISOString()) : 'N/A'}</p>
             </div>
@@ -92,31 +92,29 @@ export function FullCalendario() {
                 titleFormat={{ year: 'numeric', month: 'long' }}
                 allDayText="Dia inteiro"
                 noEventsContent='Não há eventos nesse período'
-
+                height={500}
             />
             <style>
                 {`
-                fc {
-            max-height: 450px; /* Ajuste a altura máxima conforme necessário */
-            overflow: auto;
-          @media (max-width: 768px) {
-            .fc-header-toolbar {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 10px
-            }
-            .fc-header-toolbar .fc-toolbar-chunk:first-child {
-              order: 1;
-            }
-            .fc-header-toolbar .fc-toolbar-chunk:nth-child(2) {
-              order: 0;
-            }
-            .fc-header-toolbar .fc-toolbar-chunk:last-child {
-              order: 2;
-            }
-          }
-        `}
+                
+                    @media (max-width: 768px) {
+                        .fc-header-toolbar {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10px
+                        }
+                        .fc-header-toolbar .fc-toolbar-chunk:first-child {
+                        order: 1;
+                        }
+                        .fc-header-toolbar .fc-toolbar-chunk:nth-child(2) {
+                        order: 0;
+                        }
+                        .fc-header-toolbar .fc-toolbar-chunk:last-child {
+                        order: 2;
+                        }
+                    }
+                `}
             </style>
         </div>
     )

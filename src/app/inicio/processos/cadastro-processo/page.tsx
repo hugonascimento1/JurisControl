@@ -444,8 +444,8 @@ export default function Page() {
                             <CardContent>
                                 <div className="flex flex-col gap-4 mt-5">
                                     <div className="flex items-center gap-2">
-                                        <Input type="file" id="fileUpload" className="hidden" onChange={(e) => handleFileChange(e)} />
-                                        <Label htmlFor="fileUpload" className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded">
+                                        <Input type="file" id="fileUpload" className="hidden " onChange={(e) => handleFileChange(e)} />
+                                        <Label htmlFor="fileUpload" className="cursor-pointer shadow-lg bg-blue-500 text-white px-4 py-2 rounded">
                                             Selecionar Arquivo
                                         </Label>
                                     </div>
@@ -471,7 +471,7 @@ export default function Page() {
                     </div>
 
                     <div className="flex flex-row justify-end gap-2 items-center mt-5">
-                        <Button variant="outline" className="bg-gray-200 h-11 w-24">Cancelar</Button>
+                        <Button variant="outline" className="h-11 w-24 ">Cancelar</Button>
                         <Button className="bg-green-600 h-11 w-24">Salvar</Button>
                     </div>
                 </CardContent>
