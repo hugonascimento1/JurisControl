@@ -1,6 +1,5 @@
 'use client'
 
-import MyCalendar from "@/components/MyCalendar";
 import NavBar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -8,21 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment, { locales } from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
-
-const localizer = momentLocalizer(moment);
-
-interface Event {
-  title: string;
-  start: Date;
-  end: Date;
-  description: string;
-}
-
+import { FullCalendario } from "@/components/FullCalendario";
 
 export default function Page() {
   const [events, setEvents] = useState([]);
@@ -42,21 +29,6 @@ export default function Page() {
   //   setDescription('');
   //   setDate('');
   // }
-
-  const [eventos, setEventos] = useState<Event[]>([
-    {
-      title: 'Reunião',
-      start: new Date(2025, 2, 26, 10, 0),
-      end: new Date(2025, 2, 27, 12, 0),
-      description: 'Reuião com meu cliente sobre o processo dele',
-    },
-    {
-      title: 'Almoço',
-      start: new Date(2025, 2, 29, 12, 0),
-      end: new Date(2025, 2, 31, 13, 0),
-      description: 'Reuião com meu cliente sobre o processo dele',
-    },
-  ]);
 
   return (
     <div className="flex flex-col">
@@ -97,7 +69,7 @@ export default function Page() {
                 className="border-gray-300 border-2"
               />
             </div>
-            
+
             <div className="flex flex-col gap-2 mb-4">
               <Label className="text-base">Data final</Label>
               <Input
@@ -143,42 +115,8 @@ export default function Page() {
             <CardTitle>Calendário</CardTitle>
           </CardHeader>
           <CardContent>
-            <div style={{ height: 500 }}>
-              <Calendar
-                localizer={localizer}
-                events={eventos}
-                startAccessor="start"
-                endAccessor="end"
-                culture="pt-BR"
-                messages={{
-                  next: 'Avançar',
-                  previous: 'Voltar',
-                  today: 'Hoje',
-                  month: 'Mês',
-                  week: 'Semana',
-                  day: 'Dia',
-                  allDay: 'Dia inteiro',
-                  date: 'Data',
-                  time: 'Hora',
-                  event: 'Evento',
-                  noEventsInRange: 'Não há eventos neste período',
-                  showMore: (total) => `+ ${total} eventos`,
-                  // monthNames: [
-                  //   'Janeiro',
-                  //   'Fevereiro',
-                  //   'Março',
-                  //   'Abril',
-                  //   'Maio',
-                  //   'Junho',
-                  //   'Julho',
-                  //   'Agosto',
-                  //   'Setembro',
-                  //   'Outubro',
-                  //   'Novembro',
-                  //   'Dezembro',
-                  // ],
-                }}
-              />
+            <div style={{ height: '100%'}}>
+                <FullCalendario />
             </div>
           </CardContent>
         </Card>
