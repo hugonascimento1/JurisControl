@@ -150,6 +150,35 @@ export default function Page() {
                 startAccessor="start"
                 endAccessor="end"
                 culture="pt-BR"
+                messages={{
+                  next: 'Avançar',
+                  previous: 'Voltar',
+                  today: 'Hoje',
+                  month: 'Mês',
+                  week: 'Semana',
+                  day: 'Dia',
+                  allDay: 'Dia inteiro',
+                  date: 'Data',
+                  time: 'Hora',
+                  event: 'Evento',
+                  noEventsInRange: 'Não há eventos neste período',
+                  showMore: (total) => `+ ${total} eventos`,
+                  weekdayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                  monthNames: [
+                    'Janeiro',
+                    'Fevereiro',
+                    'Março',
+                    'Abril',
+                    'Maio',
+                    'Junho',
+                    'Julho',
+                    'Agosto',
+                    'Setembro',
+                    'Outubro',
+                    'Novembro',
+                    'Dezembro',
+                  ],
+                }}
               />
             </div>
           </CardContent>
