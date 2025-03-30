@@ -1,4 +1,4 @@
-export interface Info {
+export interface InfoProcesso {
     numeroProcesso: string;
     nomeProcesso: string;
     ultimaAtualizacao: string;
@@ -8,7 +8,7 @@ export interface Info {
     status: string;
   }
   
-  export const processos: Info[] = [
+  export const processos: InfoProcesso[] = [
     {
       numeroProcesso: "00008323520184013202",
       nomeProcesso: "Procedimento do Juizado Especial Cível",
