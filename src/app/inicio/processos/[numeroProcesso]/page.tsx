@@ -12,7 +12,7 @@ export default function Page() {
     const numeroProcesso = params.numeroProcesso; // Pega o número do processo da URL
 
     return (
-        <div className="justify-center items-center">
+        <div className=" flex flex-col justify-center items-center">
             <NavBar
                 nome="Detalhes do Processo"
                 botaoVoltar={
@@ -24,7 +24,7 @@ export default function Page() {
                 }
             />
 
-            <div className="p-5 flex flex-col justify-center items-center bg-black gap-2 sm:flex-row h-auto">
+            <div className="flex flex-col w-11/12 justify-center items-center gap-2 sm:flex-row h-auto">
                 <Card className="w-full md:w-1/3 h-[600px]">
                     <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
                         <CardTitle className="text-lg">Movimentos</CardTitle>

@@ -124,7 +124,7 @@ export default function Page() {
             <NavBar
                 nome="Cadstro de processo"
                 botaoVoltar={
-                    <Link className="p-0 m-0 flex items-center" href="/inicio">
+                    <Link className="p-0 m-0 flex items-center" href="/inicio/processos">
                         <Button size="icon" className="bg-[#030430] hover:bg-gray-500">
                             <ChevronLeftIcon style={{ width: "35px", height: "35px" }} className=""></ChevronLeftIcon>
                         </Button>

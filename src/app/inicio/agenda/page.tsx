@@ -44,7 +44,7 @@ export default function Page() {
         botaoMenu
       />
 
-      <div className="flex flex-col-reverse md:flex-row justify-center items-center gap-2 mx-5 mt-2 mb-5">
+      <div className="flex flex-col-reverse md:flex-row justify-center items-center gap-2 mx-5 mt-1 mb-5">
         <Card className="w-full md:w-1/3 flex flex-col h-[610px]">
           <CardHeader className="bg-[#030430] text-white mb-5 rounded-t-lg">
             <CardTitle className="font-semibold">Adicionar Tarefa</CardTitle>
