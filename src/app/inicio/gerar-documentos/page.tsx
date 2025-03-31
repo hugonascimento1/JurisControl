@@ -8,8 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import ReactQuill from 'react-quill';
+// import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
+
+const ReactQuill = typeof window === 'object' ? require('react-quill') : () => false;
 
 export default function Page() {
     return (
