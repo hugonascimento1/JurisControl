@@ -7,19 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 // import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Delta from "quill-delta";
-import html2pdf from 'html2pdf.js';
-import ReactQuill from "react-quill";
+// import html2pdf from 'html2pdf.js';
 
-// const ReactQuill = dynamic(() => import('react-quill'), {
-//     ssr: false,
-// });
-
-type generatedModelType = string | Delta;
+const ReactQuill = dynamic(() => import('react-quill'), {
+    ssr: false,
+});
 
 async function generateDocumentModel(description, apiKey) {
     try {
@@ -46,61 +43,45 @@ async function generateDocumentModel(description, apiKey) {
         console.error('Erro ao chamar a API do Gemini: ', error);
         return 'Erro ao gerar o modelo. Tente novamente.';
     }
-}
 
-function convertTextToDeltaWithBold(text) {
-    const delta = new Delta();
-    let currentIndex = 0;
+    function convertTextToDeltaWithBold(text) {
+        const delta = new Delta();
+        let currentIndex = 0;
 
-    while (currentIndex < text.length) {
-        const boldStart = text.indexOf('**', currentIndex);
+        while (currentIndex < text.length) {
+            const boldStart = text.indexOf('**', currentIndex);
 
-        if (boldStart === -1) {
-            delta.insert(text.substring(currentIndex));
-            currentIndex = text.length;
-        } else {
-            delta.insert(text.substring(currentIndex, boldStart));
-            currentIndex = boldStart + 2;
-
-            const boldEnd = text.indexOf('**', currentIndex);
-
-            if (boldEnd === -1) {
+            if (boldStart === -1) {
                 delta.insert(text.substring(currentIndex));
                 currentIndex = text.length;
             } else {
-                delta.insert(text.substring(currentIndex, boldEnd), { bold: true });
-                currentIndex = boldEnd + 2;
+                delta.insert(text.substring(currentIndex, boldStart));
+                currentIndex = boldStart + 2;
+
+                const boldEnd = text.indexOf('**', currentIndex);
+
+                if (boldEnd === -1) {
+                    delta.insert(text.substring(currentIndex));
+                    currentIndex = text.length;
+                } else {
+                    delta.insert(text.substring(currentIndex, boldEnd), { bold: true });
+                    currentIndex = boldEnd + 2;
+                }
             }
         }
+
+        return delta;
     }
-
-    return delta;
 }
-
 
 export default function Page() {
     const [description, setDescription] = useState('');
-    const [generatedModel, setGeneratedModel] = useState<generatedModelType>('');
-    const quillRef = useRef<ReactQuill | null>(null);
+    const [generatedModel, setGeneratedModel] = useState<any>('');
 
     const handleGenerate = async () => {
         const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
         const model = await generateDocumentModel(description, apiKey);
         setGeneratedModel(model);
-    }
-
-    const handleDownloadPDF = () => {
-        if (quillRef.current) {
-            const editor = quillRef.current.getEditor();
-            const content = editor.root.innerHTML;
-
-            const element = document.createElement('div');
-            element.innerHTML = content
-
-            html2pdf()
-                .from(element)
-                .save('documento.pdf');
-        }
     }
 
     return (
@@ -152,9 +133,8 @@ export default function Page() {
                             className="h-[400px]"
                             value={generatedModel}
                             onChange={setGeneratedModel}
-                            ref={quillRef}
                         />
-                        <Button onClick={handleDownloadPDF} className="mt-10 justify-self-end">Download</Button>
+                        <Button className="mt-10 justify-self-end">Download</Button>
                     </CardContent>
                 </Card>
             </div>
