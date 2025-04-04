@@ -26,7 +26,7 @@ export default function Page() {
   const movimentosProcesso = movimentos.filter(
     (m) => m.numeroProcesso === numeroProcesso
   );
-
+  
   if (!processo) {
     return (
       <div className="text-center p-10">
