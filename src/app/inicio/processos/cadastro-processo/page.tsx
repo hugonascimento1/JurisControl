@@ -122,7 +122,7 @@ export default function Page() {
     return (
         <div className="flex flex-col justify-center items-center mb-7">
             <NavBar
-                nome="Cadstro de processo"
+                nome="Cadastro de processo"
                 botaoVoltar={
                     <Link className="p-0 m-0 flex items-center" href="/inicio/processos">
                         <Button size="icon" className="bg-[#030430] hover:bg-gray-500">

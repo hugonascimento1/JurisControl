@@ -26,7 +26,7 @@ export default function Page() {
 
     return (
         <main className="min-h-screen pb-10">
-            <header className="w-full h-24 bg-[#030430] flex justify-between items-center px-6 shadow-md">
+            <header className="w-full h-20 bg-[#030430] flex justify-between items-center px-6 shadow-md">
                 <div className="flex items-center space-x-3">
                     <Logo />
                 </div>
@@ -36,14 +36,15 @@ export default function Page() {
             </header>
 
             <div className="flex flex-col items-center justify-center mt-6">
-                <p className="text-gray-600 text-xl font-bold text-center">
+                <p className="text-gray-600 text-xl font-bold text-center lg:text-2xl ">
                     Bem-vindo ao JurisControl,
                 </p>
-                <p className="text-gray-600">[Nome Advogado]</p>
+                <p className="text-gray-600 lg:text-xl">[Nome Advogado]</p>
             </div>
 
-            <div className="flex justify-center mt-6 md:w-50 md:h-30">
+            <div className="flex justify-center mt-6">
                 <Image
+                    className=""
                     src="/logo-escritorio.png"
                     width={426}
                     height={175}
