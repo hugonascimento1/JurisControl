@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState } from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,11 +11,35 @@ import { TabsList } from "./tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginForm() {
-
     const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleLogin = () => {
-        router.push('/inicio');
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('https://backendjuriscontrol.onrender.com/auth/login/advogado', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                sessionStorage.setItem('authToken', data.token);
+                console.log('Login bem-sucedido!');
+                window.location.href = '/inicio'
+            } else {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || 'Erro ao fazer login. Verifique suas credenciais.');
+                console.error('Erro no login:', errorData);
+            }
+        } catch (error) {
+            setErrorMessage('Ocorreu um erro ao tentar fazer login.');
+            console.error('Erro na requisição:', error);
+        }
     }
 
     return (
@@ -42,6 +67,8 @@ export default function LoginForm() {
                                     name="email"
                                     placeholder="Insira seu email"
                                     required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
                             <div className="">
@@ -57,6 +84,8 @@ export default function LoginForm() {
                                     placeholder="Insira sua senha"
                                     required
                                     minLength={6}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                 />
 
                             </div>
@@ -71,7 +100,7 @@ export default function LoginForm() {
                                 <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
                             </Button>
                             <div className="flex h-8 items-end space-x-1">
-                                {/* Aqui ficarão as mensagem de erro  */}
+                                {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                             </div>
                         </CardFooter>
                     </Card>
