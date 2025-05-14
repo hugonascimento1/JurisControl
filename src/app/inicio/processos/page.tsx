@@ -1,17 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
-import { MenuIcon, ChevronLeft, Circle, Search, CirclePlus, BinocularsIcon } from "lucide-react";
 import Link from "next/link";
-
-// import VisualizarCaso from "@/components/visualizarCaso";
-import NavBar from "@/components/navbar";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
+
+import NavBar from "@/components/navbar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+// import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationPrevious, 
+  PaginationNext 
+} from "@/components/ui/pagination";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
+  MenuIcon, 
+  ChevronLeft,  
+  Search, 
+  CirclePlus, 
+  BinocularsIcon 
+} from "lucide-react";
 
 import { processos, InfoProcesso } from "./processosData";
 
@@ -20,7 +39,6 @@ const itemsPag = 5;
 export default function Page() {
   const router = useRouter();
   const [proxPag, setProxPag] = useState(1);
-
   const totalPages = Math.ceil(processos.length / itemsPag);
 
   const handlePageChange = (page: number) => {
@@ -77,10 +95,10 @@ export default function Page() {
           <TableHeader className="bg-[#030430]">
             <TableRow>
               <TableHead className="text-white text-lg font-semibold">N° Processo</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Identificação</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Última Atualização</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Tribunal</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Autor</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Vara</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Classe</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Assunto</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Cliente</TableHead>
               <TableHead className="text-white text-lg font-semibold">Advogado</TableHead>
               
               <TableHead className="text-white text-lg font-semibold">Status</TableHead>

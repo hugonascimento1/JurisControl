@@ -1,50 +1,75 @@
 'use client'
 
 import React, { useState } from "react";
-import { ArrowRightIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import axios from 'axios';
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { 
+    Tabs, 
+    TabsContent, 
+    TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "./tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRightIcon } from "lucide-react";
 
 export default function LoginForm() {
     const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [emailAdvogado, setEmailAdvogado] = useState('');
+    const [passwordAdvogado, setPasswordAdvogado] = useState('');
+    const [errorMessageAdvogado, setErrorMessageAdvogado] = useState('');
+    
+    const [emailAdmin, setEmailAdmin] = useState('');
+    const [passwordAdmin, setPasswordAdmin] = useState('');
+    const [errorMessageAdmin, setErrorMessageAdmin] = useState('');
 
-    const handleLogin = async () => {
+    const handleLoginAdvogado = async () => {
         try {
-            const response = await fetch('https://backendjuriscontrol.onrender.com/auth/login/advogado', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
+            const response = await axios.post('https://backendjuriscontrol.onrender.com/api/login/advogado', {
+                email: emailAdvogado,
+                senha: passwordAdvogado
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                sessionStorage.setItem('authToken', data.token);
-                console.log('Login bem-sucedido!');
+            if (response.status === 200) {
+                sessionStorage.setItem('authToken', response.data.token);
+                console.log('Login de advogado bem-sucedido!');
                 window.location.href = '/inicio'
             } else {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || 'Erro ao fazer login. Verifique suas credenciais.');
-                console.error('Erro no login:', errorData);
+                setErrorMessageAdvogado(response.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
+                console.error('Erro no login:', response.data);
             }
         } catch (error) {
-            setErrorMessage('Ocorreu um erro ao tentar fazer login.');
+            setErrorMessageAdvogado('Ocorreu um erro ao tentar fazer login.');
             console.error('Erro na requisição:', error);
         }
     }
 
+    const handleLoginAdmin = async () => {
+        try {
+            const response = await axios.post('https://backendjuriscontrol.onrender.com/api/login/admin', {
+                email: emailAdmin,
+                senha: passwordAdmin
+            });
+
+            if (response.status === 200) {
+                sessionStorage.setItem('authToken', response.data.token);
+                console.log('Login de administrador bem-sucedido!');
+                window.location.href = '/dashboard';
+            } else {
+                setErrorMessageAdmin(response.data?.message || 'Erro ao fazer login. verifique suas credenciais.');
+                console.error('Erro no login de admin:', response.data);
+            }
+        } catch (error: any) {
+            setErrorMessageAdmin(error.response?.data?.message || 'Ocorreu um erro ao tentar fazer login.');
+            console.error('Erro na requisição de login de admin:', error);
+        };
+    }
+
     return (
         <div>
-            <Tabs defaultValue="loginAdvogado" className="w-[400px]">
+            <Tabs defaultValue="loginAdvogado" className="max-w-[400px]">
                 <TabsList className="grid w-full grid-cols-2 bg-gray-300 h-12 rounded-lg">
                     <TabsTrigger value="loginAdvogado" className=" data-[state=active]:bg-[#030430] data-[state=active]:text-white text-gray-700 hover:text-gray-900">Advogado</TabsTrigger>
                     <TabsTrigger value="loginAdministrador" className=" data-[state=active]:bg-[#030430] data-[state=active]:text-white text-gray-700 hover:text-gray-900">Administrador</TabsTrigger>
@@ -67,8 +92,8 @@ export default function LoginForm() {
                                     name="email"
                                     placeholder="Insira seu email"
                                     required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={emailAdvogado}
+                                    onChange={(e) => setEmailAdvogado(e.target.value)}
                                 />
                             </div>
                             <div className="">
@@ -84,8 +109,8 @@ export default function LoginForm() {
                                     placeholder="Insira sua senha"
                                     required
                                     minLength={6}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={passwordAdvogado}
+                                    onChange={(e) => setPasswordAdvogado(e.target.value)}
                                 />
 
                             </div>
@@ -94,13 +119,13 @@ export default function LoginForm() {
                             <Button
                                 className=" text-base w-full h-11 bg-[#030430]"
                                 type="submit"
-                                onClick={handleLogin}
+                                onClick={handleLoginAdvogado}
                             >
                                 Entrar
                                 <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
                             </Button>
                             <div className="flex h-8 items-end space-x-1">
-                                {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+                                {errorMessageAdvogado && <p className="text-red-500 text-sm">{errorMessageAdvogado}</p>}
                             </div>
                         </CardFooter>
                     </Card>
@@ -124,6 +149,8 @@ export default function LoginForm() {
                                     name="email"
                                     placeholder="Insira seu email"
                                     required
+                                    value={emailAdmin}
+                                    onChange={(e) => setEmailAdmin(e.target.value)}
                                 />
                             </div>
                             <div className="">
@@ -139,6 +166,8 @@ export default function LoginForm() {
                                     placeholder="Insira sua senha"
                                     required
                                     minLength={6}
+                                    value={passwordAdmin}
+                                    onChange={(e) => setPasswordAdmin(e.target.value)}
                                 />
 
                             </div>
@@ -147,7 +176,7 @@ export default function LoginForm() {
                             <Button
                                 className=" text-base w-full h-11 bg-[#030430]"
                                 type="submit"
-                                onClick={handleLogin}
+                                onClick={handleLoginAdmin}
                             >
                                 Entrar
                                 <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
