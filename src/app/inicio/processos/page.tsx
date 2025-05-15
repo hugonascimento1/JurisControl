@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 import NavBar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
@@ -32,13 +33,74 @@ import {
   BinocularsIcon 
 } from "lucide-react";
 
-import { processos, InfoProcesso } from "./processosData";
+// import { processos, InfoProcesso } from "./processosData";
 
-const itemsPag = 5;
+const itemsPag = 10;
+
+// interface para representar o processo simplificado que aparece na tabela
+interface ProcessoSimples {
+  id: number;
+  numeroProcesso: string;
+  vara: string;
+  classeTipo: string;
+  assuntosTitulo: string;
+  status: string;
+  nomeAutor: string;
+  advogadoAutor: string;
+  nomeReu: string;
+  advogadoReu: string;
+  advogadoId: number;
+}
+
+// interface para a resposta da API contendo o advogado e seus processos simplificados
+interface AdvogadoProcessosResponse {
+  id: number;
+  nome: string;
+  email: string;
+  registroOAB: string;
+  processos: ProcessoSimples[];
+}
 
 export default function Page() {
   const router = useRouter();
   const [proxPag, setProxPag] = useState(1);
+  const [processos, setProcessos] = useState<ProcessoSimples[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const advogadoId = sessionStorage.getItem('advogadoId');
+  const authToken = sessionStorage.getItem('authToken');
+
+  useEffect(() => {
+    const fetchProcessosAdvogado = async () => {
+      setLoading(true);
+      setError(null)
+
+      try {
+        const response = await axios.get<AdvogadoProcessosResponse>(
+          `https://backendjuriscontrol.onrender.com/api/buscar-advogado/${advogadoId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`, // incluindo o token no cabecalho
+            },
+          }
+        );
+        setProcessos(response.data.processos || []);
+      } catch (error: any) {
+        setError(error.message || 'Erro ao buscar processos.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (advogadoId && authToken) {
+      fetchProcessosAdvogado();
+    } else {
+      console.warn('Id do advogado não encontrado. Redirecionamento para login');
+      router.push('/login');
+    }
+  }, [advogadoId, authToken, router]);
+
   const totalPages = Math.ceil(processos.length / itemsPag);
 
   const handlePageChange = (page: number) => {
@@ -54,6 +116,14 @@ export default function Page() {
 
   const handleCadastroProcesso = () => {
     router.push('/inicio/processos/cadastro-processo')
+  }
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Carregando processos....</div>
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">Erro ao carregar processos: {error}</div>
   }
 
   return (
@@ -95,11 +165,10 @@ export default function Page() {
           <TableHeader className="bg-[#030430]">
             <TableRow>
               <TableHead className="text-white text-lg font-semibold">N° Processo</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Vara</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Classe</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Assunto</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Assunto(Título)</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Classe(Tipo)</TableHead>
               <TableHead className="text-white text-lg font-semibold">Cliente</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Advogado</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Vara</TableHead>
               
               <TableHead className="text-white text-lg font-semibold">Status</TableHead>
               <TableHead className="text-white w-24 text-lg font-semibold">Detalhes</TableHead>
@@ -109,18 +178,19 @@ export default function Page() {
             {paginatedData.map((processo, index) => (
               <TableRow key={index}>
                   <TableCell>{processo.numeroProcesso}</TableCell>
-                  <TableCell>{processo.nomeProcesso}</TableCell>
-                  <TableCell>{processo.ultimaAtualizacao}</TableCell>
-                  <TableCell>{processo.tribunal}</TableCell>
-                  <TableCell>{processo.autor}</TableCell>
-                  <TableCell>{processo.advogado}</TableCell>
+                  <TableCell>{processo.assuntosTitulo}</TableCell>
+                  <TableCell>{processo.classeTipo}</TableCell>
+                  <TableCell>{processo.nomeAutor}</TableCell>
+                  <TableCell>{processo.vara}</TableCell>
                   <TableCell
                     className={
                       processo.status === "Concluído"
                       ? "text-green-600 font-semibold"
                       : processo.status === "Em Andamento"
                       ? "text-yellow-600 font-semibold"
-                      : "text-gray-600 font-semibold"
+                      : processo.status === "Criado" 
+                      ? "text-gray-600 font-semibold"
+                      : "text-gray-400 font-semibold"
                     }
                   >
                     {processo.status}

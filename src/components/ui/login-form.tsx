@@ -34,6 +34,7 @@ export default function LoginForm() {
 
             if (response.status === 200) {
                 sessionStorage.setItem('authToken', response.data.token);
+                sessionStorage.setItem('advogadoId', response.data.id);
                 console.log('Login de advogado bem-sucedido!');
                 window.location.href = '/inicio'
             } else {
@@ -55,6 +56,7 @@ export default function LoginForm() {
 
             if (response.status === 200) {
                 sessionStorage.setItem('authToken', response.data.token);
+                sessionStorage.setItem('administradorId', response.data.id);
                 console.log('Login de administrador bem-sucedido!');
                 window.location.href = '/dashboard';
             } else {
