@@ -6,9 +6,15 @@ import Image from "next/image";
 import Logo from "@/components/logo-text-icon";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export default function Page() {
-    const router = useRouter()
+    const router = useRouter();
+    const [advogadoNome, setAdvogadoNome] = useState<string | null>(null);
+
+    useEffect(() => {
+        setAdvogadoNome(sessionStorage.getItem('advogadoNome'));
+    }, []);
 
     const handleProcessPage = () => {
         router.push('/inicio/processos');
@@ -39,7 +45,7 @@ export default function Page() {
                 <p className="text-gray-600 text-xl font-bold text-center lg:text-2xl ">
                     Bem-vindo ao JurisControl,
                 </p>
-                <p className="text-gray-600 lg:text-xl">[Nome Advogado]</p>
+                <p className="text-gray-600 lg:text-xl">{advogadoNome}</p>
             </div>
 
             <div className="flex justify-center mt-6">

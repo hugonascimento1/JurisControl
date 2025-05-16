@@ -3,35 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-
+import axios, { AxiosError } from "axios";
 import NavBar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationPrevious, 
-  PaginationNext 
-} from "@/components/ui/pagination";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { 
-  MenuIcon, 
-  ChevronLeft,  
-  Search, 
-  CirclePlus, 
-  BinocularsIcon 
-} from "lucide-react";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { MenuIcon, ChevronLeft, Search, CirclePlus, BinocularsIcon, Loader2 } from "lucide-react";
+import { toast, ToastContainer, ToastPosition } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 // import { processos, InfoProcesso } from "./processosData";
 
@@ -65,29 +45,69 @@ export default function Page() {
   const router = useRouter();
   const [proxPag, setProxPag] = useState(1);
   const [processos, setProcessos] = useState<ProcessoSimples[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const advogadoId = sessionStorage.getItem('advogadoId');
-  const authToken = sessionStorage.getItem('authToken');
+  const [advogadoId, setAdvogadoId] = useState<string | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  const toastOptions = {
+    position: "top-center" as ToastPosition,
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+  }
+
+  useEffect(() => {
+    const id = sessionStorage.getItem('advogadoId');
+    const token = sessionStorage.getItem('authToken');
+    if (id) {
+      setAdvogadoId(id);
+    }
+    if (token) {
+      setAuthToken(token);
+    }
+
+  }, []);
 
   useEffect(() => {
     const fetchProcessosAdvogado = async () => {
+      if (!advogadoId || !authToken) {
+          console.warn('Id do advogado ou token não encontrados. Redirecionando para login');
+          router.push('/login');
+          return;
+      }
       setLoading(true);
-      setError(null)
+      setError(null);
 
       try {
         const response = await axios.get<AdvogadoProcessosResponse>(
           `https://backendjuriscontrol.onrender.com/api/buscar-advogado/${advogadoId}`,
           {
             headers: {
-              Authorization: `Bearer ${authToken}`, // incluindo o token no cabecalho
+              Authorization: `Bearer ${authToken}`,
             },
           }
         );
         setProcessos(response.data.processos || []);
+        if (response.data.processos.length === 0) {
+          toast.info("Não foram encontrados processos para este advogado.", toastOptions)
+        }
       } catch (error: any) {
-        setError(error.message || 'Erro ao buscar processos.');
+        let errorMessage = 'Erro ao buscar processos.';
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 404) {
+            errorMessage = 'Não foram encontrados processos para este advogado.';
+          } else if (error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+          }
+        }
+        setError(errorMessage);
+        toast.error(errorMessage, toastOptions);
       } finally {
         setLoading(false);
       }
@@ -95,9 +115,6 @@ export default function Page() {
 
     if (advogadoId && authToken) {
       fetchProcessosAdvogado();
-    } else {
-      console.warn('Id do advogado não encontrado. Redirecionamento para login');
-      router.push('/login');
     }
   }, [advogadoId, authToken, router]);
 
@@ -116,14 +133,6 @@ export default function Page() {
 
   const handleCadastroProcesso = () => {
     router.push('/inicio/processos/cadastro-processo')
-  }
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Carregando processos....</div>
-  }
-
-  if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">Erro ao carregar processos: {error}</div>
   }
 
   return (
@@ -161,7 +170,7 @@ export default function Page() {
       </div>
 
       <div className="w-11/12 mb-3">
-        <Table className="border rounded-2xl">
+        <Table className="border shadow-3xl rounded-2xl">
           <TableHeader className="bg-[#030430]">
             <TableRow>
               <TableHead className="text-white text-lg font-semibold">N° Processo</TableHead>
@@ -169,14 +178,28 @@ export default function Page() {
               <TableHead className="text-white text-lg font-semibold">Classe(Tipo)</TableHead>
               <TableHead className="text-white text-lg font-semibold">Cliente</TableHead>
               <TableHead className="text-white text-lg font-semibold">Vara</TableHead>
-              
+
               <TableHead className="text-white text-lg font-semibold">Status</TableHead>
               <TableHead className="text-white w-24 text-lg font-semibold">Detalhes</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((processo, index) => (
-              <TableRow key={index}>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8">
+                  <Loader2 className="animate-spin h-6 w-6 mx-auto text-gray-500" />
+                  <p className="mt-2 text-gray-500">Carregando processos...</p>
+                </TableCell>
+              </TableRow>
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-red-500 py-8">
+                  {error}
+                </TableCell>
+              </TableRow>
+            ) : paginatedData.length > 0 ? (
+              paginatedData.map((processo, index) => (
+                <TableRow key={index}>
                   <TableCell>{processo.numeroProcesso}</TableCell>
                   <TableCell>{processo.assuntosTitulo}</TableCell>
                   <TableCell>{processo.classeTipo}</TableCell>
@@ -185,12 +208,12 @@ export default function Page() {
                   <TableCell
                     className={
                       processo.status === "Concluído"
-                      ? "text-green-600 font-semibold"
-                      : processo.status === "Em Andamento"
-                      ? "text-yellow-600 font-semibold"
-                      : processo.status === "Criado" 
-                      ? "text-gray-600 font-semibold"
-                      : "text-gray-400 font-semibold"
+                        ? "text-green-600 font-semibold"
+                        : processo.status === "Em Andamento"
+                          ? "text-yellow-600 font-semibold"
+                          : processo.status === "Criado"
+                            ? "text-gray-600 font-semibold"
+                            : "text-gray-400 font-semibold"
                     }
                   >
                     {processo.status}
@@ -202,8 +225,15 @@ export default function Page() {
                       </Button>
                     </Link>
                   </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+                  Nenhum processo encontrado.
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
@@ -217,8 +247,8 @@ export default function Page() {
               onClick={() => handlePageChange(proxPag - 1)}
               className={
                 proxPag === 1 || processos.length === 0
-                ? "cursor-not-allowed text-gray-400"
-                : "cursor-pointer"
+                  ? "cursor-not-allowed text-gray-400"
+                  : "cursor-pointer"
               }
             />
           </PaginationItem>
@@ -234,13 +264,13 @@ export default function Page() {
             </PaginationItem>
           ))}
           <PaginationItem>
-            <PaginationNext 
+            <PaginationNext
               href="#"
               onClick={() => handlePageChange(proxPag + 1)}
               className={
                 proxPag === totalPages || processos.length === 0
-                ? "cursor-not-allowed text-gray-400"
-                : "cursor-pointer"
+                  ? "cursor-not-allowed text-gray-400"
+                  : "cursor-pointer"
               }
             />
           </PaginationItem>
