@@ -24,8 +24,10 @@ interface ProcessoSimples {
   vara: string;
   classeTipo: string;
   assuntosTitulo: string;
+  comarcaUF: string;
   status: string;
   nomeAutor: string;
+  telefoneCliente: string;
   advogadoAutor: string;
   nomeReu: string;
   advogadoReu: string;
@@ -77,9 +79,9 @@ export default function Page() {
   useEffect(() => {
     const fetchProcessosAdvogado = async () => {
       if (!advogadoId || !authToken) {
-          console.warn('Id do advogado ou token não encontrados. Redirecionando para login');
-          router.push('/login');
-          return;
+        console.warn('Id do advogado ou token não encontrados. Redirecionando para login');
+        router.push('/login');
+        return;
       }
       setLoading(true);
       setError(null);
@@ -153,7 +155,7 @@ export default function Page() {
         }
       />
 
-      <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center m-8 mb-10 w-11/12">
+      <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center m-8 mb-5 w-11/12">
         <div className="flex items-center justify-center">
           <Input icon={
             <Button variant="ghost" size="icon" className="pt-1 hover:bg-transparent shadow-none focus:ring-0">
@@ -174,11 +176,11 @@ export default function Page() {
           <TableHeader className="bg-[#030430]">
             <TableRow>
               <TableHead className="text-white text-lg font-semibold">N° Processo</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Assunto(Título)</TableHead>
-              <TableHead className="text-white text-lg font-semibold">Classe(Tipo)</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Assunto</TableHead>
+              <TableHead className="text-white text-lg font-semibold">Classe</TableHead>
               <TableHead className="text-white text-lg font-semibold">Cliente</TableHead>
               <TableHead className="text-white text-lg font-semibold">Vara</TableHead>
-
+              <TableHead className="text-white text-lg font-semibold">Comarca/UF</TableHead>
               <TableHead className="text-white text-lg font-semibold">Status</TableHead>
               <TableHead className="text-white w-24 text-lg font-semibold">Detalhes</TableHead>
             </TableRow>
@@ -199,26 +201,41 @@ export default function Page() {
               </TableRow>
             ) : paginatedData.length > 0 ? (
               paginatedData.map((processo, index) => (
-                <TableRow key={index}>
-                  <TableCell>{processo.numeroProcesso}</TableCell>
-                  <TableCell>{processo.assuntosTitulo}</TableCell>
-                  <TableCell>{processo.classeTipo}</TableCell>
-                  <TableCell>{processo.nomeAutor}</TableCell>
-                  <TableCell>{processo.vara}</TableCell>
+                <TableRow key={index} className="">
+                  <TableCell className="py-0">{processo.numeroProcesso}</TableCell>
+                  <TableCell className="py-0">{processo.assuntosTitulo}</TableCell>
+                  <TableCell className="py-0">{processo.classeTipo}</TableCell>
+                  <TableCell className="py-0">{processo.nomeAutor}</TableCell>
+                  <TableCell className="py-0">{processo.vara}</TableCell>
+                  <TableCell className="py-0">{processo.comarcaUF}</TableCell>
                   <TableCell
                     className={
-                      processo.status === "Concluído"
-                        ? "text-green-600 font-semibold"
-                        : processo.status === "Em Andamento"
-                          ? "text-yellow-600 font-semibold"
-                          : processo.status === "Criado"
-                            ? "text-gray-600 font-semibold"
-                            : "text-gray-400 font-semibold"
+                      processo.status === "Iniciado"
+                        ? "bg-amber-400 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Distribuído"
+                        ? "bg-sky-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Em Andamento"
+                        ? "bg-blue-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Aguardando Decisão"
+                        ? "bg-yellow-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Sentenciado"
+                        ? "bg-green-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Recursos"
+                        ? "bg-orange-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Execução"
+                        ? "bg-emerald-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Suspenso"
+                        ? "bg-gray-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Concluído"
+                        ? "bg-indigo-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : processo.status === "Arquivado"
+                        ? "bg-slate-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                        : "bg-black text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"                                                           
                     }
                   >
                     {processo.status}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-0">
                     <Link href={`/inicio/processos/${processo.numeroProcesso}`}>
                       <Button variant="outline">
                         <BinocularsIcon />
@@ -226,57 +243,57 @@ export default function Page() {
                     </Link>
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center text-gray-500 py-8">
-                  Nenhum processo encontrado.
-                </TableCell>
-              </TableRow>
+          ))
+          ) : (
+          <TableRow>
+            <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+              Nenhum processo encontrado.
+            </TableCell>
+          </TableRow>
             )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Paginação */}
-      <Pagination className="mb-7">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={() => handlePageChange(proxPag - 1)}
-              className={
-                proxPag === 1 || processos.length === 0
-                  ? "cursor-not-allowed text-gray-400"
-                  : "cursor-pointer"
-              }
-            />
-          </PaginationItem>
-          {[...Array(totalPages)].map((_, pageIndex) => (
-            <PaginationItem key={pageIndex}>
-              <PaginationLink
-                href="#"
-                onClick={() => handlePageChange(pageIndex + 1)}
-                className={proxPag === pageIndex + 1 ? "active" : ""}
-              >
-                {pageIndex + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={() => handlePageChange(proxPag + 1)}
-              className={
-                proxPag === totalPages || processos.length === 0
-                  ? "cursor-not-allowed text-gray-400"
-                  : "cursor-pointer"
-              }
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-
+        </TableBody>
+      </Table>
     </div>
+
+      {/* Paginação */ }
+  <Pagination className="mb-7">
+    <PaginationContent>
+      <PaginationItem>
+        <PaginationPrevious
+          href="#"
+          onClick={() => handlePageChange(proxPag - 1)}
+          className={
+            proxPag === 1 || processos.length === 0
+              ? "cursor-not-allowed text-gray-400"
+              : "cursor-pointer"
+          }
+        />
+      </PaginationItem>
+      {[...Array(totalPages)].map((_, pageIndex) => (
+        <PaginationItem key={pageIndex}>
+          <PaginationLink
+            href="#"
+            onClick={() => handlePageChange(pageIndex + 1)}
+            className={proxPag === pageIndex + 1 ? "active" : ""}
+          >
+            {pageIndex + 1}
+          </PaginationLink>
+        </PaginationItem>
+      ))}
+      <PaginationItem>
+        <PaginationNext
+          href="#"
+          onClick={() => handlePageChange(proxPag + 1)}
+          className={
+            proxPag === totalPages || processos.length === 0
+              ? "cursor-not-allowed text-gray-400"
+              : "cursor-pointer"
+          }
+        />
+      </PaginationItem>
+    </PaginationContent>
+  </Pagination>
+
+    </div >
   )
 }
