@@ -9,10 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRightIcon } from "lucide-react";
-import { toast, ToastContainer, ToastPosition } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-// import { toast } from "sonner";
-// import { Toaster } from "@/components/ui/sonner";
+import { toast, ToastContainer, ToastPosition } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginForm() {
     const router = useRouter();
