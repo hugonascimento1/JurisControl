@@ -45,11 +45,8 @@
     "react-quill": "^2.0.0",
     "react-toastify": "^11.0.5",
     "recharts": "^2.13.0",
-<<<<<<< HEAD
-    "swiper": "^11.2.6",
-=======
     "sonner": "^2.0.3",
->>>>>>> 32efcc215d5200ea452533a1f20526671dbaac29
+    "swiper": "^11.2.6",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.25.12"
