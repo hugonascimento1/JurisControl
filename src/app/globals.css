@@ -78,3 +78,58 @@ body {
     @apply bg-background text-foreground;
   }
 }
+/* Estilo básico sugerido */
+.container {
+  width: 100%;
+  padding: 40px 0;
+}
+/* Slide do meio (ativo) */
+.swiper-slide-active {
+  background-color: #050550 !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.822) !important;
+  border: solid rgb(203, 203, 233) 3px;
+}
+
+/* Slides laterais (próximo e anterior) */
+.swiper-slide-prev,
+.swiper-slide-next {
+  background-color: #050550 !important;
+  opacity: 0.7;
+  transform: scale(0.95) !important;
+}
+
+
+.heading {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.swiper_container {
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.slider-controler {
+  position: relative;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider-arrow {
+  color: #000;
+  font-size: 2rem;
+  cursor: pointer;
+  margin: 0 10px;
+}
