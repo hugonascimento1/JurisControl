@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+// import Autoplay from "embla-carousel-autoplay";
 
 export function Carousell() {
   const images = [
@@ -23,11 +23,11 @@ export function Carousell() {
         loop: true,
       }}
       plugins={[
-        Autoplay({
-          delay: 3000,
-          stopOnInteraction: false,
-          stopOnMouseEnter: true,
-        }),
+        // Autoplay({
+        //   delay: 3000,
+        //   stopOnInteraction: false,
+        //   stopOnMouseEnter: true,
+        // }),
       ]}
       className="w-[full] max-w-6xl mx-auto px-4"
     >

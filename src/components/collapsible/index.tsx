@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion";
 
 interface Item {
   question: React.ReactNode;
@@ -52,7 +52,7 @@ export function CollapsibleDemo({ items }: CollapsibleDemoProps) {
               </Button>
             </div>
 
-            <AnimatePresence initial={false}>
+            {/* <AnimatePresence initial={false}>
               {isOpen && (
                 <motion.div
                   id={`content-${index}`}
@@ -66,7 +66,7 @@ export function CollapsibleDemo({ items }: CollapsibleDemoProps) {
                   {item.content}
                 </motion.div>
               )}
-            </AnimatePresence>
+            </AnimatePresence> */}
           </div>
         );
       })}
