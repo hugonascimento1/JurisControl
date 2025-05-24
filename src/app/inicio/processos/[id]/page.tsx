@@ -16,6 +16,7 @@ import router from "next/router";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { withAuth } from "@/utils/withAuth";
+import { set } from "react-hook-form";
 
 interface ProcessoDetalhado {
     id: number;
@@ -144,6 +145,64 @@ function Page() {
         }
     }, [id, authToken]);
 
+    // Método 'GET' para a lista de todos os movimentos criados
+    useEffect(() => {
+        const fetchMovimentos = async () => {
+            if (!id || !authToken) return;
+            
+            setLoading(true);
+            try {
+                const response = await axios.get<Movimento[]>(
+                    `https://backendjuriscontrol.onrender.com/api/buscar-todos-movimentos/${id}`, 
+                    {
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                    }
+                );
+                setMovimentos(response.data);
+            } catch (error) {
+                toast.error('Erro ao carregar os movimentos', toastOptions);
+                console.error('Erro:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (authToken) {
+            fetchMovimentos();
+        }
+    }, [id, authToken]);
+
+    //Método 'GET' para a lista de todos os anexos criados
+    useEffect(() => {
+        const fetchAnexos = async () => {
+            if (!id || !authToken) return;
+            
+            setLoading(true);
+            try {
+                const response = await axios.get<Anexo[]>(
+                    `https://backendjuriscontrol.onrender.com/api/buscar-todos-anexos/${id}`, 
+                    {
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                    }
+                );
+                setAnexos(response.data);
+            } catch (error) {
+                toast.error('Erro ao carregar os movimentos', toastOptions);
+                console.error('Erro:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (authToken) {
+            fetchAnexos();
+        }
+    }, [id, authToken]);
+
     // Método 'POST' para adicionar um movimento associado ao processo
     const handleAdicionarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -189,24 +248,6 @@ function Page() {
         }
     };
 
-    // Método 'GET' para a lista de todos os movimentos criados
-    const fetchMovimentos = async () => {
-        if (!id || !authToken) return;
-            
-        setLoading(true);
-        try {
-            const response = await axios.get<Movimento[]>(`https://backendjuriscontrol.onrender.com/api/buscar-movimentos`);
-            setMovimentos(response.data);
-        } catch (error) {
-            console.error('Erro ao buscar os movimentos:', error);
-        }
-        useEffect(() => {
-            if (authToken) {
-                fetchMovimentos();
-            }
-        }, [authToken]);
-    }
-
     //Método 'POST' para adicionar o anexo ao processo
     const handleAdicionarAnexo = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -249,32 +290,6 @@ function Page() {
             console.error(error);
         }
     }
-
-    //Método 'GET' para a lista de todos os anexos criados
-    const fetchAnexos = async () => {
-        if (!id || !authToken) return;
-            
-        setLoading(true);
-        try {
-            const response = await axios.get<Anexo[]>(`https://backendjuriscontrol.onrender.com/api/buscar-todos-anexos`);
-            setAnexos(response.data);
-        } catch (error) {
-            console.error('Erro ao buscar os anexos:', error);
-        }
-
-        useEffect(() => {
-            if (authToken) {
-                fetchAnexos();
-            }
-        }, [authToken]);
-    }
-
-    useEffect(() => {
-        if (authToken) {
-            fetchMovimentos();
-            fetchAnexos();
-        }
-    }, [authToken]);
 
     const toastOptions = {
         position: "top-center" as ToastPosition,
@@ -387,6 +402,7 @@ function Page() {
                                     <p>{new Date(movimento.data).toLocaleDateString()}</p>
                                     <p className="font-semibold">Tipo:</p>
                                     <p>{movimento.tipo}</p>
+                                    <hr className="my-2 border-t-2 border-gray-300" />
                                 </div>
                             ))
                             ) : (

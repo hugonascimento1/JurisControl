@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col justify-center items-center p-6">
-      <div className="flex h-32 items-center rounded-lg bg-[#030430] p-4 w-[98%]">
+      <div className="flex h-32 items-center rounded-lg bg-[#030430] w-[98%]">
         <Logo />
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row w-[95%]">
@@ -54,8 +54,8 @@ export default function Home() {
       </div>
 
       <section className="mt-12 - px-12 flex flex-col justify-center w-[92%]">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
-          <h2 className="text-2xl font-bold mb-4 text-white">Por que usar o JurisControl?</h2>
+        <div className="flex h-24 shrink-0 items-center justify-center rounded-lg bg-[#030430] px-4 mb-10 w-full">
+          <h2 className="text-2xl font-bold text-white">Por que usar o JurisControl?</h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           <div className="p-4 bg-white rounded-lg border shadow hover:shadow-xl">
@@ -77,8 +77,8 @@ export default function Home() {
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center w-[92%]">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
-          <h2 className="text-2xl font-bold mb-4 text-white">Equipe Juriscontrol</h2>
+        <div className="flex h-24 shrink-0 items-center justify-center rounded-lg bg-[#030430] px-4 mb-10 w-full">
+          <h2 className="text-2xl font-bold text-white">Equipe Juriscontrol</h2>
         </div>
         <div className="w-full max-w-6xl mx-auto px-4 mt-10 flex flex-col md:flex-row items-center gap-10">
           {/* Imagem da equipe */}
@@ -102,8 +102,8 @@ export default function Home() {
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center items-center w-[92%]">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
-          <h2 className="text-2xl font-bold mb-4 text-white">Escolha o melhor plano para você!</h2>
+        <div className="flex h-24 shrink-0 items-center justify-center rounded-lg bg-[#030430] px-4 mb-10 w-full">
+          <h2 className="text-2xl font-bold text-white">Escolha o melhor plano para você!</h2>
         </div>
         <div className="flex flex-row items-center md:justify-center gap-5 w-full overflow-x-auto">
           <Card className="max-w-[350px] min-w-[250px] shadow-lg">
@@ -160,8 +160,8 @@ export default function Home() {
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center items-center w-[92%] mb-12">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
-          <h2 className="text-2xl font-bold mb-4 text-white">Perguntas frequentes</h2>
+        <div className="flex h-24 shrink-0 items-center justify-center rounded-lg bg-[#030430] px-4 mb-10 w-full">
+          <h2 className="text-2xl font-bold text-white">Perguntas frequentes</h2>
         </div>
         <Accordion type="single" collapsible className="w-full space-y-4">
           <AccordionItem value="item-1">
