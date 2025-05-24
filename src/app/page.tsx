@@ -8,28 +8,12 @@ import Logo from "@/components/logo-text-iconw";
 import Desktopmobile from "../../public/desktop-mobile.png";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useRef, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-
-const carouselItems = [
-  {
-    title: "Visão",
-    description: "Ser referência nacional em soluções jurídicas acessíveis e eficientes para todos os cidadãos.",
-  },
-  {
-    title: "Missão",
-    description: "Facilitar o acesso à justiça por meio de tecnologia inovadora, promovendo agilidade e transparência.",
-  },
-  {
-    title: "Valores",
-    description: "Ética, inovação, acessibilidade e compromisso com a justiça social.",
-  },
-];
 
 export default function Home() {
   const router = useRouter();
@@ -70,7 +54,7 @@ export default function Home() {
       </div>
 
       <section className="mt-12 - px-12 flex flex-col justify-center w-[92%]">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] p-4 mb-10 w-full">
+        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
           <h2 className="text-2xl font-bold mb-4 text-white">Por que usar o JurisControl?</h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -93,7 +77,7 @@ export default function Home() {
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center w-[92%]">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] p-4 mb-10 w-full">
+        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
           <h2 className="text-2xl font-bold mb-4 text-white">Equipe Juriscontrol</h2>
         </div>
         <div className="w-full max-w-6xl mx-auto px-4 mt-10 flex flex-col md:flex-row items-center gap-10">
@@ -118,39 +102,65 @@ export default function Home() {
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center items-center w-[92%]">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] p-4 mb-10 w-full">
-          <h2 className="text-2xl font-bold mb-4 text-white">Sobre nós</h2>
+        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
+          <h2 className="text-2xl font-bold mb-4 text-white">Escolha o melhor plano para você!</h2>
         </div>
-        <Carousel
-          opts={{
-            align: "center",
-            loop: false,
-          }}
-          className="my-4 py-5 w-[78%] flex justify-center items-center"
-        >
-          <CarouselContent className="-ml-4 my-3">
-            {carouselItems.map((item, index) => (
-              <CarouselItem
-                key={index}
-                className="pl-4 basis-[85%] md:basis-2/3 lg:basis-2/3 flex justify-center transition-transform duration-500"
-              >
-                <Card className="h-72 md:w-[380px] lg:w-[680px] hover:scale-[1.03] transition-transform duration-300 shadow-md hover:shadow-xl">
-                  <CardContent className="flex h-full flex-col items-center justify-center text-center p-6">
-                    <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
-                    <p className="text-gray-600 text-base">{item.description}</p>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
+        <div className="flex flex-row items-center md:justify-center gap-5 w-full overflow-x-auto">
+          <Card className="max-w-[350px] min-w-[250px] shadow-lg">
+            <CardHeader className="">
+              <CardTitle className="text-[#030430] font-bold">JurisBasic</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-lg">R$ [valor] / mês</CardDescription>
+              <CardDescription className="text-base">R$ [valor] / ano (1 mês grátis!)</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <CardDescription className="text-base">✔ Funcionalida 1</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 2</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 3</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 4</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+            <div className="flex justify-center items-center mt-4"><Button>Assinar Agora</Button></div>
+            </CardContent>
+          </Card>
 
-          <CarouselNext />
-          <CarouselPrevious />
-        </Carousel>
+          <Card className="max-w-[350px] min-w-[250px] shadow-lg">
+            <CardHeader className="">
+              <CardTitle className="text-[#030430] font-bold">JurisPro</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-lg">R$ [valor] / mês</CardDescription>
+              <CardDescription className="text-base">R$ [valor] / ano (1 mês grátis!)</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <CardDescription className="text-base">✔ Funcionalida 1</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 2</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 3</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 4</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+            <div className="flex justify-center items-center mt-4"><Button>Assinar Agora</Button></div>
+            </CardContent>
+          </Card>
+
+          <Card className="max-w-[350px] min-w-[250px] shadow-lg">
+            <CardHeader className="">
+              <CardTitle className="text-[#030430] font-bold">JurisMaster</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-lg">R$ [valor] / mês</CardDescription>
+              <CardDescription className="text-base">R$ [valor] / ano (1 mês grátis!)</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-30" />
+              <CardDescription className="text-base">✔ Funcionalida 1</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 2</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 3</CardDescription>
+              <CardDescription className="text-base">✔ Funcionalida 4</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+            <div className="flex justify-center items-center mt-4"><Button>Assinar Agora</Button></div>
+            </CardContent>
+          </Card>
+        </div>  
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center items-center w-[92%] mb-12">
-        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] p-4 mb-10 w-full">
+        <div className="flex h-24 shrink-0 items-end rounded-lg bg-[#030430] px-4 mb-10 w-full">
           <h2 className="text-2xl font-bold mb-4 text-white">Perguntas frequentes</h2>
         </div>
         <Accordion type="single" collapsible className="w-full space-y-4">
