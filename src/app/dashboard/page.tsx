@@ -122,4 +122,4 @@ function Page() {
     );
 }
 
-export default withAuth(['advogado'])(Page);
+export default withAuth(['administrador'])(Page);

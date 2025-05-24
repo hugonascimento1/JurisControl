@@ -65,7 +65,7 @@ function Page() {
                     onClick={handleProcessPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
-                    <FileTextIcon size={48} />
+                    <FileTextIcon size={48} className="w-12 h-12" />
                     <p className="mt-2 text-lg font-semibold">Processos</p>
                 </Button>
 

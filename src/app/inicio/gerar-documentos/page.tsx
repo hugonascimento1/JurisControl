@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import NavBar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
@@ -172,8 +172,8 @@ function Page() {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="modelos-prontos">
-                    <div className="flex flex-col md:flex-row w-full gap-4">
+                <TabsContent value="modelos-prontos" className="flex justify-center px-2 py-0 mt-0">
+                    <div className="flex flex-col md:flex-row w-full gap-4 mt-0">
                         <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
                                 <CardTitle className="text-lg">Escolha seu modelo</CardTitle>

@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 body {
   font-family: 'Montserrat' sans-serif;
-} */
+}
 
 @layer utilities {
   .text-balance {
@@ -70,29 +70,29 @@ body {
   }
 }
 
-@layer base {
+/* @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
-}
-/* Estilo básico sugerido */
+} */
+/* Estilo básico sugerido
 .container {
   width: 100%;
   padding: 40px 0;
 }
 /* Slide do meio (ativo) */
-.swiper-slide-active {
+/* .swiper-slide-active {
   background-color: #050550 !important;
   transform: scale(1.05) !important;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.822) !important;
   border: solid rgb(203, 203, 233) 3px;
-}
+} */
 
 /* Slides laterais (próximo e anterior) */
-.swiper-slide-prev,
+/* .swiper-slide-prev,
 .swiper-slide-next {
   background-color: #050550 !important;
   opacity: 0.7;
@@ -132,4 +132,4 @@ body {
   font-size: 2rem;
   cursor: pointer;
   margin: 0 10px;
-}
+} */

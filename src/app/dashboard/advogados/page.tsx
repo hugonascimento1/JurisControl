@@ -1,3 +1,5 @@
+'use client';
+
 import NavBar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -177,4 +179,4 @@ function Page() {
     );
 }
 
-export default withAuth(['advogado'])(Page);
+export default withAuth(['administrador'])(Page);
