@@ -223,16 +223,16 @@ export default function Page() {
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         <SelectLabel>Situação do Processo</SelectLabel>
-                                                        <SelectItem value="iniciado">Iniciado</SelectItem>
-                                                        <SelectItem value="distribuido">Distribuído</SelectItem>
-                                                        <SelectItem value="emAndamento">Em Andamento</SelectItem>
-                                                        <SelectItem value="aguardandoDecisao">Aguardando Decisão</SelectItem>
-                                                        <SelectItem value="sentenciado">Sentenciado</SelectItem>
-                                                        <SelectItem value="recursos">Recursos</SelectItem>
-                                                        <SelectItem value="execucao">Execução</SelectItem>
-                                                        <SelectItem value="suspenso">Suspenso</SelectItem>
-                                                        <SelectItem value="concluido">Concluído</SelectItem>
-                                                        <SelectItem value="arquivado">Arquivado</SelectItem>
+                                                        <SelectItem value="Iniciado">Iniciado</SelectItem>
+                                                        <SelectItem value="Distribuído">Distribuído</SelectItem>
+                                                        <SelectItem value="Em Andamento">Em Andamento</SelectItem>
+                                                        <SelectItem value="Aguardando Decisão">Aguardando Decisão</SelectItem>
+                                                        <SelectItem value="Sentenciado">Sentenciado</SelectItem>
+                                                        <SelectItem value="Recursos">Recursos</SelectItem>
+                                                        <SelectItem value="Execução">Execução</SelectItem>
+                                                        <SelectItem value="Suspenso">Suspenso</SelectItem>
+                                                        <SelectItem value="Concluído">Concluído</SelectItem>
+                                                        <SelectItem value="Arquivado">Arquivado</SelectItem>
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>

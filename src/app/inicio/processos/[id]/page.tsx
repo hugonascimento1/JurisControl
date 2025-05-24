@@ -10,7 +10,7 @@ import Link from "next/link";
 import NavBar from "@/components/navbar";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { set } from "date-fns";
+// import { set } from "date-fns";
 import { toast, ToastPosition } from "react-toastify";
 import router from "next/router";
 import { Label } from "@/components/ui/label";
@@ -400,9 +400,7 @@ export default function Page() {
                 <div className="w-full md:w-2/3 flex flex-col gap-2 h-[600px]">
                     <Card className="w-full h-[75%] flex flex-col">
                         <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
-                            <CardTitle className="text-lg">
                                 <CardTitle className="text-lg">Processo Nº {processo?.numeroProcesso}</CardTitle>
-                            </CardTitle>
                         </CardHeader>
                         <CardContent className="flex-1 overflow-y-auto p-4">
                             {loading ? (
@@ -490,7 +488,7 @@ export default function Page() {
                                 <div className="">
                                     <p className="">Área para upload de documentos...</p>
                                 </div>
-                            )}
+                            ))}
                         </CardContent>
                     </Card>
                 </div>
