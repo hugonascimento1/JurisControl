@@ -36,15 +36,13 @@ export default function Home() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-
-
   const handleLoginPage = () => {
     router.push('/login')
   }
 
   return (
     <main className="flex min-h-screen flex-col justify-center items-center p-6">
-      <div className="flex h-32 shrink-0 items-end rounded-lg bg-[#030430] p-4 w-[98%]">
+      <div className="flex h-32 items-center rounded-lg bg-[#030430] p-4 w-[98%]">
         <Logo />
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row w-[95%]">
@@ -69,8 +67,6 @@ export default function Home() {
             height={400}
           />
         </div>
-
-
       </div>
 
       <section className="mt-12 - px-12 flex flex-col justify-center w-[92%]">
@@ -119,7 +115,6 @@ export default function Home() {
             </p>
           </div>
         </div>
-
       </section>
 
       <section className="mt-12 - px-12 flex flex-col justify-center items-center w-[92%]">
@@ -137,9 +132,9 @@ export default function Home() {
             {carouselItems.map((item, index) => (
               <CarouselItem
                 key={index}
-                className="pl-4 basis-[85%] md:basis-2/3 lg:basis-2/3 transition-transform duration-500"
+                className="pl-4 basis-[85%] md:basis-2/3 lg:basis-2/3 flex justify-center transition-transform duration-500"
               >
-                <Card className="h-72 md:w-[380px] lg:w-[630px] hover:scale-[1.03] transition-transform duration-300 shadow-md hover:shadow-xl">
+                <Card className="h-72 md:w-[380px] lg:w-[680px] hover:scale-[1.03] transition-transform duration-300 shadow-md hover:shadow-xl">
                   <CardContent className="flex h-full flex-col items-center justify-center text-center p-6">
                     <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
                     <p className="text-gray-600 text-base">{item.description}</p>

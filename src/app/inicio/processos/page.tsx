@@ -76,6 +76,7 @@ export default function Page() {
 
   }, []);
 
+  // Método 'GET' de processos do advogado (processos criados pelo advogado)
   useEffect(() => {
     const fetchProcessosAdvogado = async () => {
       if (!advogadoId || !authToken) {
@@ -236,7 +237,7 @@ export default function Page() {
                     {processo.status}
                   </TableCell>
                   <TableCell className="py-0">
-                    <Link href={`/inicio/processos/${processo.numeroProcesso}`}>
+                    <Link href={`/inicio/processos/${processo.id}`}>
                       <Button variant="outline">
                         <BinocularsIcon />
                       </Button>
