@@ -23,8 +23,9 @@ import Advogados from "@/components/advogados";
 import NavBar from "@/components/navbar";
 import CadastrarAdvogado from "@/components/cadastroAdvogado";
 import { useRouter } from "next/navigation";
+import { withAuth } from "@/utils/withAuth";
 
-export default function Page() {
+function Page() {
 
     const router = useRouter();
 
@@ -120,3 +121,5 @@ export default function Page() {
         </main>
     );
 }
+
+export default withAuth(['advogado'])(Page);

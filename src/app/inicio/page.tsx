@@ -7,8 +7,9 @@ import Logo from "@/components/logo-text-icon";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { withAuth } from "@/utils/withAuth";
 
-export default function Page() {
+function Page() {
     const router = useRouter();
     const [advogadoNome, setAdvogadoNome] = useState<string | null>(null);
 
@@ -88,3 +89,5 @@ export default function Page() {
         </main>
     );
 }
+
+export default withAuth(['advogado'])(Page);

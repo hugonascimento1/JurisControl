@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { MenuIcon, ChevronLeft, Search, CirclePlus, BinocularsIcon, Loader2 } from "lucide-react";
 import { toast, ToastContainer, ToastPosition } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { withAuth } from "@/utils/withAuth";
 
 // import { processos, InfoProcesso } from "./processosData";
 
@@ -43,7 +44,7 @@ interface AdvogadoProcessosResponse {
   processos: ProcessoSimples[];
 }
 
-export default function Page() {
+function Page() {
   const router = useRouter();
   const [proxPag, setProxPag] = useState(1);
   const [processos, setProcessos] = useState<ProcessoSimples[]>([]);
@@ -298,3 +299,5 @@ export default function Page() {
     </div >
   )
 }
+
+export default withAuth(['advogado'])(Page);

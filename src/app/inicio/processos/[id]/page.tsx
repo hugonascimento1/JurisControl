@@ -15,6 +15,7 @@ import { toast, ToastPosition } from "react-toastify";
 import router from "next/router";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { withAuth } from "@/utils/withAuth";
 
 interface ProcessoDetalhado {
     id: number;
@@ -75,7 +76,7 @@ function TestDialogButton() {
   );
 }
 
-export default function Page() {
+function Page() {
     const params = useParams()
     const id = params.id as string // Isso pegará o ID da URL
 
@@ -496,3 +497,5 @@ export default function Page() {
         </div>
     );
 }
+
+export default withAuth(['advogado'])(Page);

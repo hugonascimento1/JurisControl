@@ -10,8 +10,9 @@ import { useState } from "react";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { FullCalendario } from "@/components/FullCalendario";
+import { withAuth } from "@/utils/withAuth";
 
-export default function Page() {
+function Page() {
   const [events, setEvents] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -124,3 +125,5 @@ export default function Page() {
     </div>
   );
 }
+
+export default withAuth(['advogado'])(Page);

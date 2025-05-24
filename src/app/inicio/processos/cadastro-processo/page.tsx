@@ -14,6 +14,7 @@ import { ChevronLeftIcon, Trash2Icon } from "lucide-react"
 import { toast, ToastContainer, ToastPosition } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from "next/navigation";
+import { withAuth } from "@/utils/withAuth";
 
 interface CadastroProcesso {
     numeroProcesso: string;
@@ -32,7 +33,7 @@ interface CadastroProcesso {
     advogadoId: number | null;
 }
 
-export default function Page() {
+function Page() {
     const [advogadoNome, setAdvogadoNome] = useState<string | null>(null);
     const [advogadoId, setAdvogadoId] = useState<number | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
@@ -332,3 +333,5 @@ export default function Page() {
         </div>
     )
 }
+
+export default withAuth(['advogado'])(Page);

@@ -36,6 +36,7 @@ import {
     DialogDescription,
     DialogFooter 
 } from "@/components/ui/dialog";
+import { withAuth } from "@/utils/withAuth";
 
 const advogados = [
     {
@@ -76,7 +77,7 @@ const advogados = [
     },
 ]
 
-export default function Page() {
+function Page() {
     return (
         <div>
             <NavBar nome={"Advogados"} />
@@ -175,3 +176,5 @@ export default function Page() {
         </div>
     );
 }
+
+export default withAuth(['advogado'])(Page);

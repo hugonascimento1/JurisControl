@@ -24,6 +24,7 @@ import dynamic from "next/dynamic";
 // import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Delta from "quill-delta";
+import { withAuth } from "@/utils/withAuth";
 // import html2pdf from 'html2pdf.js';
 
 const ReactQuill = dynamic(() => import('react-quill'), {
@@ -100,7 +101,7 @@ async function generateDocumentModel(description, apiKey) {
     }
 }
 
-export default function Page() {
+function Page() {
     const [description, setDescription] = useState('');
     const [generatedModel, setGeneratedModel] = useState<any>('');
 
@@ -215,3 +216,5 @@ export default function Page() {
         </div>
     );
 }
+
+export default withAuth(['advogado'])(Page);

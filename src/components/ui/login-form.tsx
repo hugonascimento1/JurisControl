@@ -44,6 +44,7 @@ export default function LoginForm() {
 
             if (response.status === 200) {
                 sessionStorage.setItem('authToken', response.data.token);
+                sessionStorage.setItem('tipoUsuario', response.data.tipoUsuario);
                 sessionStorage.setItem('advogadoId', response.data.id);
                 sessionStorage.setItem('advogadoNome', response.data.nome);
                 toast.success(`Bem-vindo(a), ${response.data.nome}!`, toastOptions);
@@ -84,7 +85,9 @@ export default function LoginForm() {
 
             if (response.status === 200) {
                 sessionStorage.setItem('authToken', response.data.token);
+                sessionStorage.setItem('tipoUsuario', response.data.tipoUsuario);
                 sessionStorage.setItem('administradorId', response.data.id);
+                sessionStorage.setItem('administradorNome', response.data.nome);
                 toast.success('Login de administrador bem-sucedido!', toastOptions);
                 console.log('Login de administrador bem-sucedido!');
                 router.push('/dashboard')
