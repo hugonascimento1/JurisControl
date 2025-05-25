@@ -82,7 +82,7 @@ function Page() {
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
                     <FolderOpenIcon size={48} />
-                    <p className="mt-2 text-lg font-semibold">Gerar documentos</p>
+                    <p className="mt-2 text-lg font-semibold">Documentos</p>
                     
                 </Button>
             </div>
