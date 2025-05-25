@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeftIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import NavBar from "@/components/navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 // import { set } from "date-fns";
 import { toast, ToastPosition } from "react-toastify";
@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { withAuth } from "@/utils/withAuth";
 import { set } from "react-hook-form";
+import { Plus } from "lucide-react";
 
 interface ProcessoDetalhado {
     id: number;
@@ -57,24 +58,8 @@ interface Anexo {
     id: number;
     nomeAnexo: string;
     tipoAnexo: string;
-    anexo: string;
+    anexo: File;
     processoId: number;
-}
-
-function TestDialogButton() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>Testar Dialog</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Teste Funcionando</DialogTitle>
-        </DialogHeader>
-        <p>Se isso aparecer, o dialog está configurado corretamente</p>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 function Page() {
@@ -94,6 +79,7 @@ function Page() {
         processoId: Number(id)
     });
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [anexo, getAnexo] = useState<File | null>(null);
     const [anexos, setAnexos] = useState<Anexo[]>([]);
     const [novoAnexo, setNovoAnexo] = useState({
@@ -248,48 +234,7 @@ function Page() {
         }
     };
 
-    //Método 'POST' para adicionar o anexo ao processo
-    const handleAdicionarAnexo = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (!novoAnexo.nomeAnexo.trim() || !novoAnexo.anexo) {
-            toast.error("Preencha todos os campos obrigatórios");
-            return;
-        }
-
-        try {
-            const formData = new FormData();
-                formData.append('nomeAnexo', novoAnexo.nomeAnexo);
-                formData.append('anexo', anexo!); // o arquivo selecionado
-                formData.append('processoId', String(id));
-
-            const response = await axios.post(
-                `https://backendjuriscontrol.onrender.com/api/cadastrar-anexo`,
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            );
-
-            // Atualize a lista de anexos
-            setAnexos(prev => [response.data, ...prev]);
-
-            setNovoAnexo({
-                nomeAnexo: "",
-                anexo: "",
-                processoId: Number(id)
-            });
-            
-            toast.success("Anexo adicionado com sucesso!");
-            return response.data;
-        } catch (error: any) {
-            toast.error("Erro ao cadastrar o anexo");
-            console.error(error);
-        }
-    }
+    
 
     const toastOptions = {
         position: "top-center" as ToastPosition,
@@ -317,15 +262,17 @@ function Page() {
 
             <div className="flex flex-col w-11/12 justify-center items-center gap-2 sm:flex-row h-auto">
                 <Card className="w-full rounded-xl md:w-1/3 h-[600px] flex flex-col">
-                    <CardHeader className="bg-[#030430] justify-between items-center h-14 rounded-t-lg text-white flex flex-row px-4">
+                    <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
                         <CardTitle className="text-lg">Movimentos</CardTitle>
                         <Dialog>
                             <DialogTrigger asChild>
                                 <Button 
-                                    variant="outline" 
-                                    className="bg-white text-[#030430] hover:bg-gray-100 text-sm"
+                                    variant="outline"
+                                    size="add"
+                                    className="bg-white text-[#030430] hover:bg-gray-100 text-sm flex items-center gap-2"
                                 >
-                                    Adicionar Movimento
+                                    <Plus className="w-4 h-4 lg:hidden" />
+                                    <span className="hidden lg:block">Adicionar Movimento</span>
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
@@ -483,8 +430,23 @@ function Page() {
                     </Card>
 
                     <Card className="w-full h-[25%] flex flex-col">
-                        <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
+                        <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
                             <CardTitle className="text-lg"> Documentos Anexados</CardTitle>
+                            <Button 
+                                variant="outline"
+                                size="add"
+                                className="bg-white text-[#030430] hover:bg-gray-100 text-sm flex items-center gap-2"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <Plus className="w-4 h-4 lg:hidden" />
+                                <span className="hidden lg:block">Adicionar Anexo</span>
+                            </Button>
+                            <Input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*, application/pdf, .doc, .docx, .xls, .xlsx"
+                            />
                         </CardHeader>
                         <CardContent className="flex-1 flex items-center justify-center p-0">
                             {loading ? (
@@ -493,12 +455,8 @@ function Page() {
                                 anexos && anexos.length > 0 ? (
                                 anexos.map((anexo) => (
                                 <div key={anexo.id} className="mb-4">
-                                    <p className="font-semibold">Movimento:</p>
-                                    <p>{anexo.nomeAnexo}</p>
-                                    <p className="font-semibold">Data:</p>
+                                    <p className="font-semibold">Documento:</p>
                                     <p>{anexo.anexo.toLocaleString()}</p>
-                                    <p className="font-semibold">Tipo:</p>
-                                    <p>{anexo.tipoAnexo}</p>
                                 </div>
                             ))
                             ) : (
