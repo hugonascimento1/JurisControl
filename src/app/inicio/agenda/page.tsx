@@ -42,7 +42,6 @@ function Page() {
           </Link>
         }
         nome="Agenda"
-        botaoMenu
       />
 
       <div className="flex flex-col-reverse md:flex-row justify-center items-center gap-2 mx-5 mt-1 mb-5">

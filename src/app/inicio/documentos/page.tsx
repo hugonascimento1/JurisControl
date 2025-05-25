@@ -146,7 +146,7 @@ function Page() {
                             </CardContent>
                         </Card>
 
-                        <Card className="w-full md:w-4/6 h-[calc(100vh-200px)] flex flex-col bg-black">
+                        <Card className="w-full md:w-4/6 h-[calc(100vh-200px)] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
                                 <CardTitle className="text-lg">Editor de Texto</CardTitle>
                             </CardHeader>

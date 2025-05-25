@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MenuIcon, ChevronLeft, Search, CirclePlus, BinocularsIcon, Loader2 } from "lucide-react";
+import { MenuIcon, ChevronLeft, Search, CirclePlus, BinocularsIcon, Loader2, SquareArrowOutUpRightIcon } from "lucide-react";
 import { toast, ToastContainer, ToastPosition } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { withAuth } from "@/utils/withAuth";
@@ -150,11 +150,6 @@ function Page() {
           </Link>
         }
         nome={"Processos"}
-        botaoMenu={
-          <Button size="icon" className="bg-[#030430] hover:bg-gray-500 p-6">
-            <MenuIcon style={{ width: "35px", height: "35px" }} className="text-white"></MenuIcon>
-          </Button>
-        }
       />
 
       <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center m-8 mb-5 w-11/12">
@@ -240,7 +235,7 @@ function Page() {
                   <TableCell className="py-0">
                     <Link href={`/inicio/processos/${processo.id}`}>
                       <Button variant="outline">
-                        <BinocularsIcon />
+                        <SquareArrowOutUpRightIcon />
                       </Button>
                     </Link>
                   </TableCell>

@@ -319,9 +319,9 @@ function Page() {
                     </div>
 
                     <div className="flex flex-row justify-end gap-2 items-center mt-5">
-                        <Button variant="outline" className="h-12 w-28 ">Cancelar</Button>
+                        <Button variant="outline" className="h-12 w-28 border-2 bg-gray-100">Cancelar</Button>
                         <Button 
-                            className="bg-green-600 hover:bg-green-900 h-12 w-28 shadow-2xl"
+                            className="bg-green-700 border-2 hover:bg-green-900 h-12 w-28 shadow-2xl"
                             onClick={handleCadastrarProcesso}
                             disabled={isSubmitting}
                         >

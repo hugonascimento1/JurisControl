@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { withAuth } from "@/utils/withAuth";
+import MenuDrawer from "@/components/MenuDrawer";
 
 function Page() {
     const router = useRouter();
@@ -27,7 +28,7 @@ function Page() {
     }
 
     const handleModelsPage = () => {
-        router.push('/inicio/gerar-documentos')
+        router.push('/inicio/documentos')
     }
  
 
@@ -37,9 +38,7 @@ function Page() {
                 <div className="flex items-center space-x-3">
                     <Logo />
                 </div>
-                <button className="text-white hover:text-gray-300">
-                    <MenuIcon size={24} />
-                </button>
+                <MenuDrawer />
             </header>
 
             <div className="flex flex-col items-center justify-center mt-6">
