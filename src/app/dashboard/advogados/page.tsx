@@ -82,7 +82,7 @@ const advogados = [
 function Page() {
     return (
         <div>
-            <NavBar nome={"Advogados"} />
+            <NavBar nome={"Advogados"}  botaoVoltar />
 
             <div className="m-2">
                 <div className="m-2 mb-6 flex justify-between">

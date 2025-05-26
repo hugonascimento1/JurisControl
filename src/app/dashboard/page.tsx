@@ -45,11 +45,6 @@ function Page() {
                 botaoAdiconar={
                     <CadastrarAdvogado />
                 }
-                botaoMenu={
-                    <Button onClick={handleClick} size="icon" variant="outline" className="bg-[#030430] hover:bg-gray-500">
-                        <MenuIcon className="text-white" />
-                    </Button>
-                } 
             />
 
             <section className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 m-2">
