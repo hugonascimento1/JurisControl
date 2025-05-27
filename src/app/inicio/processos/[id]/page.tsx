@@ -10,11 +10,10 @@ import Link from "next/link";
 import NavBar from "@/components/navbar";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-// import { set } from "date-fns";
-import { toast, ToastPosition } from "react-toastify";
-import router from "next/router";
+import { useRouter } from 'next/navigation';
+import { toast, ToastContainer, ToastPosition } from "react-toastify";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from "@/components/ui/select";
 import { withAuth } from "@/utils/withAuth";
 import { set } from "react-hook-form";
 import { Plus } from "lucide-react";
@@ -33,7 +32,6 @@ interface ProcessoDetalhado {
     nomeReu: string;
     advogadoReu: string;
     advogadoId: number;
-    movimentos: Movimento[];
 }
 
 interface Movimento {
@@ -70,6 +68,8 @@ function Page() {
     const [advogadoId, setAdvogadoId] = useState<string | null>(null)
     const [authToken, setAuthToken] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
+    const [open, setOpen] = useState(false);
+    const router = useRouter();
     
     const [movimentos, setMovimentos] = useState<Movimento[]>([])
     const [novoMovimento, setNovoMovimento] = useState({
@@ -87,6 +87,17 @@ function Page() {
         anexo: "",
         processoId: Number(id)
     });
+
+    const [nomeAutor, setNomeAutor] = useState(processo?.nomeAutor || "");
+    const [telefoneCliente, setTelefoneCliente] = useState(processo?.telefoneCliente || "");
+    const [advogadoAutor, setAdvogadoAutor] = useState(processo?.advogadoAutor || "");
+    const [nomeReu, setNomeReu] = useState(processo?.nomeReu || "");
+    const [advogadoReu, setAdvogadoReu] = useState(processo?.advogadoReu || "");
+    const [classeTipo, setClasseTipo] = useState(processo?.classeTipo || "");
+    const [assuntosTitulo, setAssuntosTitulo] = useState(processo?.assuntosTitulo || "");
+    const [comarcaUF, setComarcaUF] = useState(processo?.comarcaUF || "");
+    const [status, setStatus] = useState(processo?.status || "");
+    const [vara, setVara] = useState(processo?.vara || "");
 
     // Verifica se o Advogado está logado
     useEffect(() => {
@@ -189,6 +200,87 @@ function Page() {
         }
     }, [id, authToken]);
 
+    // Pega os valores de cada campo do processo
+    useEffect(() => {
+        if (processo) {
+            setNomeAutor(processo.nomeAutor || "");
+            setTelefoneCliente(processo.telefoneCliente || "");
+            setAdvogadoAutor(processo.advogadoAutor || "");
+            setNomeReu(processo.nomeReu || "");
+            setAdvogadoReu(processo.advogadoReu || "");
+            setClasseTipo(processo.classeTipo || "");
+            setAssuntosTitulo(processo.assuntosTitulo || "");
+            setComarcaUF(processo.comarcaUF || "");
+            setStatus(processo.status || "");
+            setVara(processo.vara || "");
+        }
+    }, [processo]);
+
+    // Método 'PUT' para editar os detalhes do processo (com 'GET' para buscar os detaçhes atualizados)
+    const handleEditarProcesso = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const data = {
+            nomeAutor,
+            telefoneCliente,
+            advogadoAutor,
+            nomeReu,
+            advogadoReu,
+            status,
+            classeTipo,
+            assuntosTitulo,
+            comarcaUF,
+            vara,
+            advogadoId
+        };
+
+        try {
+            await axios.put(
+                `https://backendjuriscontrol.onrender.com/api/atualizar-processo/${id}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            toast.success("Processo editado com sucesso!", toastOptions);
+            const response = await axios.get<ProcessoDetalhado>(
+                `https://backendjuriscontrol.onrender.com/api/buscar-processo/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+            setProcesso(response.data);
+            setOpen(false);
+        } catch (error) {
+            toast.error('Erro ao editar o processo', toastOptions);
+            console.error('Erro:', error);
+        }
+    }
+
+    // Método 'DELETE' para excluir o processo
+    const handleExcluirProcesso = async () => {
+        try {
+            await axios.delete(
+                `https://backendjuriscontrol.onrender.com/api/deletar-processo/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+            toast.success("Processo excluido com sucesso!", toastOptions);
+            router.push('/inicio/processos');
+        } catch (error) {
+            toast.error('Erro ao excluir o processo', toastOptions);
+            console.error('Erro:', error);
+        }
+    }
+
     // Método 'POST' para adicionar um movimento associado ao processo
     const handleAdicionarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -226,15 +318,20 @@ function Page() {
                 processoId: Number(id)
             });
             
-            toast.success("Movimento adicionado com sucesso!");
-            return response.data;
+            if (response.status === 200 || response.status === 201) {
+                toast.success("Movimento cadastrado com sucesso!", toastOptions); 
+            } else {
+                const errorData = response.data;
+                toast.error(`Erro ao cadastrar o movimento: ${errorData?.message || 'Erro desconhecido'}`, toastOptions); 
+            }
+
         } catch (error: any) {
             toast.error("Erro ao cadastrar o movimento");
             console.error(error);
         }
     };
 
-    
+    //
 
     const toastOptions = {
         position: "top-center" as ToastPosition,
@@ -259,6 +356,8 @@ function Page() {
                     </Link>
                 }
             />
+
+            <ToastContainer />
 
             <div className="flex flex-col w-11/12 justify-center items-center gap-2 sm:flex-row h-auto">
                 <Card className="w-full rounded-xl md:w-1/3 h-[600px] flex flex-col">
@@ -308,7 +407,7 @@ function Page() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {tiposMovimento.map((tipo) => (
-                                                <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                                                    <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -342,14 +441,13 @@ function Page() {
                         ) : (
                             movimentos && movimentos.length > 0 ? (
                             movimentos.map((movimento) => (
-                                <div key={movimento.id} className="mb-4">
+                                <div key={movimento.id} className="mb-4 border-2 border-gray-300 rounded-md p-2">
                                     <p className="font-semibold">Movimento:</p>
                                     <p>{movimento.nomeMovimento}</p>
                                     <p className="font-semibold">Data:</p>
                                     <p>{new Date(movimento.data).toLocaleDateString()}</p>
                                     <p className="font-semibold">Tipo:</p>
                                     <p>{movimento.tipo}</p>
-                                    <hr className="my-2 border-t-2 border-gray-300" />
                                 </div>
                             ))
                             ) : (
@@ -364,7 +462,7 @@ function Page() {
                 <div className="w-full md:w-2/3 flex flex-col gap-2 h-[600px]">
                     <Card className="w-full h-[75%] flex flex-col">
                         <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
-                                <CardTitle className="text-lg">Processo Nº {processo?.numeroProcesso}</CardTitle>
+                                <CardTitle className="text-lg">Processo Nº {processo?.numeroProcesso || "Nd"}</CardTitle>
                         </CardHeader>
                         <CardContent className="flex-1 overflow-y-auto p-4">
                             {loading ? (
@@ -426,6 +524,149 @@ function Page() {
                             ) : (
                                 <p className="text-center text-gray-500">Nenhum dado do processo disponível</p>
                             )}
+                            <div className="flex justify-end gap-2 mt-3 md:mt-0">
+                                <Dialog open={open} onOpenChange={setOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button>Editar</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="flex flex-col sm:max-w-[470px] max-h-[90vh] overflow-y-auto p-6">
+                                        <DialogTitle className="text-center text-lg font-semibold mb-2 mt-3">Editar Processo Nº {processo?.numeroProcesso || "Nd"}</DialogTitle>
+                                        <form onSubmit={handleEditarProcesso}>
+                                            <div className="flex flex-col space-y-2 p-2">
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Nome do Autor:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="nomeAutor"
+                                                    value={nomeAutor || ""}
+                                                    onChange={(e) => setNomeAutor(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Telefone do Autor:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="telefoneAutor"
+                                                    value={telefoneCliente || ""}
+                                                    onChange={(e) => setTelefoneCliente(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Advogado do Autor:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="advogadoAutor"
+                                                    value={advogadoAutor || ""}
+                                                    onChange={(e) => setAdvogadoAutor(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Nome do Réu:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="nomeReu"
+                                                    value={nomeReu || ""}
+                                                    onChange={(e) => setNomeReu(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Advogado do Réu:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="advogadoReu"
+                                                    value={advogadoReu || ""}
+                                                    onChange={(e) => setAdvogadoReu(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Vara:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="vara"
+                                                    value={vara || ""}
+                                                    onChange={(e) => setVara(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Status:
+                                                    </span>
+                                                </Label>
+                                                <Select value={status || ""} onValueChange={(e) => setStatus(e)}>
+                                                    <SelectTrigger className="w-full rounded-md border-gray-300 border-2 border-input">
+                                                        <SelectValue placeholder={status || ""} />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectItem value="Iniciado">Iniciado</SelectItem>
+                                                            <SelectItem value="Distribuído">Distribuído</SelectItem>
+                                                            <SelectItem value="Em Andamento">Em Andamento</SelectItem>
+                                                            <SelectItem value="Aguardando Decisão">Aguardando Decisão</SelectItem>
+                                                            <SelectItem value="Sentenciado">Sentenciado</SelectItem>
+                                                            <SelectItem value="Recursos">Recursos</SelectItem>
+                                                            <SelectItem value="Execução">Execução</SelectItem>
+                                                            <SelectItem value="Suspenso">Suspenso</SelectItem>
+                                                            <SelectItem value="Concluído">Concluído</SelectItem>
+                                                            <SelectItem value="Arquivado">Arquivado</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Classe:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="classeTipo"
+                                                    value={classeTipo || ""}
+                                                    onChange={(e) => setClasseTipo(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Assuntos:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="assuntosTitulo"
+                                                    value={assuntosTitulo || ""}
+                                                    onChange={(e) => setAssuntosTitulo(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Comarca:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="comarcaUF"
+                                                    value={comarcaUF || ""}
+                                                    onChange={(e) => setComarcaUF(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="justify-end">
+                                                <Button className="mt-4" type="submit">Salvar</Button>
+                                            </div>  
+                                        </form>
+                                    </DialogContent>
+                                </Dialog>
+                                <Button
+                                    onClick={handleExcluirProcesso}
+                                >Excluir</Button>
+                            </div>
                         </CardContent>
                     </Card>
 
