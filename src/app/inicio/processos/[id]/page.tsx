@@ -64,6 +64,7 @@ function Page() {
     const params = useParams()
     const id = params.id as string // Isso pegará o ID da URL
 
+    // Criar Processo e Buscar Detalhes do Processo
     const [processo, setProcesso] = useState<ProcessoDetalhado | null>(null)
     const [advogadoId, setAdvogadoId] = useState<string | null>(null)
     const [authToken, setAuthToken] = useState<string | null>(null)
@@ -71,23 +72,7 @@ function Page() {
     const [open, setOpen] = useState(false);
     const router = useRouter();
     
-    const [movimentos, setMovimentos] = useState<Movimento[]>([])
-    const [novoMovimento, setNovoMovimento] = useState({
-        nomeMovimento: "",
-        tipo: "",
-        data: new Date(),
-        processoId: Number(id)
-    });
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [anexo, getAnexo] = useState<File | null>(null);
-    const [anexos, setAnexos] = useState<Anexo[]>([]);
-    const [novoAnexo, setNovoAnexo] = useState({
-        nomeAnexo: "",
-        anexo: "",
-        processoId: Number(id)
-    });
-
+    // Editar Processo
     const [nomeAutor, setNomeAutor] = useState(processo?.nomeAutor || "");
     const [telefoneCliente, setTelefoneCliente] = useState(processo?.telefoneCliente || "");
     const [advogadoAutor, setAdvogadoAutor] = useState(processo?.advogadoAutor || "");
@@ -98,6 +83,25 @@ function Page() {
     const [comarcaUF, setComarcaUF] = useState(processo?.comarcaUF || "");
     const [status, setStatus] = useState(processo?.status || "");
     const [vara, setVara] = useState(processo?.vara || "");
+    
+    // Criar Movimento e Lista de Movimentos
+    const [movimentos, setMovimentos] = useState<Movimento[]>([])
+    const [novoMovimento, setNovoMovimento] = useState({
+        nomeMovimento: "",
+        tipo: "",
+        data: new Date(),
+        processoId: Number(id)
+    });
+
+    // Criar Anexo e Lista de Anexos
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [anexo, getAnexo] = useState<File | null>(null);
+    const [anexos, setAnexos] = useState<Anexo[]>([]);
+    const [novoAnexo, setNovoAnexo] = useState({
+        nomeAnexo: "",
+        anexo: "",
+        processoId: Number(id)
+    });
 
     // Verifica se o Advogado está logado
     useEffect(() => {
@@ -113,7 +117,7 @@ function Page() {
         }
     }, []);
 
-    // Método 'GET' para buscar os detalhes do processo pelo seu "id"
+    // Método 'GET' para buscar os detalhes do PROCESSO pelo seu "id"
     useEffect(() => {
         const fetchProcessoDetalhes = async () => {
             if (!id || !authToken) return;
@@ -142,7 +146,7 @@ function Page() {
         }
     }, [id, authToken]);
 
-    // Método 'GET' para a lista de todos os movimentos criados
+    // Método 'GET' para a lista de todos os MOVIMENTOS criados
     useEffect(() => {
         const fetchMovimentos = async () => {
             if (!id || !authToken) return;
@@ -171,7 +175,7 @@ function Page() {
         }
     }, [id, authToken]);
 
-    //Método 'GET' para a lista de todos os anexos criados
+    //Método 'GET' para a lista de todos os ANEXOS criados
     useEffect(() => {
         const fetchAnexos = async () => {
             if (!id || !authToken) return;
@@ -200,7 +204,7 @@ function Page() {
         }
     }, [id, authToken]);
 
-    // Pega os valores de cada campo do processo
+    // Pega os valores de cada campo do processo (será usado no 'PUT' para editar os detalhes do processo)
     useEffect(() => {
         if (processo) {
             setNomeAutor(processo.nomeAutor || "");
@@ -216,7 +220,7 @@ function Page() {
         }
     }, [processo]);
 
-    // Método 'PUT' para editar os detalhes do processo (com 'GET' para buscar os detaçhes atualizados)
+    // Método 'PUT' para editar os detalhes do PROCESSO (com 'GET' para buscar os detalhes atualizados)
     const handleEditarProcesso = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -262,7 +266,7 @@ function Page() {
         }
     }
 
-    // Método 'DELETE' para excluir o processo
+    // Método 'DELETE' para excluir o PROCESSO
     const handleExcluirProcesso = async () => {
         try {
             await axios.delete(
@@ -281,7 +285,7 @@ function Page() {
         }
     }
 
-    // Método 'POST' para adicionar um movimento associado ao processo
+    // Método 'POST' para adicionar um MOVIMENTO associado ao processo
     const handleAdicionarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -331,7 +335,8 @@ function Page() {
         }
     };
 
-    //
+    // Método 'POST' para adicionar um ANEXO associado ao processo
+    // 
 
     const toastOptions = {
         position: "top-center" as ToastPosition,
@@ -360,6 +365,7 @@ function Page() {
             <ToastContainer />
 
             <div className="flex flex-col w-11/12 justify-center items-center gap-2 sm:flex-row h-auto">
+                {/*Movimentos*/}
                 <Card className="w-full rounded-xl md:w-1/3 h-[600px] flex flex-col">
                     <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
                         <CardTitle className="text-lg">Movimentos</CardTitle>
@@ -458,7 +464,8 @@ function Page() {
                         )}
                     </CardContent>
                 </Card>
-
+                
+                {/*Detalhe do Processo*/}
                 <div className="w-full md:w-2/3 flex flex-col gap-2 h-[600px]">
                     <Card className="w-full h-[75%] flex flex-col">
                         <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
@@ -470,206 +477,212 @@ function Page() {
                                     <Loader2 className="animate-spin h-6 w-6 mx-auto text-gray-500" />
                                 </div>
                             ) : processo ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="font-semibold">Cliente:</p>
-                                        <p>{processo.nomeAutor || "Sem Dados"}</p>
+                                <div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="font-semibold">Cliente:</p>
+                                            <p>{processo.nomeAutor || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Telefone:</p>
+                                            <p>{processo.telefoneCliente || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Vara:</p>
+                                            <p>{processo.vara || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Classe:</p>
+                                            <p>{processo.classeTipo || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Assunto:</p>
+                                            <p>{processo.assuntosTitulo || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Comarca/UF:</p>
+                                            <p>{processo.comarcaUF || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Réu:</p>
+                                            <p>{processo.nomeReu || "Sem Dados"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Advogado do Réu:</p>
+                                            <p>{processo.advogadoReu || "Sem Dados"}</p>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <p className="font-semibold">Status:</p>
+                                            <span className={`inline-block px-3 py-1 rounded-full text-white ${
+                                                processo.status === "Iniciado" ? "bg-amber-400" :
+                                                processo.status === "Distribuído" ? "bg-sky-600" :
+                                                processo.status === "Em Andamento" ? "bg-blue-500" :
+                                                processo.status === "Aguardando Decisão" ? "bg-yellow-600" :
+                                                processo.status === "Sentenciado" ? "bg-green-600" :
+                                                processo.status === "Recursos" ? "bg-orange-600" :
+                                                processo.status === "Execução" ? "bg-emerald-600" :
+                                                processo.status === "Suspenso" ? "bg-gray-600" :
+                                                processo.status === "Concluído" ? "bg-indigo-600" :
+                                                processo.status === "Arquivado" ? "bg-slate-500" : "bg-black"
+                                            }`}>
+                                                {processo.status || "Sem Dados"}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-semibold">Telefone:</p>
-                                        <p>{processo.telefoneCliente || "Sem Dados"}</p>
+
+                                    <div className="flex justify-end gap-2 mt-3 md:mt-0">
+                                        <Dialog open={open} onOpenChange={setOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button>Editar</Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="flex flex-col sm:max-w-[470px] max-h-[90vh] overflow-y-auto p-6">
+                                                <DialogTitle className="text-center text-lg font-semibold mb-2 mt-3">Editar Processo Nº {processo?.numeroProcesso || "Nd"}</DialogTitle>
+                                                <form onSubmit={handleEditarProcesso}>
+                                                    <div className="flex flex-col space-y-2 p-2">
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Nome do Autor:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="nomeAutor"
+                                                            value={nomeAutor || ""}
+                                                            onChange={(e) => setNomeAutor(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Telefone do Autor:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="telefoneAutor"
+                                                            value={telefoneCliente || ""}
+                                                            onChange={(e) => setTelefoneCliente(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Advogado do Autor:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="advogadoAutor"
+                                                            value={advogadoAutor || ""}
+                                                            onChange={(e) => setAdvogadoAutor(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Nome do Réu:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="nomeReu"
+                                                            value={nomeReu || ""}
+                                                            onChange={(e) => setNomeReu(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Advogado do Réu:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="advogadoReu"
+                                                            value={advogadoReu || ""}
+                                                            onChange={(e) => setAdvogadoReu(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Vara:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="vara"
+                                                            value={vara || ""}
+                                                            onChange={(e) => setVara(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Status:
+                                                            </span>
+                                                        </Label>
+                                                        <Select value={status || ""} onValueChange={(e) => setStatus(e)}>
+                                                            <SelectTrigger className="w-full rounded-md border-gray-300 border-2 border-input">
+                                                                <SelectValue placeholder={status || ""} />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectGroup>
+                                                                    <SelectItem value="Iniciado">Iniciado</SelectItem>
+                                                                    <SelectItem value="Distribuído">Distribuído</SelectItem>
+                                                                    <SelectItem value="Em Andamento">Em Andamento</SelectItem>
+                                                                    <SelectItem value="Aguardando Decisão">Aguardando Decisão</SelectItem>
+                                                                    <SelectItem value="Sentenciado">Sentenciado</SelectItem>
+                                                                    <SelectItem value="Recursos">Recursos</SelectItem>
+                                                                    <SelectItem value="Execução">Execução</SelectItem>
+                                                                    <SelectItem value="Suspenso">Suspenso</SelectItem>
+                                                                    <SelectItem value="Concluído">Concluído</SelectItem>
+                                                                    <SelectItem value="Arquivado">Arquivado</SelectItem>
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Classe:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="classeTipo"
+                                                            value={classeTipo || ""}
+                                                            onChange={(e) => setClasseTipo(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Assuntos:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="assuntosTitulo"
+                                                            value={assuntosTitulo || ""}
+                                                            onChange={(e) => setAssuntosTitulo(e.target.value)}
+                                                        />
+                                                        <Label className="block text-base">
+                                                            <span>
+                                                                Comarca:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            name="comarcaUF"
+                                                            value={comarcaUF || ""}
+                                                            onChange={(e) => setComarcaUF(e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className="justify-end">
+                                                        <Button className="mt-4" type="submit">Salvar</Button>
+                                                    </div>  
+                                                </form>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Button
+                                            onClick={handleExcluirProcesso}
+                                        >Excluir</Button>
                                     </div>
-                                    <div>
-                                        <p className="font-semibold">Vara:</p>
-                                        <p>{processo.vara || "Sem Dados"}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Classe:</p>
-                                        <p>{processo.classeTipo || "Sem Dados"}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Assunto:</p>
-                                        <p>{processo.assuntosTitulo || "Sem Dados"}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Comarca/UF:</p>
-                                        <p>{processo.comarcaUF || "Sem Dados"}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Réu:</p>
-                                        <p>{processo.nomeReu || "Sem Dados"}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Advogado do Réu:</p>
-                                        <p>{processo.advogadoReu || "Sem Dados"}</p>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <p className="font-semibold">Status:</p>
-                                        <span className={`inline-block px-3 py-1 rounded-full text-white ${
-                                            processo.status === "Iniciado" ? "bg-amber-400" :
-                                            processo.status === "Distribuído" ? "bg-sky-600" :
-                                            processo.status === "Em Andamento" ? "bg-blue-500" :
-                                            processo.status === "Aguardando Decisão" ? "bg-yellow-600" :
-                                            processo.status === "Sentenciado" ? "bg-green-600" :
-                                            processo.status === "Recursos" ? "bg-orange-600" :
-                                            processo.status === "Execução" ? "bg-emerald-600" :
-                                            processo.status === "Suspenso" ? "bg-gray-600" :
-                                            processo.status === "Concluído" ? "bg-indigo-600" :
-                                            processo.status === "Arquivado" ? "bg-slate-500" : "bg-black"
-                                        }`}>
-                                            {processo.status || "Sem Dados"}
-                                        </span>
-                                    </div>
+
                                 </div>
                             ) : (
                                 <p className="text-center text-gray-500">Nenhum dado do processo disponível</p>
                             )}
-                            <div className="flex justify-end gap-2 mt-3 md:mt-0">
-                                <Dialog open={open} onOpenChange={setOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button>Editar</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="flex flex-col sm:max-w-[470px] max-h-[90vh] overflow-y-auto p-6">
-                                        <DialogTitle className="text-center text-lg font-semibold mb-2 mt-3">Editar Processo Nº {processo?.numeroProcesso || "Nd"}</DialogTitle>
-                                        <form onSubmit={handleEditarProcesso}>
-                                            <div className="flex flex-col space-y-2 p-2">
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Nome do Autor:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="nomeAutor"
-                                                    value={nomeAutor || ""}
-                                                    onChange={(e) => setNomeAutor(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Telefone do Autor:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="telefoneAutor"
-                                                    value={telefoneCliente || ""}
-                                                    onChange={(e) => setTelefoneCliente(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Advogado do Autor:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="advogadoAutor"
-                                                    value={advogadoAutor || ""}
-                                                    onChange={(e) => setAdvogadoAutor(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Nome do Réu:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="nomeReu"
-                                                    value={nomeReu || ""}
-                                                    onChange={(e) => setNomeReu(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Advogado do Réu:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="advogadoReu"
-                                                    value={advogadoReu || ""}
-                                                    onChange={(e) => setAdvogadoReu(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Vara:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="vara"
-                                                    value={vara || ""}
-                                                    onChange={(e) => setVara(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Status:
-                                                    </span>
-                                                </Label>
-                                                <Select value={status || ""} onValueChange={(e) => setStatus(e)}>
-                                                    <SelectTrigger className="w-full rounded-md border-gray-300 border-2 border-input">
-                                                        <SelectValue placeholder={status || ""} />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectItem value="Iniciado">Iniciado</SelectItem>
-                                                            <SelectItem value="Distribuído">Distribuído</SelectItem>
-                                                            <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                                                            <SelectItem value="Aguardando Decisão">Aguardando Decisão</SelectItem>
-                                                            <SelectItem value="Sentenciado">Sentenciado</SelectItem>
-                                                            <SelectItem value="Recursos">Recursos</SelectItem>
-                                                            <SelectItem value="Execução">Execução</SelectItem>
-                                                            <SelectItem value="Suspenso">Suspenso</SelectItem>
-                                                            <SelectItem value="Concluído">Concluído</SelectItem>
-                                                            <SelectItem value="Arquivado">Arquivado</SelectItem>
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Classe:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="classeTipo"
-                                                    value={classeTipo || ""}
-                                                    onChange={(e) => setClasseTipo(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Assuntos:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="assuntosTitulo"
-                                                    value={assuntosTitulo || ""}
-                                                    onChange={(e) => setAssuntosTitulo(e.target.value)}
-                                                />
-                                                <Label className="block text-base">
-                                                    <span>
-                                                        Comarca:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    name="comarcaUF"
-                                                    value={comarcaUF || ""}
-                                                    onChange={(e) => setComarcaUF(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="justify-end">
-                                                <Button className="mt-4" type="submit">Salvar</Button>
-                                            </div>  
-                                        </form>
-                                    </DialogContent>
-                                </Dialog>
-                                <Button
-                                    onClick={handleExcluirProcesso}
-                                >Excluir</Button>
-                            </div>
                         </CardContent>
                     </Card>
 
+                    {/*Anexos*/}
                     <Card className="w-full h-[25%] flex flex-col">
                         <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
                             <CardTitle className="text-lg"> Documentos Anexados</CardTitle>
@@ -697,7 +710,7 @@ function Page() {
                                 anexos.map((anexo) => (
                                 <div key={anexo.id} className="mb-4">
                                     <p className="font-semibold">Documento:</p>
-                                    <p>{anexo.anexo.toLocaleString()}</p>
+                                    <p>{anexo.nomeAnexo}</p>
                                 </div>
                             ))
                             ) : (
