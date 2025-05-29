@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ChevronLeftIcon, Loader2 } from "lucide-react";
+import { ChevronLeftIcon, Loader2, SquarePen } from "lucide-react";
 import Link from "next/link";
 import NavBar from "@/components/navbar";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +17,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGr
 import { withAuth } from "@/utils/withAuth";
 import { set } from "react-hook-form";
 import { Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ProcessoDetalhado {
     id: number;
@@ -64,13 +65,20 @@ function Page() {
     const params = useParams()
     const id = params.id as string // Isso pegará o ID da URL
 
-    // Criar Processo e Buscar Detalhes do Processo
+    // Criar Processo, Buscar Detalhes do Processo, Autenticar Advogado
     const [processo, setProcesso] = useState<ProcessoDetalhado | null>(null)
     const [advogadoId, setAdvogadoId] = useState<string | null>(null)
     const [authToken, setAuthToken] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
-    const [open, setOpen] = useState(false);
     const router = useRouter();
+
+    // Abrir e Fechar Modais
+    const [abrirProcesso, setAbrirProcesso] = useState(false);
+    const [editarProcesso, setEditarProcesso] = useState(false);
+    const [abrirMovimento, setAbrirMovimento] = useState(false);
+    const [editarMovimento, setEditarMovimento] = useState(false);
+    const [abrirAnexo, setAbrirAnexo] = useState(false);
+    const [editarAnexo, setEditarAnexo] = useState(false);
     
     // Editar Processo
     const [nomeAutor, setNomeAutor] = useState(processo?.nomeAutor || "");
@@ -92,6 +100,12 @@ function Page() {
         data: new Date(),
         processoId: Number(id)
     });
+
+    // Editar Movimento
+    const [movimento, setMovimento] = useState<Movimento | null>(null);
+    const [nomeMovimento, setNomeMovimento] = useState(novoMovimento?.nomeMovimento || "");
+    const [tipo, setTipo] = useState(novoMovimento?.tipo || "");
+    const [dataMovimento, setDataMovimento] = useState(novoMovimento?.data || "");
 
     // Criar Anexo e Lista de Anexos
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -259,7 +273,7 @@ function Page() {
                 }
             );
             setProcesso(response.data);
-            setOpen(false);
+            setEditarProcesso(false);
         } catch (error) {
             toast.error('Erro ao editar o processo', toastOptions);
             console.error('Erro:', error);
@@ -297,6 +311,7 @@ function Page() {
         try {
             const movimentoParaEnviar = {
                 ...novoMovimento,
+                tipo: novoMovimento.tipo,
                 data: novoMovimento.data.toISOString(),
                 processoId: Number(id)
             };
@@ -323,17 +338,59 @@ function Page() {
             });
             
             if (response.status === 200 || response.status === 201) {
-                toast.success("Movimento cadastrado com sucesso!", toastOptions); 
+                toast.success("Movimento cadastrado com sucesso!", toastOptions);
+                setAbrirMovimento(false);
             } else {
                 const errorData = response.data;
-                toast.error(`Erro ao cadastrar o movimento: ${errorData?.message || 'Erro desconhecido'}`, toastOptions); 
+                toast.error(`Erro ao cadastrar o movimento: ${errorData?.message || 'Erro desconhecido'}`, toastOptions);
+                setAbrirMovimento(false);
             }
 
         } catch (error: any) {
             toast.error("Erro ao cadastrar o movimento");
             console.error(error);
+            setAbrirMovimento(false);
         }
     };
+
+    // Método 'PUT' para editar o Movimento
+    const handleEditarMovimento = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const data = {
+            nomeMovimento,
+            tipo,
+            dataMovimento
+        };
+        
+        try {
+            await axios.put(
+                `https://backendjuriscontrol.onrender.com/api/atualizar-movimento/${id}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            toast.success("Movimento editado com sucesso!", toastOptions);
+            const response = await axios.get<Movimento>(
+                `https://backendjuriscontrol.onrender.com/api/buscar-movimento/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                }
+            );
+            setMovimento(response.data);
+            setEditarMovimento(false);
+        } catch (error) {
+            toast.error('Erro ao editar o movimento', toastOptions);
+            console.error('Erro:', error);
+            setEditarMovimento(false);
+        }
+    }
 
     // Método 'POST' para adicionar um ANEXO associado ao processo
     // 
@@ -369,7 +426,7 @@ function Page() {
                 <Card className="w-full rounded-xl md:w-1/3 h-[600px] flex flex-col">
                     <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
                         <CardTitle className="text-lg">Movimentos</CardTitle>
-                        <Dialog>
+                        <Dialog open={abrirMovimento} onOpenChange={setAbrirMovimento}>
                             <DialogTrigger asChild>
                                 <Button 
                                     variant="outline"
@@ -401,26 +458,6 @@ function Page() {
                                     <div className="space-y-2">
                                         <Label className="block">
                                             <span>
-                                                Tipo do Movimento:
-                                            </span>
-                                        </Label>
-                                        <Select
-                                            value={novoMovimento.tipo}
-                                            onValueChange={(value) => setNovoMovimento({ ...novoMovimento, tipo: value })}
-                                        >
-                                            <SelectTrigger className="mt-1">
-                                                <SelectValue placeholder="Selecione o tipo" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {tiposMovimento.map((tipo) => (
-                                                    <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="block">
-                                            <span>
                                                 Data do Movimento:
                                             </span>
                                         </Label>
@@ -431,7 +468,18 @@ function Page() {
                                             className="mt-1"
                                         />
                                     </div>
-                                    
+                                    <div className="space-y-2">
+                                        <Label className="block">
+                                            <span>
+                                                Observação do Movimento:
+                                            </span>
+                                        </Label>
+                                        <Textarea
+                                            value={novoMovimento.tipo}
+                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, tipo: e.target.value })}
+                                            className="mt-1"
+                                        />
+                                    </div>
                                     <DialogFooter>
                                         <Button type="submit">Salvar</Button>
                                     </DialogFooter>
@@ -448,12 +496,70 @@ function Page() {
                             movimentos && movimentos.length > 0 ? (
                             movimentos.map((movimento) => (
                                 <div key={movimento.id} className="mb-4 border-2 border-gray-300 rounded-md p-2">
-                                    <p className="font-semibold">Movimento:</p>
-                                    <p>{movimento.nomeMovimento}</p>
-                                    <p className="font-semibold">Data:</p>
-                                    <p>{new Date(movimento.data).toLocaleDateString()}</p>
-                                    <p className="font-semibold">Tipo:</p>
-                                    <p>{movimento.tipo}</p>
+                                    <div className="flex flex-col">
+                                        <p className="font-semibold">Movimento:</p>
+                                        <p>{movimento.nomeMovimento}</p>
+                                        <p className="font-semibold">Data:</p>
+                                        <p>{new Date(movimento.data).toLocaleDateString()}</p>
+                                        <p className="font-semibold">Observação:</p>
+                                        <p>{movimento.tipo}</p>
+                                        <Dialog open={editarMovimento} onOpenChange={setEditarMovimento}>
+                                            <DialogTrigger asChild>
+                                                <Button>
+                                                    <SquarePen className="w-5 h-5 lg:hidden" />
+                                                    <span className="hidden lg:block">Editar Movimento</span>
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle className="">Editar Movimento</DialogTitle>
+                                                </DialogHeader>
+                                                <form onSubmit={handleEditarMovimento}>
+                                                    <div className="space-y-2 mt-4">
+                                                        <Label className="block">
+                                                            <span>
+                                                                Nome do Movimento:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            value={nomeMovimento || ""}
+                                                            onChange={(e) => setMovimento({ ...movimento, nomeMovimento: e.target.value })}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2 mt-4">
+                                                        <Label className="block">
+                                                            <span>
+                                                                Data do Movimento:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="date"
+                                                            //value={movimento.data.toISOString().split('T')[0]}
+                                                            onChange={(e) => setMovimento({ ...movimento, data: new Date(e.target.value) })}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2 mt-4">
+                                                        <Label className="block">
+                                                            <span>
+                                                                Observação do Movimento:
+                                                            </span>
+                                                        </Label>
+                                                        <Textarea
+                                                            value={tipo || ""}
+                                                            onChange={(e) => setMovimento({ ...movimento, tipo: e.target.value })}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                </form>
+                                                <DialogFooter>
+                                                    <Button type="submit">Salvar</Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </div>
                                 </div>
                             ))
                             ) : (
@@ -516,15 +622,8 @@ function Page() {
                                             <p className="font-semibold">Status:</p>
                                             <span className={`inline-block px-3 py-1 rounded-full text-white ${
                                                 processo.status === "Iniciado" ? "bg-amber-400" :
-                                                processo.status === "Distribuído" ? "bg-sky-600" :
                                                 processo.status === "Em Andamento" ? "bg-blue-500" :
-                                                processo.status === "Aguardando Decisão" ? "bg-yellow-600" :
-                                                processo.status === "Sentenciado" ? "bg-green-600" :
-                                                processo.status === "Recursos" ? "bg-orange-600" :
-                                                processo.status === "Execução" ? "bg-emerald-600" :
-                                                processo.status === "Suspenso" ? "bg-gray-600" :
-                                                processo.status === "Concluído" ? "bg-indigo-600" :
-                                                processo.status === "Arquivado" ? "bg-slate-500" : "bg-black"
+                                                processo.status === "Concluído" ? "bg-emerald-600" : "bg-black"
                                             }`}>
                                                 {processo.status || "Sem Dados"}
                                             </span>
@@ -532,7 +631,7 @@ function Page() {
                                     </div>
 
                                     <div className="flex justify-end gap-2 mt-3 md:mt-0">
-                                        <Dialog open={open} onOpenChange={setOpen}>
+                                        <Dialog open={editarProcesso} onOpenChange={setEditarProcesso}>
                                             <DialogTrigger asChild>
                                                 <Button>Editar</Button>
                                             </DialogTrigger>
@@ -618,15 +717,8 @@ function Page() {
                                                             <SelectContent>
                                                                 <SelectGroup>
                                                                     <SelectItem value="Iniciado">Iniciado</SelectItem>
-                                                                    <SelectItem value="Distribuído">Distribuído</SelectItem>
                                                                     <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                                                                    <SelectItem value="Aguardando Decisão">Aguardando Decisão</SelectItem>
-                                                                    <SelectItem value="Sentenciado">Sentenciado</SelectItem>
-                                                                    <SelectItem value="Recursos">Recursos</SelectItem>
-                                                                    <SelectItem value="Execução">Execução</SelectItem>
-                                                                    <SelectItem value="Suspenso">Suspenso</SelectItem>
                                                                     <SelectItem value="Concluído">Concluído</SelectItem>
-                                                                    <SelectItem value="Arquivado">Arquivado</SelectItem>
                                                                 </SelectGroup>
                                                             </SelectContent>
                                                         </Select>
@@ -686,21 +778,63 @@ function Page() {
                     <Card className="w-full h-[25%] flex flex-col">
                         <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
                             <CardTitle className="text-lg"> Documentos Anexados</CardTitle>
-                            <Button 
-                                variant="outline"
-                                size="add"
-                                className="bg-white text-[#030430] hover:bg-gray-100 text-sm flex items-center gap-2"
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                <Plus className="w-4 h-4 lg:hidden" />
-                                <span className="hidden lg:block">Adicionar Anexo</span>
-                            </Button>
-                            <Input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept="image/*, application/pdf, .doc, .docx, .xls, .xlsx"
-                            />
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button 
+                                        variant="outline"
+                                        size="add"
+                                        className="bg-white text-[#030430] hover:bg-gray-100 text-sm flex items-center gap-2"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        <Plus className="w-4 h-4 lg:hidden" />
+                                        <span className="hidden lg:block">Adicionar Anexo</span>
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle className="">Adicionar Anexo</DialogTitle>
+                                    </DialogHeader>
+                                    <form className="space-y-4">
+                                        <div className="space-y-2 mt-4">
+                                            <Label>Nome do Anexo (opcional):</Label>
+                                            <Input
+                                                placeholder="Ex: contrato.pdf"
+                                                //value={novoAnexo.nomeAnexo}
+                                                //onChange={(e) => setNovoAnexo({ ...novoAnexo, nomeAnexo: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2 mt-4">
+                                            <Label>Tipo do Anexo:</Label>
+                                            <Input
+                                                placeholder="Ex: .pdf"
+                                                //value={novoAnexo.tipoAnexo}
+                                                //onChange={(e) => setNovoAnexo({ ...novoAnexo, tipoAnexo: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Arquivo:</Label>
+                                            <Input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                accept="image/*, video/*,application/pdf"
+                                                //onChange={(e) => {
+                                                //    const file = e.target.files?.[0] || null;
+                                                //    setNovoAnexo({ ...novoAnexo, anexo: file });
+                                                //    if (file && !novoAnexo.nomeAnexo) {
+                                                //        setNovoAnexo((prev) => ({ ...prev, nomeAnexo: file.name }));
+                                                //    }
+                                                //}}
+                                            />
+                                        </div>
+
+                                        <DialogFooter>
+                                            <Button type="submit">Salvar</Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
                         </CardHeader>
                         <CardContent className="flex-1 flex items-center justify-center p-0">
                             {loading ? (

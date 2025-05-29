@@ -225,15 +225,8 @@ function Page() {
                                                     <SelectGroup>
                                                         <SelectLabel>Situação do Processo</SelectLabel>
                                                         <SelectItem value="Iniciado">Iniciado</SelectItem>
-                                                        <SelectItem value="Distribuído">Distribuído</SelectItem>
                                                         <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                                                        <SelectItem value="Aguardando Decisão">Aguardando Decisão</SelectItem>
-                                                        <SelectItem value="Sentenciado">Sentenciado</SelectItem>
-                                                        <SelectItem value="Recursos">Recursos</SelectItem>
-                                                        <SelectItem value="Execução">Execução</SelectItem>
-                                                        <SelectItem value="Suspenso">Suspenso</SelectItem>
                                                         <SelectItem value="Concluído">Concluído</SelectItem>
-                                                        <SelectItem value="Arquivado">Arquivado</SelectItem>
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
