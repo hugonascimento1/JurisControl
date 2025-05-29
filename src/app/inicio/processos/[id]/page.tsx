@@ -189,7 +189,7 @@ function Page() {
         }
     }, [id, authToken]);
 
-    //Método 'GET' para a lista de todos os ANEXOS criados
+    // Método 'GET' para a lista de todos os ANEXOS criados
     useEffect(() => {
         const fetchAnexos = async () => {
             if (!id || !authToken) return;
@@ -357,16 +357,16 @@ function Page() {
     const handleEditarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const data = {
-            nomeMovimento,
-            tipo,
-            dataMovimento
-        };
+        if (!movimentos) return;
         
         try {
             await axios.put(
                 `https://backendjuriscontrol.onrender.com/api/atualizar-movimento/${id}`,
-                data,
+                {
+                    nomeMovimento: movimento?.nomeMovimento,
+                    tipo: movimento?.tipo,
+                    dataMovimento: movimento?.data
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -503,18 +503,17 @@ function Page() {
                                         <p>{new Date(movimento.data).toLocaleDateString()}</p>
                                         <p className="font-semibold">Observação:</p>
                                         <p>{movimento.tipo}</p>
-                                        <Dialog open={editarMovimento} onOpenChange={setEditarMovimento}>
+                                        <Dialog>
                                             <DialogTrigger asChild>
                                                 <Button>
-                                                    <SquarePen className="w-5 h-5 lg:hidden" />
-                                                    <span className="hidden lg:block">Editar Movimento</span>
+                                                    <SquarePen className="w-4 h-4" />
                                                 </Button>
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[425px]">
                                                 <DialogHeader>
                                                     <DialogTitle className="">Editar Movimento</DialogTitle>
                                                 </DialogHeader>
-                                                <form onSubmit={handleEditarMovimento}>
+                                                <form onSubmit={handleEditarMovimento} className="space-y-4">
                                                     <div className="space-y-2 mt-4">
                                                         <Label className="block">
                                                             <span>
@@ -523,12 +522,12 @@ function Page() {
                                                         </Label>
                                                         <Input
                                                             type="text"
-                                                            value={nomeMovimento || ""}
-                                                            onChange={(e) => setMovimento({ ...movimento, nomeMovimento: e.target.value })}
+                                                            value={movimento.nomeMovimento}
+                                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, nomeMovimento: e.target.value })}
                                                             className="mt-1"
                                                         />
                                                     </div>
-                                                    <div className="space-y-2 mt-4">
+                                                    <div className="space-y-2">
                                                         <Label className="block">
                                                             <span>
                                                                 Data do Movimento:
@@ -536,27 +535,27 @@ function Page() {
                                                         </Label>
                                                         <Input
                                                             type="date"
-                                                            //value={movimento.data.toISOString().split('T')[0]}
-                                                            onChange={(e) => setMovimento({ ...movimento, data: new Date(e.target.value) })}
+                                                            value={movimento.data ? new Date(movimento.data).toISOString().split('T')[0] : ""}
+                                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, data: new Date(e.target.value) })}
                                                             className="mt-1"
                                                         />
                                                     </div>
-                                                    <div className="space-y-2 mt-4">
+                                                    <div className="space-y-2">
                                                         <Label className="block">
                                                             <span>
                                                                 Observação do Movimento:
                                                             </span>
                                                         </Label>
                                                         <Textarea
-                                                            value={tipo || ""}
-                                                            onChange={(e) => setMovimento({ ...movimento, tipo: e.target.value })}
+                                                            value={movimento.tipo}
+                                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, tipo: e.target.value })}
                                                             className="mt-1"
                                                         />
                                                     </div>
+                                                    <DialogFooter>
+                                                        <Button type="submit">Salvar</Button>
+                                                    </DialogFooter>
                                                 </form>
-                                                <DialogFooter>
-                                                    <Button type="submit">Salvar</Button>
-                                                </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
                                     </div>
