@@ -103,9 +103,9 @@ function Page() {
 
     // Editar Movimento
     const [movimento, setMovimento] = useState<Movimento | null>(null);
-    const [nomeMovimento, setNomeMovimento] = useState(novoMovimento?.nomeMovimento || "");
-    const [tipo, setTipo] = useState(novoMovimento?.tipo || "");
-    const [dataMovimento, setDataMovimento] = useState(novoMovimento?.data || "");
+    const [nomeMovimento, setNomeMovimento] = useState(movimento?.nomeMovimento || "");
+    const [tipo, setTipo] = useState(movimento?.tipo || "");
+    const [dataMovimento, setDataMovimento] = useState(movimento?.data.toISOString().split('T')[0] || "");
 
     // Criar Anexo e Lista de Anexos
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -357,16 +357,16 @@ function Page() {
     const handleEditarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!movimentos) return;
+        const data = {
+            nomeMovimento,
+            tipo,
+            dataMovimento
+        };
         
         try {
             await axios.put(
                 `https://backendjuriscontrol.onrender.com/api/atualizar-movimento/${id}`,
-                {
-                    nomeMovimento: movimento?.nomeMovimento,
-                    tipo: movimento?.tipo,
-                    dataMovimento: movimento?.data
-                },
+                data,
                 {
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -522,8 +522,8 @@ function Page() {
                                                         </Label>
                                                         <Input
                                                             type="text"
-                                                            value={movimento.nomeMovimento}
-                                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, nomeMovimento: e.target.value })}
+                                                            value={nomeMovimento || ""}
+                                                            onChange={(e) => setNomeMovimento(e.target.value)}
                                                             className="mt-1"
                                                         />
                                                     </div>
@@ -535,8 +535,8 @@ function Page() {
                                                         </Label>
                                                         <Input
                                                             type="date"
-                                                            value={movimento.data ? new Date(movimento.data).toISOString().split('T')[0] : ""}
-                                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, data: new Date(e.target.value) })}
+                                                            value={dataMovimento || ""}
+                                                            onChange={(e) => setDataMovimento(new Date(e.target.value).toISOString().split('T')[0])}
                                                             className="mt-1"
                                                         />
                                                     </div>
@@ -547,8 +547,8 @@ function Page() {
                                                             </span>
                                                         </Label>
                                                         <Textarea
-                                                            value={movimento.tipo}
-                                                            onChange={(e) => setNovoMovimento({ ...novoMovimento, tipo: e.target.value })}
+                                                            value={tipo || ""}
+                                                            onChange={(e) => setTipo(e.target.value)}
                                                             className="mt-1"
                                                         />
                                                     </div>
