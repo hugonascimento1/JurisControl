@@ -105,7 +105,7 @@ function Page() {
     const [movimento, setMovimento] = useState<Movimento | null>(null);
     const [nomeMovimento, setNomeMovimento] = useState(movimento?.nomeMovimento || "");
     const [tipo, setTipo] = useState(movimento?.tipo || "");
-    const [dataMovimento, setDataMovimento] = useState(movimento?.data.toISOString().split('T')[0] || "");
+    const [dataMovimento, setDataMovimento] = useState("");
 
     // Criar Anexo e Lista de Anexos
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -357,15 +357,23 @@ function Page() {
     const handleEditarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!movimento) return;
+
+        // Formata a data para o formato esperado pelo backend (LocalDateTime)
+        const dataFormatada = dataMovimento 
+            ? new Date(dataMovimento).toISOString() 
+            : new Date().toISOString();
+
         const data = {
             nomeMovimento,
             tipo,
-            dataMovimento
+            data: dataFormatada,
+            processoId: movimento.processoId
         };
         
         try {
             await axios.put(
-                `https://backendjuriscontrol.onrender.com/api/atualizar-movimento/${id}`,
+                `https://backendjuriscontrol.onrender.com/api/atualizar-movimento/${movimento.id}`,
                 data,
                 {
                     headers: {
@@ -383,7 +391,15 @@ function Page() {
                     },
                 }
             );
-            setMovimento(response.data);
+            setMovimentos(prev => [response.data, ...prev]);
+
+            setNovoMovimento({
+                nomeMovimento: "",
+                tipo: "",
+                data: new Date(),
+                processoId: Number(id)
+            });
+
             setEditarMovimento(false);
         } catch (error) {
             toast.error('Erro ao editar o movimento', toastOptions);
@@ -503,9 +519,21 @@ function Page() {
                                         <p>{new Date(movimento.data).toLocaleDateString()}</p>
                                         <p className="font-semibold">Observação:</p>
                                         <p>{movimento.tipo}</p>
-                                        <Dialog>
+                                        <Dialog open={editarMovimento} onOpenChange={setEditarMovimento}>
                                             <DialogTrigger asChild>
-                                                <Button>
+                                                <Button onClick={() => {
+                                                    setMovimento(movimento);
+                                                    setNomeMovimento(movimento.nomeMovimento);
+                                                    setTipo(movimento.tipo);
+                                                    if (movimento.data) {
+                                                        const date = typeof movimento.data === 'string' 
+                                                            ? new Date(movimento.data) 
+                                                            : movimento.data;
+                                                        setDataMovimento(date.toISOString().split('T')[0]);
+                                                    } else {
+                                                        setDataMovimento("");
+                                                    } // Ajuste para o formato de data
+                                                }}>
                                                     <SquarePen className="w-4 h-4" />
                                                 </Button>
                                             </DialogTrigger>
@@ -536,7 +564,7 @@ function Page() {
                                                         <Input
                                                             type="date"
                                                             value={dataMovimento || ""}
-                                                            onChange={(e) => setDataMovimento(new Date(e.target.value).toISOString().split('T')[0])}
+                                                            onChange={(e) => setDataMovimento(e.target.value)}
                                                             className="mt-1"
                                                         />
                                                     </div>
@@ -648,6 +676,12 @@ function Page() {
                                                             name="nomeAutor"
                                                             value={nomeAutor || ""}
                                                             onChange={(e) => setNomeAutor(e.target.value)}
+                                                        />
+                                                        <Input
+                                                            type="text"
+                                                            value={nomeMovimento || ""}
+                                                            onChange={(e) => setNomeMovimento(e.target.value)}
+                                                            className="mt-1"
                                                         />
                                                         <Label className="block text-base">
                                                             <span>
