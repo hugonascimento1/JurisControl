@@ -41,14 +41,14 @@ function Page() {
                 <MenuDrawer />
             </header>
 
-            <div className="flex flex-col items-center justify-center mt-6">
+            <div className="flex flex-col items-center justify-center mt-4">
                 <p className="text-gray-600 text-xl font-bold text-center lg:text-2xl ">
                     Bem-vindo ao JurisControl,
                 </p>
                 <p className="text-gray-600 lg:text-xl">{advogadoNome}</p>
             </div>
 
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center my-4">
                 <Image
                     className=""
                     src="/logo-escritorio.png"
@@ -59,7 +59,7 @@ function Page() {
             </div>
 
 
-            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-20 mx-5">
+            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-12 mx-5">
                 <Button
                     onClick={handleProcessPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
