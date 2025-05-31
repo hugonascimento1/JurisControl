@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Building, FileBarChart, HomeIcon, LogOutIcon, MenuIcon, Percent, UserCog, Users, UsersRoundIcon } from "lucide-react";
+import { Building, FileBarChart, HomeIcon, LogOutIcon, MenuIcon, Percent, Scale, UserCog, Users, UsersRoundIcon } from "lucide-react";
 import ChartOverview from "@/components/chart/ChartOverview";
 import Advogados from "@/app/dashboard/advogados";
 import NavBar from "@/components/navbar";
@@ -15,10 +15,13 @@ import { useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { ChartPieLabelCustom } from "@/components/chart/PieChart";
+import Logo from "@/components/logo-text-iconw";
+import Administradores from "@/app/dashboard/administradores";
 
 function Page() {
     const [activeTab, setActiveTab] = useState("dashboard")
     const router = useRouter();
+    const admNome = sessionStorage.getItem('administradorNome');
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
@@ -37,6 +40,7 @@ function Page() {
             <aside className="w-40 bg-[#030430] text-white flex flex-col p-4 shadow-lg">
                 <div className="flex items-center justify-center h-12 border-b border-gray-700">
                     {/* <h2 className="text-xl font-semibold">Meu Painel</h2> */}
+                    {/* <Scale className="text-white w-6 h-6" /> */}
                 </div>
                 <nav className="flex-1 mt-4">
                     <ul className="space-y-2">
@@ -90,8 +94,10 @@ function Page() {
 
             <div className="flex-1 flex flex-col bg-gray-100">
                 {/* <NavBar nome={"Gerenciamento"} /> */}
-                <div className="bg-[#030430] w-full h-16 flex items-center px-4 mb-0">
+                <div className="bg-[#030430] w-full h-16 flex items-center justify-between px-4 mb-0">
                     <p className="text-xl font-semibold text-white">Gerenciamento</p>
+                    <p className="text-white flex flex-row gap-2 bg-gray-700 p-1"><UserCog /> {admNome}</p>
+
                 </div>
 
                 <div className="flex-1 px-6 py-4">
@@ -160,7 +166,7 @@ function Page() {
                         </TabsContent>
 
                         <TabsContent value="administradores" className="mt-0">
-                            tabela de administradores
+                            <Administradores />
                         </TabsContent>
                     </Tabs>
                 </div>

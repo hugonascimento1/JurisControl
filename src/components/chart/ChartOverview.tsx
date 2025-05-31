@@ -48,7 +48,7 @@ export default function ChartOverview() {
         <Card className="w-full md:w-2/3 md:max-w-[950px]">
             <CardHeader>
                 <div className="flex items-center justify-center">
-                    <CardTitle className="text-lg sm:text-xl text-primary">Processos por mês</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl text-primary">Processos por advogado</CardTitle>
                     <CalendarDays className="ml-auto w-4 h-4 " />
                 </div>
             </CardHeader>

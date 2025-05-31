@@ -9,14 +9,14 @@ import { Table, TableBody, TableCaption, TableHead, TableRow, TableHeader, Table
 import { CirclePlus, Edit, Loader2, RefreshCcw, Search, Trash2 } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { withAuth } from "@/utils/withAuth";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast, ToastPosition } from "react-toastify";
 import axios, { AxiosError } from "axios";
 
 import { useAdvogadosStore } from "@/store/advogadosStore";
 
-const itemsPag = 6;
+const itemsPag = 5;
 
 interface AdvogadoLista {
   id: number;
@@ -29,12 +29,13 @@ interface AdvogadoLista {
 function Page() {
   const router = useRouter();
   const [proxPag, setProxPag] = useState(1);
-  // const [advogados, setAdvogados] = useState<AdvogadoLista[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [administradorId, setAdministradoId] = useState<string | null>(null);
   const [authTokenAdm, setAuthTokenAdm] = useState<string | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Usar o estado e as ações do store do Zustand
   const advogados = useAdvogadosStore((state) => state.advogados);
@@ -73,7 +74,7 @@ function Page() {
 
   useEffect(() => {
     const id = sessionStorage.getItem('administradorId');
-    const token = sessionStorage.getItem('authTokenAdm');
+    const token = sessionStorage.getItem('authToken');
     if (id) {
       setAdministradoId(id);
     }
@@ -134,6 +135,7 @@ function Page() {
 
   const handleRefreshClick = () => {
     fetchListaAdvogados(true); // Força a requisição, ignorando o cache
+    setSearchTerm(''); // limpa o termo de busca ao atualizar
   };
 
   const handleOpenCadastrarDialog = () => {
@@ -292,7 +294,19 @@ function Page() {
     }
   };
 
-  const totalPages = Math.ceil(advogados.length / itemsPag);
+  const filteredAdvogados = useMemo(() => {
+    if (!searchTerm) {
+      return advogados;
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return advogados.filter(adv => 
+      adv.nome.toLowerCase().includes(lowerCaseSearchTerm) ||
+      adv.email.toLowerCase().includes(lowerCaseSearchTerm) ||
+      adv.registroOAB.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  }, [advogados, searchTerm]);
+
+  const totalPages = Math.ceil(filteredAdvogados.length / itemsPag);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -300,7 +314,7 @@ function Page() {
     }
   };
 
-  const paginatedData = advogados.slice(
+  const paginatedData = filteredAdvogados.slice(
     (proxPag - 1) * itemsPag,
     proxPag * itemsPag
   );
@@ -316,6 +330,11 @@ function Page() {
             <Input
               className=" md:w-[400px]"
               placeholder={"Buscar Advogado"}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setProxPag(1);
+              }}
             />
           </div>
 
@@ -518,7 +537,7 @@ function Page() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center text-gray-500 py-8">
-                    Nenhum advogado encontrado.
+                    Nenhum advogado encontrado com o termo de busca.
                   </TableCell>
                 </TableRow>
               )}
