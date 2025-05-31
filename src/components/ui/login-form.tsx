@@ -84,7 +84,7 @@ export default function LoginForm() {
             });
 
             if (response.status === 200) {
-                sessionStorage.setItem('authToken', response.data.token);
+                sessionStorage.setItem('authTokenAdm', response.data.token);
                 sessionStorage.setItem('tipoUsuario', response.data.tipoUsuario);
                 sessionStorage.setItem('administradorId', response.data.id);
                 sessionStorage.setItem('administradorNome', response.data.nome);

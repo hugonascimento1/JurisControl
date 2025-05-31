@@ -22,7 +22,7 @@ import {
     Users,
     UsersRoundIcon
 } from "lucide-react";
-import ChartOverview from "@/components/chart";
+import ChartOverview from "@/components/chart/ChartOverview";
 import Advogados from "@/components/advogados";
 import NavBar from "@/components/navbar";
 import CadastrarAdvogado from "@/components/cadastroAdvogado";
