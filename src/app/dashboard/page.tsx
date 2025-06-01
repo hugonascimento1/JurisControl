@@ -11,17 +11,101 @@ import NavBar from "@/components/navbar";
 import CadastrarAdvogado from "@/components/cadastroAdvogado";
 import { useRouter } from "next/navigation";
 import { withAuth } from "@/utils/withAuth";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { ChartPieLabelCustom } from "@/components/chart/PieChart";
 import Logo from "@/components/logo-text-iconw";
 import Administradores from "@/app/dashboard/administradores";
+import Image from "next/image";
 
 function Page() {
     const [activeTab, setActiveTab] = useState("dashboard")
     const router = useRouter();
     const admNome = sessionStorage.getItem('administradorNome');
+
+    // Estados para armazenar os totais do backend
+    const [totalProcessos, setTotalProcessos] = useState<number | null>(null);
+    const [totalAdvogados, setTotalAdvogados] = useState<number | null>(null);
+
+    // Estado para o token de autenticação
+    const [authTokenAdm, setAuthTokenAdm] = useState<string | null>(null);
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('authToken');
+        if (token) {
+            setAuthTokenAdm(token);
+        } else {
+            router.push('/login')
+        }
+    }, [router]);
+
+    // Função para buscar os dados do backend
+    const fetchDashboardData = useCallback(async () => {
+        if (!authTokenAdm) {
+            console.warn('Token de autenticação não disponível. Não foi possível buscar dados do dashboard.');
+            return;
+        }
+
+        const headers = {
+            'Authorization': `Bearer ${authTokenAdm}`,
+            'Content-Type': 'application/json'
+        };
+
+        try {
+            // Fetch Total Processos
+            const processosResponse = await fetch('https://backendjuriscontrol.onrender.com/api/dashboard/total-processos', { headers });
+            if (processosResponse.ok) {
+                const data = await processosResponse.json();
+                setTotalProcessos(data.totalProcessos);
+            } else {
+                console.error('Erro ao buscar total de processos:', processosResponse.status, processosResponse.statusText);
+                setTotalProcessos(0); 
+                if (processosResponse.status === 401 || processosResponse.status === 403) {
+                     router.push('/login');
+                }
+            }
+
+            // Fetch Total Advogados
+            const advogadosResponse = await fetch('https://backendjuriscontrol.onrender.com/api/dashboard/total-advogados', { headers });
+            if (advogadosResponse.ok) {
+                const data = await advogadosResponse.json();
+                setTotalAdvogados(data.totalAdvogados);
+            } else {
+                console.error('Erro ao buscar total de advogados:', advogadosResponse.status, advogadosResponse.statusText);
+                setTotalAdvogados(0); 
+                if (advogadosResponse.status === 401 || advogadosResponse.status === 403) {
+                    router.push('/login');
+                }
+            }
+
+        } catch (error) {
+            console.error('Erro de rede ao buscar dados do dashboard:', error);
+            setTotalProcessos(0);
+            setTotalAdvogados(0);
+        }
+    }, [authTokenAdm, router]); 
+
+    // 3. Efeito para chamar a função de busca de dados inicialmente E periodicamente
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+
+        if (authTokenAdm) {
+            fetchDashboardData(); 
+
+            // Configura o intervalo para chamar a função a cada 5 segundos (5000 ms)
+            intervalId = setInterval(() => {
+                console.log("Atualizando dados do dashboard automaticamente...");
+                fetchDashboardData();
+            }, 5000); 
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [authTokenAdm, fetchDashboardData]);
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
@@ -111,35 +195,42 @@ function Page() {
                                 <Card>
                                     <CardHeader>
                                         <div className="flex items-center justify-start">
-                                            <CardTitle className="text-lg sm:text-xl text-primary select-none">Total Processos</CardTitle>
+                                            <CardTitle className="text-lg sm:text-xl text-[#030430] select-none">Total Processos</CardTitle>
                                             <FileBarChart className="ml-auto w-4 h-4" />
                                         </div>
                                         <CardDescription>
-                                            Soma total de processos atualizada.
+                                            Total de processos cadastrados.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-3xl font-bold text-yellow-600">345</p>
+                                        <p className="text-3xl font-bold text-yellow-600">{totalProcessos}</p>
                                     </CardContent>
                                 </Card>
 
                                 <Card>
                                     <CardHeader>
                                         <div className="flex items-center justify-start">
-                                            <CardTitle className="text-lg sm:text-xl text-gray-800 select-none">Total Clientes</CardTitle>
+                                            <CardTitle className="text-lg sm:text-xl text-[#030430] select-none">Total Advogados</CardTitle>
                                             <Users className="ml-auto w-4 h-4" />
                                         </div>
                                         <CardDescription>
-                                            Total de clientes atendidos.
+                                            Total de advogados cadastrados.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <p className="text-3xl font-bold text-yellow-600">2.500</p>
+                                        <p className="text-3xl font-bold text-yellow-600">{totalAdvogados}</p>
                                     </CardContent>
                                 </Card>
 
                                 <Card>
-                                    <CardHeader>
+                                    <Image
+                                        className=""
+                                        src="/logo-escritorio.png"
+                                        width={426}
+                                        height={175}
+                                        alt="logo escritorio"
+                                    />
+                                    {/* <CardHeader>
                                         <div className="flex items-center justify-start">
                                             <CardTitle className="text-lg sm:text-xl text-gray-800 select-none">Casos Solucionados</CardTitle>
                                             <Percent className="ml-auto w-4 h-4" />
@@ -150,7 +241,7 @@ function Page() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-3xl font-bold text-yellow-600">56%</p>
-                                    </CardContent>
+                                    </CardContent> */}
                                 </Card>
                             </section>
 
