@@ -208,26 +208,12 @@ function Page() {
                   <TableCell
                     className={
                       processo.status === "Iniciado"
-                        ? "bg-amber-400 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Distribuído"
-                        ? "bg-sky-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                        ? "bg-green-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
                       : processo.status === "Em Andamento"
-                        ? "bg-blue-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Aguardando Decisão"
-                        ? "bg-yellow-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Sentenciado"
-                        ? "bg-green-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Recursos"
-                        ? "bg-orange-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Execução"
-                        ? "bg-emerald-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Suspenso"
-                        ? "bg-gray-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                        ? "bg-amber-400 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
                       : processo.status === "Concluído"
-                        ? "bg-indigo-600 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Arquivado"
-                        ? "bg-slate-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                        : "bg-black text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"                                                           
+                        ? "bg-stone-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                      : "bg-black text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"                                                           
                     }
                   >
                     {processo.status}

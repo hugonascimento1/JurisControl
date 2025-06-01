@@ -319,9 +319,9 @@ function Page() {
                                         <div className="md:col-span-2">
                                             <p className="font-semibold">Status:</p>
                                             <span className={`inline-block px-3 py-1 rounded-full text-white ${
-                                                processo.status === "Iniciado" ? "bg-amber-400" :
-                                                processo.status === "Em Andamento" ? "bg-blue-500" :
-                                                processo.status === "Concluído" ? "bg-emerald-600" : "bg-black"
+                                                processo.status === "Iniciado" ? "bg-green-500" :
+                                                processo.status === "Em Andamento" ? "bg-amber-400" :
+                                                processo.status === "Concluído" ? "bg-stone-500" : "bg-black"
                                             }`}>
                                                 {processo.status || "Sem Dados"}
                                             </span>

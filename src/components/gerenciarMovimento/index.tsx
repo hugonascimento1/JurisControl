@@ -149,10 +149,8 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
         if (!movimento) return;
 
         // Formata a data para o formato esperado pelo backend (LocalDateTime)
-        const dataFormatada = dataMovimento 
-            ? new Date(dataMovimento).toISOString() 
-            : new Date().toISOString();
-
+        const dataFormatada = new Date(dataMovimento).toISOString().replace('Z', '');
+        
         const data = {
             nomeMovimento,
             tipo,
