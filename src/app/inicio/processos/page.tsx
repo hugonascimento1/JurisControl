@@ -207,11 +207,11 @@ function Page() {
                   <TableCell className="py-0">{processo.comarcaUF}</TableCell>
                   <TableCell
                     className={
-                      processo.status === "Iniciado"
+                      processo.status === "Criado"
                         ? "bg-green-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
                       : processo.status === "Em Andamento"
                         ? "bg-amber-400 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Concluído"
+                      : processo.status === "Finalizado"
                         ? "bg-stone-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
                       : "bg-black text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"                                                           
                     }

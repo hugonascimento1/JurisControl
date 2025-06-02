@@ -224,9 +224,9 @@ function Page() {
                                                 <SelectContent>
                                                     <SelectGroup>
                                                         <SelectLabel>Situação do Processo</SelectLabel>
-                                                        <SelectItem value="Iniciado">Iniciado</SelectItem>
+                                                        <SelectItem value="Criado">Criado</SelectItem>
                                                         <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                                                        <SelectItem value="Concluído">Concluído</SelectItem>
+                                                        <SelectItem value="Finalizado">Finalizado</SelectItem>
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
