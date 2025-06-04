@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from "next/navigation"; 
+import { useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -19,6 +19,8 @@ import { set } from "react-hook-form";
 import { Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import GerenciarMovimento from "@/components/gerenciarMovimento";
+import { AnexosCard } from "@/components/AnexosCard";
+import { deleteAllAnexosByProcessoId } from "@/lib/baserow";
 
 interface ProcessoDetalhado {
     id: number;
@@ -36,17 +38,11 @@ interface ProcessoDetalhado {
     advogadoId: number;
 }
 
-interface Anexo {
-    id: number;
-    nomeAnexo: string;
-    tipoAnexo: string;
-    anexo: File;
-    processoId: number;
-}
-
 function Page() {
     const params = useParams()
     const id = params.id as string // Isso pegará o ID da URL
+    const processoId = Number(params.id);
+    console.log('id do processo: ', processoId);
 
     // Criar Processo, Buscar Detalhes do Processo, Autenticar Advogado
     const [processo, setProcesso] = useState<ProcessoDetalhado | null>(null)
@@ -58,9 +54,7 @@ function Page() {
     // Abrir e Fechar Modais
     const [abrirProcesso, setAbrirProcesso] = useState(false);
     const [editarProcesso, setEditarProcesso] = useState(false);
-    const [abrirAnexo, setAbrirAnexo] = useState(false);
-    const [editarAnexo, setEditarAnexo] = useState(false);
-    
+
     // Editar Processo
     const [nomeAutor, setNomeAutor] = useState(processo?.nomeAutor || "");
     const [telefoneCliente, setTelefoneCliente] = useState(processo?.telefoneCliente || "");
@@ -73,21 +67,11 @@ function Page() {
     const [status, setStatus] = useState(processo?.status || "");
     const [vara, setVara] = useState(processo?.vara || "");
 
-    // Criar Anexo e Lista de Anexos
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [anexo, getAnexo] = useState<File | null>(null);
-    const [anexos, setAnexos] = useState<Anexo[]>([]);
-    const [novoAnexo, setNovoAnexo] = useState({
-        nomeAnexo: "",
-        anexo: "",
-        processoId: Number(id)
-    });
-
     // Verifica se o Advogado está logado
     useEffect(() => {
         const id = sessionStorage.getItem('advogadoId');
         const token = sessionStorage.getItem('authToken');
-        
+
         if (id && token) {
             setAdvogadoId(id);
             setAuthToken(token);
@@ -101,11 +85,11 @@ function Page() {
     useEffect(() => {
         const fetchProcessoDetalhes = async () => {
             if (!id || !authToken) return;
-            
+
             setLoading(true);
             try {
                 const response = await axios.get<ProcessoDetalhado>(
-                    `https://backendjuriscontrol.onrender.com/api/buscar-processo/${id}`, 
+                    `https://backendjuriscontrol.onrender.com/api/buscar-processo/${id}`,
                     {
                         headers: {
                             Authorization: `Bearer ${authToken}`,
@@ -123,35 +107,6 @@ function Page() {
 
         if (authToken) {
             fetchProcessoDetalhes();
-        }
-    }, [id, authToken]);
-
-    // Método 'GET' para a lista de todos os ANEXOS criados
-    useEffect(() => {
-        const fetchAnexos = async () => {
-            if (!id || !authToken) return;
-            
-            setLoading(true);
-            try {
-                const response = await axios.get<Anexo[]>(
-                    `https://backendjuriscontrol.onrender.com/api/buscar-todos-anexos/${id}`, 
-                    {
-                        headers: {
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                    }
-                );
-                setAnexos(response.data);
-            } catch (error) {
-                toast.error('Erro ao carregar os movimentos', toastOptions);
-                console.error('Erro:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (authToken) {
-            fetchAnexos();
         }
     }, [id, authToken]);
 
@@ -220,6 +175,7 @@ function Page() {
     // Método 'DELETE' para excluir o PROCESSO
     const handleExcluirProcesso = async () => {
         try {
+            await deleteAllAnexosByProcessoId(processoId);
             await axios.delete(
                 `https://backendjuriscontrol.onrender.com/api/deletar-processo/${id}`,
                 {
@@ -229,15 +185,15 @@ function Page() {
                 }
             );
             toast.success("Processo excluido com sucesso!", toastOptions);
-            router.push('/inicio/processos');
+            // Aguarda 1,5 segundos para que o toast apareça antes de redirecionar
+            setTimeout(() => {
+                router.push('/inicio/processos');
+            }, 1500);
         } catch (error) {
             toast.error('Erro ao excluir o processo', toastOptions);
             console.error('Erro:', error);
         }
     }
-
-    // Método 'POST' para adicionar um ANEXO associado ao processo
-    // 
 
     const toastOptions = {
         position: "top-center" as ToastPosition,
@@ -265,15 +221,173 @@ function Page() {
 
             <ToastContainer />
 
-            <div className="flex flex-col w-11/12 justify-center items-center gap-2 sm:flex-row h-auto">
-                {/*Movimentos*/}
-                <GerenciarMovimento id={id} authToken={authToken! == null ? "" : authToken} toastOptions={toastOptions}/>
-                
-                {/*Detalhe do Processo*/}
-                <div className="w-full md:w-2/3 flex flex-col gap-2 h-[600px]">
-                    <Card className="w-full h-[75%] flex flex-col">
-                        <CardHeader className="bg-[#030430] justify-center h-14 rounded-t-lg text-white items-start">
-                                <CardTitle className="text-lg">Processo Nº {processo?.numeroProcesso || "Nd"}</CardTitle>
+            <div className="flex flex-col w-[95%] justify-center items-center gap-2 sm:flex-row sm:items-stretch">
+                <GerenciarMovimento id={id} authToken={authToken! == null ? "" : authToken} toastOptions={toastOptions} />
+
+                {/* Card Detalhe do Processo e Card de Anexos */}
+                <div className="w-full md:w-[80%] flex flex-col gap-2">
+                    <Card className="w-full flex flex-col"> 
+                        <CardHeader className="flex flex-col md:flex-row bg-[#030430] justify-between h-18 md:h-14  rounded-t-lg text-white items-center px-4">
+                            <CardTitle className="text-lg">Processo Nº {processo?.numeroProcesso || "Nd"}</CardTitle>
+                            {/* Botões de edição e exclusão do processo */}
+                            <div className="flex flex-row gap-2 items-center justify-center">
+                                <Dialog open={editarProcesso} onOpenChange={setEditarProcesso}>
+                                    <DialogTrigger asChild>
+                                        <Button variant='outline' className="bg-transparent border-2 py-1">Editar</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="flex flex-col sm:max-w-[470px] max-h-[90vh] overflow-y-auto p-6">
+                                        <DialogTitle className="text-center text-lg font-semibold mb-2 mt-3">Editar Processo Nº {processo?.numeroProcesso || "Nd"}</DialogTitle>
+                                        <form onSubmit={handleEditarProcesso}>
+                                            <div className="flex flex-col space-y-2 p-2">
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Nome do Autor:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="nomeAutor"
+                                                    value={nomeAutor || ""}
+                                                    onChange={(e) => setNomeAutor(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Telefone do Autor:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="telefoneAutor"
+                                                    value={telefoneCliente || ""}
+                                                    onChange={(e) => setTelefoneCliente(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Advogado do Autor:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="advogadoAutor"
+                                                    value={advogadoAutor || ""}
+                                                    onChange={(e) => setAdvogadoAutor(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Nome do Réu:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="nomeReu"
+                                                    value={nomeReu || ""}
+                                                    onChange={(e) => setNomeReu(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Advogado do Réu:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="advogadoReu"
+                                                    value={advogadoReu || ""}
+                                                    onChange={(e) => setAdvogadoReu(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Vara:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="vara"
+                                                    value={vara || ""}
+                                                    onChange={(e) => setVara(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Status:
+                                                    </span>
+                                                </Label>
+                                                <Select value={status || ""} onValueChange={(e) => setStatus(e)}>
+                                                    <SelectTrigger className="w-full rounded-md border-gray-300 border-2 border-input">
+                                                        <SelectValue placeholder={status || ""} />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectItem value="Iniciado">Iniciado</SelectItem>
+                                                            <SelectItem value="Em Andamento">Em Andamento</SelectItem>
+                                                            <SelectItem value="Concluído">Concluído</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Classe:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="classeTipo"
+                                                    value={classeTipo || ""}
+                                                    onChange={(e) => setClasseTipo(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Assuntos:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="assuntosTitulo"
+                                                    value={assuntosTitulo || ""}
+                                                    onChange={(e) => setAssuntosTitulo(e.target.value)}
+                                                />
+                                                <Label className="block text-base">
+                                                    <span>
+                                                        Comarca:
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    name="comarcaUF"
+                                                    value={comarcaUF || ""}
+                                                    onChange={(e) => setComarcaUF(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="justify-end">
+                                                <Button className="mt-4" type="submit">Salvar</Button>
+                                            </div>
+                                        </form>
+                                    </DialogContent>
+                                </Dialog>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button
+                                            variant="destructive"
+                                            className=""
+                                        >
+                                            Excluir
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogTitle>Confirmar Exclusão</DialogTitle>
+                                        <DialogDescription>
+                                            Tem certeza que deseja excluir este processo e todos os seus anexos e movimentos?
+                                        </DialogDescription>
+                                        <div className="flex justify-end gap-2 mt-4">
+                                            <Button variant="outline">Cancelar</Button>
+                                            <Button
+                                                variant="destructive"
+                                                onClick={handleExcluirProcesso}
+                                            >
+                                                Confirmar Exclusão
+                                            </Button>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
                         </CardHeader>
                         <CardContent className="flex-1 overflow-y-auto p-4">
                             {loading ? (
@@ -282,7 +396,6 @@ function Page() {
                                 </div>
                             ) : processo ? (
                                 <div>
-
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <p className="font-semibold">Cliente:</p>
@@ -318,153 +431,14 @@ function Page() {
                                         </div>
                                         <div className="md:col-span-2">
                                             <p className="font-semibold">Status:</p>
-                                            <span className={`inline-block px-3 py-1 rounded-full text-white ${
-                                                processo.status === "Iniciado" ? "bg-green-500" :
+                                            <span className={`inline-block px-3 py-1 rounded-full text-white ${processo.status === "Criado" ? "bg-blue-700" :
                                                 processo.status === "Em Andamento" ? "bg-amber-400" :
-                                                processo.status === "Concluído" ? "bg-stone-500" : "bg-black"
-                                            }`}>
+                                                    processo.status === "Finalizado" ? "bg-stone-500" : "bg-black"
+                                                }`}>
                                                 {processo.status || "Sem Dados"}
                                             </span>
                                         </div>
                                     </div>
-
-                                    <div className="flex justify-end gap-2 mt-3 md:mt-0">
-                                        <Dialog open={editarProcesso} onOpenChange={setEditarProcesso}>
-                                            <DialogTrigger asChild>
-                                                <Button>Editar</Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="flex flex-col sm:max-w-[470px] max-h-[90vh] overflow-y-auto p-6">
-                                                <DialogTitle className="text-center text-lg font-semibold mb-2 mt-3">Editar Processo Nº {processo?.numeroProcesso || "Nd"}</DialogTitle>
-                                                <form onSubmit={handleEditarProcesso}>
-                                                    <div className="flex flex-col space-y-2 p-2">
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Nome do Autor:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="nomeAutor"
-                                                            value={nomeAutor || ""}
-                                                            onChange={(e) => setNomeAutor(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Telefone do Autor:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="telefoneAutor"
-                                                            value={telefoneCliente || ""}
-                                                            onChange={(e) => setTelefoneCliente(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Advogado do Autor:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="advogadoAutor"
-                                                            value={advogadoAutor || ""}
-                                                            onChange={(e) => setAdvogadoAutor(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Nome do Réu:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="nomeReu"
-                                                            value={nomeReu || ""}
-                                                            onChange={(e) => setNomeReu(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Advogado do Réu:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="advogadoReu"
-                                                            value={advogadoReu || ""}
-                                                            onChange={(e) => setAdvogadoReu(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Vara:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="vara"
-                                                            value={vara || ""}
-                                                            onChange={(e) => setVara(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Status:
-                                                            </span>
-                                                        </Label>
-                                                        <Select value={status || ""} onValueChange={(e) => setStatus(e)}>
-                                                            <SelectTrigger className="w-full rounded-md border-gray-300 border-2 border-input">
-                                                                <SelectValue placeholder={status || ""} />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectItem value="Iniciado">Iniciado</SelectItem>
-                                                                    <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                                                                    <SelectItem value="Concluído">Concluído</SelectItem>
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Classe:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="classeTipo"
-                                                            value={classeTipo || ""}
-                                                            onChange={(e) => setClasseTipo(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Assuntos:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="assuntosTitulo"
-                                                            value={assuntosTitulo || ""}
-                                                            onChange={(e) => setAssuntosTitulo(e.target.value)}
-                                                        />
-                                                        <Label className="block text-base">
-                                                            <span>
-                                                                Comarca:
-                                                            </span>
-                                                        </Label>
-                                                        <Input
-                                                            type="text"
-                                                            name="comarcaUF"
-                                                            value={comarcaUF || ""}
-                                                            onChange={(e) => setComarcaUF(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="justify-end">
-                                                        <Button className="mt-4" type="submit">Salvar</Button>
-                                                    </div>  
-                                                </form>
-                                            </DialogContent>
-                                        </Dialog>
-                                        <Button
-                                            onClick={handleExcluirProcesso}
-                                        >Excluir</Button>
-                                    </div>
-
                                 </div>
                             ) : (
                                 <p className="text-center text-gray-500">Nenhum dado do processo disponível</p>
@@ -472,86 +446,11 @@ function Page() {
                         </CardContent>
                     </Card>
 
-                    {/*Anexos*/}
-                    <Card className="w-full h-[25%] flex flex-col">
-                        <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
-                            <CardTitle className="text-lg"> Documentos Anexados</CardTitle>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button 
-                                        variant="outline"
-                                        size="add"
-                                        className="bg-white text-[#030430] hover:bg-gray-100 text-sm flex items-center gap-2"
-                                        onClick={() => fileInputRef.current?.click()}
-                                    >
-                                        <Plus className="w-4 h-4 lg:hidden" />
-                                        <span className="hidden lg:block">Adicionar Anexo</span>
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px]">
-                                    <DialogHeader>
-                                        <DialogTitle className="">Adicionar Anexo</DialogTitle>
-                                    </DialogHeader>
-                                    <form className="space-y-4">
-                                        <div className="space-y-2 mt-4">
-                                            <Label>Nome do Anexo (opcional):</Label>
-                                            <Input
-                                                placeholder="Ex: contrato.pdf"
-                                                //value={novoAnexo.nomeAnexo}
-                                                //onChange={(e) => setNovoAnexo({ ...novoAnexo, nomeAnexo: e.target.value })}
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2 mt-4">
-                                            <Label>Tipo do Anexo:</Label>
-                                            <Input
-                                                placeholder="Ex: .pdf"
-                                                //value={novoAnexo.tipoAnexo}
-                                                //onChange={(e) => setNovoAnexo({ ...novoAnexo, tipoAnexo: e.target.value })}
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label>Arquivo:</Label>
-                                            <Input
-                                                type="file"
-                                                ref={fileInputRef}
-                                                accept="image/*, video/*,application/pdf"
-                                                //onChange={(e) => {
-                                                //    const file = e.target.files?.[0] || null;
-                                                //    setNovoAnexo({ ...novoAnexo, anexo: file });
-                                                //    if (file && !novoAnexo.nomeAnexo) {
-                                                //        setNovoAnexo((prev) => ({ ...prev, nomeAnexo: file.name }));
-                                                //    }
-                                                //}}
-                                            />
-                                        </div>
-
-                                        <DialogFooter>
-                                            <Button type="submit">Salvar</Button>
-                                        </DialogFooter>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
-                        </CardHeader>
-                        <CardContent className="flex-1 flex items-center justify-center p-0">
-                            {loading ? (
-                                <Loader2 className="animate-spin h-6 w-6 mx-auto text-gray-500 p-4" />
-                            ) : (
-                                anexos && anexos.length > 0 ? (
-                                anexos.map((anexo) => (
-                                <div key={anexo.id} className="mb-4">
-                                    <p className="font-semibold">Documento:</p>
-                                    <p>{anexo.nomeAnexo}</p>
-                                </div>
-                            ))
-                            ) : (
-                                <div className="">
-                                    <p className="">Área para upload de documentos...</p>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
+                    {/* Anexos - Definir flex-grow para que ele preencha a altura restante */}
+                    <AnexosCard
+                        processoId={processoId}
+                        onDeleteProcesso={handleExcluirProcesso}
+                    />
                 </div>
             </div>
         </div>

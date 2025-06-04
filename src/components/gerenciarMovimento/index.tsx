@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2, SquarePen } from "lucide-react";
+import { Plus, Loader2, SquarePen, Edit } from "lucide-react";
 
 interface Movimento {
     id: number;
@@ -61,11 +61,11 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
     useEffect(() => {
         const fetchMovimentos = async () => {
             if (!id || !authToken) return;
-            
+
             setLoading(true);
             try {
                 const response = await axios.get<Movimento[]>(
-                    `https://backendjuriscontrol.onrender.com/api/buscar-todos-movimentos/${id}`, 
+                    `https://backendjuriscontrol.onrender.com/api/buscar-todos-movimentos/${id}`,
                     {
                         headers: {
                             Authorization: `Bearer ${authToken}`,
@@ -91,7 +91,7 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
     // Método 'POST' para adicionar um MOVIMENTO associado ao processo
     const handleAdicionarMovimento = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!novoMovimento.nomeMovimento.trim() || !novoMovimento.tipo || !novoMovimento.data) {
             toast.error("Preencha todos os campos obrigatórios");
             return;
@@ -108,11 +108,11 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
             const response = await axios.post(
                 `https://backendjuriscontrol.onrender.com/api/cadastrar-movimento`,
                 movimentoParaEnviar,
-                { 
-                    headers: { 
-                        Authorization: `Bearer ${authToken}`, 
-                        'Content-Type': 'application/json' 
-                    } 
+                {
+                    headers: {
+                        Authorization: `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
                 }
             );
 
@@ -125,7 +125,7 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
                 data: new Date(),
                 processoId: Number(id)
             });
-            
+
             if (response.status === 200 || response.status === 201) {
                 toast.success("Movimento cadastrado com sucesso!", toastOptions);
                 setAbrirMovimento(false);
@@ -150,14 +150,14 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
 
         // Formata a data para o formato esperado pelo backend (LocalDateTime)
         const dataFormatada = new Date(dataMovimento).toISOString().replace('Z', '');
-        
+
         const data = {
             nomeMovimento,
             tipo,
             data: dataFormatada,
             processoId: movimento.processoId
         };
-        
+
         try {
             await axios.put(
                 `https://backendjuriscontrol.onrender.com/api/atualizar-movimento/${movimento.id}`,
@@ -178,7 +178,7 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
                     },
                 }
             );
-            setMovimentos(prev => 
+            setMovimentos(prev =>
                 prev.map(m => m.id === response.data.id ? response.data : m)
             );
 
@@ -198,15 +198,15 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
     }
 
     return (
-        <Card className="w-full rounded-xl md:w-1/3 h-[600px] flex flex-col">
-            <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center h-14 rounded-t-lg text-white flex flex-row">
+        <Card className="w-full rounded-xl md:w-[30%] flex flex-col">
+            <CardHeader className="bg-[#030430] !space-y-0 justify-between items-center px-3 h-14 rounded-t-lg text-white flex flex-row">
                 <CardTitle className="text-lg">Movimentos</CardTitle>
                 <Dialog open={abrirMovimento} onOpenChange={setAbrirMovimento}>
                     <DialogTrigger asChild>
-                        <Button 
+                        <Button
                             variant="outline"
                             size="add"
-                            className="bg-white text-[#030430] hover:bg-gray-100 text-sm flex items-center gap-2"
+                            className="bg-transparent text-white border-2 hover:bg-gray-100 text-sm flex items-center gap-2"
                         >
                             <Plus className="w-4 h-4 lg:hidden" />
                             <span className="hidden lg:block">Adicionar Movimento</span>
@@ -269,92 +269,101 @@ const Movimento = ({ id, authToken, toastOptions }: MovimentoProps) => {
                     </div>
                 ) : (
                     movimentos && movimentos.length > 0 ? (
-                    movimentos.map((movimento) => (
-                        <div key={movimento.id} className="mb-4 border-2 border-gray-300 rounded-md p-2">
-                            <div className="flex flex-col">
-                                <p className="font-semibold">Movimento:</p>
-                                <p>{movimento.nomeMovimento}</p>
-                                <hr className="my-1" />
-                                <p className="font-semibold">Data:</p>
-                                <p>{new Date(movimento.data).toLocaleDateString()}</p>
-                                <hr className="my-1" />
-                                <p className="font-semibold">Observação:</p>
-                                <p className="break-words whitespace-pre-wrap">{movimento.tipo}</p>
-                                <br />
-                                <Dialog open={editarMovimento} onOpenChange={setEditarMovimento}>
-                                    <DialogTrigger asChild>
-                                        <Button onClick={() => {
-                                            setMovimento(movimento);
-                                            setNomeMovimento(movimento.nomeMovimento);
-                                            setTipo(movimento.tipo);
-                                            if (movimento.data) {
-                                                const date = typeof movimento.data === 'string' 
-                                                    ? new Date(movimento.data) 
-                                                    : movimento.data;
-                                                setDataMovimento(date.toISOString().split('T')[0]);
-                                            } else {
-                                                setDataMovimento("");
-                                            } // Ajuste para o formato de data
-                                        }}>
-                                            <SquarePen className="w-4 h-4" />
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle className="">Editar Movimento</DialogTitle>
-                                        </DialogHeader>
-                                        <form onSubmit={handleEditarMovimento} className="space-y-4">
-                                            <div className="space-y-2 mt-4">
-                                                <Label className="block">
-                                                    <span>
-                                                        Nome do Movimento:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="text"
-                                                    value={nomeMovimento || ""}
-                                                    onChange={(e) => setNomeMovimento(e.target.value)}
-                                                    className="mt-1"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="block">
-                                                    <span>
-                                                        Data do Movimento:
-                                                    </span>
-                                                </Label>
-                                                <Input
-                                                    type="date"
-                                                    value={dataMovimento || ""}
-                                                    onChange={(e) => setDataMovimento(e.target.value)}
-                                                    className="mt-1"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="block">
-                                                    <span>
-                                                        Observação do Movimento:
-                                                    </span>
-                                                </Label>
-                                                <Textarea
-                                                    value={tipo || ""}
-                                                    onChange={(e) => setTipo(e.target.value)}
-                                                    className="mt-1"
-                                                />
-                                            </div>
-                                            <DialogFooter>
-                                                <Button type="submit">Salvar</Button>
-                                            </DialogFooter>
-                                        </form>
-                                    </DialogContent>
-                                </Dialog>
+                        movimentos.map((movimento) => (
+                            <div key={movimento.id} className="mb-4 border-2 border-gray-300 shadow-sm rounded-md p-2">
+                                <div className="flex flex-col gap-2">
+
+                                    <div className="flex flex-row justify-between">
+                                        <div className="flex flex-col ">
+                                            <p className="font-semibold">Movimento</p>
+                                            <p className="text-gray-700">{movimento.nomeMovimento}</p>
+                                        </div>
+                                        <Dialog open={editarMovimento} onOpenChange={setEditarMovimento}>
+                                            <DialogTrigger asChild>
+                                                <Button className=" w-8 h-8 p-2" variant='outline' onClick={() => {
+                                                    setMovimento(movimento);
+                                                    setNomeMovimento(movimento.nomeMovimento);
+                                                    setTipo(movimento.tipo);
+                                                    if (movimento.data) {
+                                                        const date = typeof movimento.data === 'string'
+                                                            ? new Date(movimento.data)
+                                                            : movimento.data;
+                                                        setDataMovimento(date.toISOString().split('T')[0]);
+                                                    } else {
+                                                        setDataMovimento("");
+                                                    } // Ajuste para o formato de data
+                                                }}>
+                                                    <Edit className="text-gray-600 w-5 h-5" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle className="">Editar Movimento</DialogTitle>
+                                                </DialogHeader>
+                                                <form onSubmit={handleEditarMovimento} className="space-y-4">
+                                                    <div className="space-y-2 mt-4">
+                                                        <Label className="block">
+                                                            <span>
+                                                                Nome do Movimento:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            value={nomeMovimento || ""}
+                                                            onChange={(e) => setNomeMovimento(e.target.value)}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className="block">
+                                                            <span>
+                                                                Data do Movimento:
+                                                            </span>
+                                                        </Label>
+                                                        <Input
+                                                            type="date"
+                                                            value={dataMovimento || ""}
+                                                            onChange={(e) => setDataMovimento(e.target.value)}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className="block">
+                                                            <span>
+                                                                Observação do Movimento:
+                                                            </span>
+                                                        </Label>
+                                                        <Textarea
+                                                            value={tipo || ""}
+                                                            onChange={(e) => setTipo(e.target.value)}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                    <DialogFooter>
+                                                        <Button type="submit">Salvar</Button>
+                                                    </DialogFooter>
+                                                </form>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </div>
+
+
+                                    <div className="flex flex-col">
+                                        <p className="font-semibold">Observação</p>
+                                        <p className="break-words text-gray-700 whitespace-pre-wrap">{movimento.tipo}</p>
+                                    </div>
+
+
+
+
+                                    <p className="text-gray-500 font-normal position-absolute bottom-0 right-0 text-end">{new Date(movimento.data).toLocaleDateString()}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        ))
                     ) : (
-                    <div className="h-full">
-                        <p>Histórico dos Movimentos...</p>
-                    </div>
+                        <div className="h-full flex justify-center items-center">
+                            <p>Nenhum movimento encontrado...</p>
+                        </div>
                     )
                 )}
             </CardContent>

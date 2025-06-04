@@ -216,17 +216,17 @@ function Page() {
                                         </div>
 
                                         <div className="flex flex-col gap-2 w-full">
-                                            <Label htmlFor="statusSelect" className="text-base">Situação do Processo</Label>
+                                            <Label htmlFor="statusSelect" className="text-base">Status</Label>
                                             <Select value={status} onValueChange={setStatus} >
                                                 <SelectTrigger className="w-full border-gray-300 border-2">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
-                                                        <SelectLabel>Situação do Processo</SelectLabel>
-                                                        <SelectItem value="Iniciado">Iniciado</SelectItem>
+                                                        <SelectLabel>Status</SelectLabel>
+                                                        <SelectItem value="Criado">Criado</SelectItem>
                                                         <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                                                        <SelectItem value="Concluído">Concluído</SelectItem>
+                                                        <SelectItem value="Finalizado">Finalizado</SelectItem>
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
@@ -270,7 +270,7 @@ function Page() {
                                             />
                                         </div>
 
-                                        <div className="flex flex-col gap-2">
+                                        {/* <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Advogado do cliente</Label>
                                             <Input
                                                 type="text"
@@ -280,9 +280,9 @@ function Page() {
                                                 placeholder="Nome do Advogado do autor"
                                                 className="w-full border-gray-300 border-2"
                                             />
-                                        </div>
+                                        </div> */}
                                         <div className="flex flex-col gap-2">
-                                            <Label htmlFor="text" className="text-base">Parte Adversa</Label>
+                                            <Label htmlFor="text" className="text-base">Réu</Label>
                                             <Input
                                                 type="text"
                                                 id="nomeReu"
@@ -292,7 +292,7 @@ function Page() {
                                                 className="w-full border-gray-300 border-2"
                                             />
                                         </div>
-                                        <div className="flex flex-col gap-2">
+                                        {/* <div className="flex flex-col gap-2">
                                             <Label htmlFor="text" className="text-base">Advogado parte Adversa</Label>
                                             <Input
                                                 type="text"
@@ -302,7 +302,7 @@ function Page() {
                                                 placeholder=""
                                                 className="w-full border-gray-300 border-2"
                                             />
-                                        </div>
+                                        </div> */}
 
                                     </div>
                                 </div>
