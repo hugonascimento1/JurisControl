@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios, { AxiosError } from "axios";
@@ -53,6 +53,8 @@ function Page() {
 
   const [advogadoId, setAdvogadoId] = useState<string | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
 
   const toastOptions = {
     position: "top-center" as ToastPosition,
@@ -122,7 +124,22 @@ function Page() {
     }
   }, [advogadoId, authToken, router]);
 
-  const totalPages = Math.ceil(processos.length / itemsPag);
+  const filteredProcessos = useMemo(() => {
+    if (!searchTerm) {
+      return processos;
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return processos.filter(pro =>
+      pro.numeroProcesso.toLowerCase().includes(lowerCaseSearchTerm) ||
+      pro.nomeAutor.toLowerCase().includes(lowerCaseSearchTerm) ||
+      pro.assuntosTitulo.toLowerCase().includes(lowerCaseSearchTerm) ||
+      pro.classeTipo.toLowerCase().includes(lowerCaseSearchTerm) ||
+      pro.comarcaUF.toLowerCase().includes(lowerCaseSearchTerm) ||
+      pro.vara.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  }, [processos, searchTerm]);
+
+  const totalPages = Math.ceil(filteredProcessos.length / itemsPag);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -130,7 +147,7 @@ function Page() {
     }
   };
 
-  const paginatedData = processos.slice(
+  const paginatedData = filteredProcessos.slice(
     (proxPag - 1) * itemsPag,
     proxPag * itemsPag
   );
@@ -153,16 +170,22 @@ function Page() {
       />
 
       <div className="flex flex-col gap-4 md:flex-row justify-between items-start md:items-center m-8 mb-5 w-11/12">
-        <div className="flex items-center justify-center">
-          <Input icon={
-            <Button variant="ghost" size="icon" className="pt-1 hover:bg-transparent shadow-none focus:ring-0">
-              <Search style={{ width: "20px", height: "20px" }} className="text-gray-500 "></Search>
-            </Button>
-          } className="md:w-[400px] pl-14 py-4 text-xl text-start h-10 border-gray-300 border-2" placeholder="Buscar Processo..." />
+        <div className="flex items-center justify-center gap-2">
+          <Search className="text-gray-500 flex justify-center items-center text-center " />
+          <Input
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setProxPag(1);
+            }}
+            className="md:w-[400px] shadow-sm py-4 text-xl text-start h-10 border-gray-300 border-2"
+            placeholder="Buscar Processo..."
+          />
+
         </div>
         <Button
           onClick={handleCadastroProcesso}
-          className="bg-green-600 hover:bg-green-900 gap-2 p-6 text-base">
+          className="bg-green-600 hover:bg-green-900 gap-2 p-6 text-base shadow-md">
           Cadastrar novo
           <CirclePlus size="icon" style={{ width: "25px", height: "25px" }} className="text-white" />
         </Button>
@@ -209,11 +232,11 @@ function Page() {
                     className={
                       processo.status === "Criado"
                         ? "bg-blue-700 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Em Andamento"
-                        ? "bg-amber-400 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : processo.status === "Finalizado"
-                        ? "bg-stone-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
-                      : "bg-black text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"                                                           
+                        : processo.status === "Em Andamento"
+                          ? "bg-amber-400 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                          : processo.status === "Finalizado"
+                            ? "bg-stone-500 text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
+                            : "bg-black text-white rounded-lg my-3 py-2 px-2 font-semibold text-center flex items-center justify-center"
                     }
                   >
                     {processo.status}
@@ -226,56 +249,56 @@ function Page() {
                     </Link>
                   </TableCell>
                 </TableRow>
-          ))
-          ) : (
-          <TableRow>
-            <TableCell colSpan={8} className="text-center text-gray-500 py-8">
-              Nenhum processo encontrado.
-            </TableCell>
-          </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+                  Nenhum processo encontrado.
+                </TableCell>
+              </TableRow>
             )}
-        </TableBody>
-      </Table>
-    </div>
+          </TableBody>
+        </Table>
+      </div>
 
-      {/* Paginação */ }
-  <Pagination className="mb-7">
-    <PaginationContent>
-      <PaginationItem>
-        <PaginationPrevious
-          href="#"
-          onClick={() => handlePageChange(proxPag - 1)}
-          className={
-            proxPag === 1 || processos.length === 0
-              ? "cursor-not-allowed text-gray-400"
-              : "cursor-pointer"
-          }
-        />
-      </PaginationItem>
-      {[...Array(totalPages)].map((_, pageIndex) => (
-        <PaginationItem key={pageIndex}>
-          <PaginationLink
-            href="#"
-            onClick={() => handlePageChange(pageIndex + 1)}
-            className={proxPag === pageIndex + 1 ? "active" : ""}
-          >
-            {pageIndex + 1}
-          </PaginationLink>
-        </PaginationItem>
-      ))}
-      <PaginationItem>
-        <PaginationNext
-          href="#"
-          onClick={() => handlePageChange(proxPag + 1)}
-          className={
-            proxPag === totalPages || processos.length === 0
-              ? "cursor-not-allowed text-gray-400"
-              : "cursor-pointer"
-          }
-        />
-      </PaginationItem>
-    </PaginationContent>
-  </Pagination>
+      {/* Paginação */}
+      <Pagination className="mb-7">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => handlePageChange(proxPag - 1)}
+              className={
+                proxPag === 1 || processos.length === 0
+                  ? "cursor-not-allowed text-gray-400"
+                  : "cursor-pointer"
+              }
+            />
+          </PaginationItem>
+          {[...Array(totalPages)].map((_, pageIndex) => (
+            <PaginationItem key={pageIndex}>
+              <PaginationLink
+                href="#"
+                onClick={() => handlePageChange(pageIndex + 1)}
+                className={proxPag === pageIndex + 1 ? "active" : ""}
+              >
+                {pageIndex + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={() => handlePageChange(proxPag + 1)}
+              className={
+                proxPag === totalPages || processos.length === 0
+                  ? "cursor-not-allowed text-gray-400"
+                  : "cursor-pointer"
+              }
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
 
     </div >
   )
