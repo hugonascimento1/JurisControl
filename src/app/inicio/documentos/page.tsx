@@ -9,6 +9,8 @@ import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 import { withAuth } from "@/utils/withAuth";
 
@@ -72,10 +74,14 @@ async function generateDocumentModel(description, apiKey) {
 }
 
 function Page() {
+    // estados para geração com ia
     const [description, setDescription] = useState('');
     const [htmlContent, setHtmlContent] = useState<string>('');
-    const [text, setText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // estados para aba de upload de modelos
+    const [text, setText] = useState('');
+
 
     const handleGenerate = async () => {
         if (!description.trim()) {
@@ -115,7 +121,7 @@ function Page() {
             <Tabs defaultValue="gere-com-ia" className="w-[98%] border-2 border-gray-300 pb-4 rounded-t-lg shadow-lg">
                 <TabsList className="flex flex-row bg-[#030430] h-11 rounded-t-lg w-full justify-start items-start">
                     <TabsTrigger value="gere-com-ia">Gere com IA</TabsTrigger>
-                    <TabsTrigger value="modelos-prontos">Modelos Prontos</TabsTrigger>
+                    <TabsTrigger value="modelos-prontos">Usar um modelo</TabsTrigger>
                 </TabsList>
                 <TabsContent value="gere-com-ia" className="flex justify-center px-2">
                     <div className="flex flex-col md:flex-row w-full gap-4">
@@ -160,15 +166,15 @@ function Page() {
 
                 <TabsContent value="modelos-prontos" className="flex justify-center px-2 py-0 mt-0">
                     <div className="flex flex-col md:flex-row w-full gap-4 mt-0">
-                        <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
+                        <h1>Em desenvolvimento</h1>
+                        {/* <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
-                                <CardTitle className="text-lg">Escolha seu modelo</CardTitle>
+                                <CardTitle className="text-lg">Faça upload do modelo</CardTitle>
                             </CardHeader>
                             <CardContent className="flex-grow">
                                 <div className="flex flex-col gap-4 p-3">
                                     <CardDescription className="text-base text-gray-500">
-                                        Escolha um dos modelos disponíveis e clique em
-                                        "Usar modelo" para carregar o modelo dentro da aba de edição
+                                        Faça o upload do modelo que você deseja usar
                                     </CardDescription>
 
                                     <ul className="my-3 gap-2">
@@ -189,9 +195,9 @@ function Page() {
                             </CardHeader>
                             <CardContent className="flex flex-col justify-between gap-10">
                                 <EditorTiny value={text} onChange={(newText) => setText(newText)} />
-                                {/* <Button className="justify-self-end w-full">Download</Button> */}
+                                <Button className="justify-self-end w-full">Download</Button> 
                             </CardContent>
-                        </Card>
+                        </Card> */}
                     </div>
                 </TabsContent>
             </Tabs>

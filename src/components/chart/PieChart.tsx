@@ -155,7 +155,7 @@ export function ChartPieLabelCustom() {
 
       if (response.ok) {
         const data: ProcessosPorStatusData[] = await response.json();
-        const colors = ['#00FF00', '#0000CC', '#808080'];
+        const colors = ['#1D4ED8', '#FBBF24', '#808080'];
         const dataWithColors = data.map((item, index) => ({
           ...item,
           fill: colors[index % colors.length] // Cicla pelas cores
@@ -195,11 +195,11 @@ export function ChartPieLabelCustom() {
     };
   }, [authTokenAdm, fetchProcessosPorStatus]);
 
-  
+
   const dynamicChartConfig: ChartConfig = chartData.reduce((acc, item, index) => {
     const varName = `chart-${index + 1}`;
     acc[item.status] = {
-      label: `${item.status} ${item.quantidade}`,
+      label: `${item.status} Qtd: ${item.quantidade}`,
       color: `var(--${varName}, ${item.fill})` // Usa a cor definida no item.fill
     };
     return acc;
@@ -216,19 +216,21 @@ export function ChartPieLabelCustom() {
 
 
   return (
-    <Card className="flex flex-col w-full md:w-1/3 h-auto"> {/* Ajuste a largura para caber no layout */}
+    <Card className="flex flex-col w-full md:w-1/3 flex-grow"> {/* Adicionei flex-grow, flex e flex-col */}
       <CardHeader className="items-center pb-0">
-        <div className="flex items-center w-full justify-between pr-4"> {/* Ajuste para espaçamento */}
-          <CardTitle className="text-lg sm:text-xl text-primary">Processos por Status</CardTitle>
+        <div className="flex items-center w-full justify-between pr-4">
+          <CardTitle className="text-lg sm:text-xl text-primary">
+            Processos por Status
+          </CardTitle>
           <div className="flex items-center gap-2">
             {isRefreshing && (
               <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
             )}
-            <TrendingUp className="h-4 w-4" /> {/* Ícone para este gráfico */}
+            <TrendingUp className="h-4 w-4" />
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 pb-0 justify-center items-center">
+      <CardContent className="flex-1 flex items-center justify-center p-4"> {/* flex-1 para o conteúdo do card preencher o espaço, e padding */}
         {isLoadingInitial && (
           <div className="flex justify-center items-center h-[200px] text-gray-600">
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -236,15 +238,19 @@ export function ChartPieLabelCustom() {
           </div>
         )}
         {!isLoadingInitial && error && chartData.length === 0 && (
-          <div className="flex justify-center items-center h-[200px] text-red-600"><p>{error}</p></div>
+          <div className="flex justify-center items-center h-[200px] text-red-600">
+            <p>{error}</p>
+          </div>
         )}
         {!isLoadingInitial && !error && chartData.length === 0 && (
-          <div className="flex justify-center items-center h-[200px] text-gray-500"><p>Nenhum dado de processo por status encontrado para exibir.</p></div>
+          <div className="flex justify-center items-center h-[200px] text-gray-500">
+            <p>Nenhum dado de processo por status encontrado para exibir.</p>
+          </div>
         )}
         {chartData.length > 0 && (
           <ChartContainer
-            config={dynamicChartConfig} // Usa a configuração dinâmica
-            className="mx-auto aspect-square px-0 flex justify-center items-center"
+            config={dynamicChartConfig}
+            className="mx-auto aspect-square w-full h-auto min-h-[280px] max-h-[450px] px-0 flex justify-center items-center" // w-full e h-full para preencher o pai. aspect-square mantém a proporção
           >
             <PieChart>
               <ChartTooltip
@@ -252,7 +258,7 @@ export function ChartPieLabelCustom() {
               />
               <Pie
                 data={chartData}
-                dataKey="quantidade" // Usa a chave 'quantidade' do backend
+                dataKey="quantidade"
                 labelLine={false}
                 label={({ payload, ...props }) => {
                   return (
@@ -265,14 +271,14 @@ export function ChartPieLabelCustom() {
                       dominantBaseline={props.dominantBaseline}
                       fill="hsl(var(--foreground))"
                     >
-                      {`${payload.quantidade}`} {/* Exibe a quantidade */}
+                      {`${payload.quantidade}`}
                     </text>
                   );
                 }}
-                nameKey="status" // Usa a chave 'status' para o nome da fatia
+                nameKey="status"
               />
-              <ChartLegend 
-                content={<ChartLegendContent nameKey='status' />}
+              <ChartLegend
+                content={<ChartLegendContent nameKey="status" />}
                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
               />
             </PieChart>
@@ -284,15 +290,6 @@ export function ChartPieLabelCustom() {
           </div>
         )}
       </CardContent>
-      {/* Opcional: Adicionar um CardFooter para exibir uma porcentagem geral ou tendência */}
-      {/* <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                </div>
-                <div className="leading-none text-muted-foreground">
-                    Based on data from January to June 2024
-                </div>
-            </CardFooter> */}
     </Card>
   );
 }

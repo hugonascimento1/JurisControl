@@ -101,30 +101,38 @@ export default function ChartOverview() {
     } satisfies ChartConfig;
 
     return (
-        <Card className="w-full md:w-2/3">
+        <Card className="w-full md:w-2/3 flex-grow flex flex-col"> {/* Adicionei flex-grow, flex e flex-col */}
             <CardHeader>
                 <div className="flex items-center justify-center">
-                    <CardTitle className="text-lg sm:text-xl text-primary">Processos por Advogado</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl text-primary">
+                        Processos por Advogado
+                    </CardTitle>
                     <CalendarDays className="ml-auto w-4 h-4 " />
                 </div>
             </CardHeader>
 
-            <CardContent>
-                {isLoadingInitial && ( // Mostra "Carregando..." apenas no primeiro load
+            <CardContent className="flex-1 flex items-center justify-center p-4"> {/* flex-1 para o conteúdo do card preencher o espaço, e padding */}
+                {isLoadingInitial && (
                     <div className="flex justify-center items-center h-[200px] text-gray-600">
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         <p>Carregando dados do gráfico...</p>
                     </div>
                 )}
-                {!isLoadingInitial && error && chartData.length === 0 && ( // Mostra erro se for o primeiro load E houver erro
-                    <div className="flex justify-center items-center h-[200px] text-red-600"><p>{error}</p></div>
+                {!isLoadingInitial && error && chartData.length === 0 && (
+                    <div className="flex justify-center items-center h-[200px] text-red-600">
+                        <p>{error}</p>
+                    </div>
                 )}
-                {!isLoadingInitial && !error && chartData.length === 0 && ( // Mostra "Nenhum dado" se for o primeiro load e não houver dados
-                    <div className="flex justify-center items-center h-[200px] text-gray-500"><p>Nenhum dado de processo por advogado encontrado para exibir.</p></div>
+                {!isLoadingInitial && !error && chartData.length === 0 && (
+                    <div className="flex justify-center items-center h-[200px] text-gray-500">
+                        <p>Nenhum dado de processo por advogado encontrado para exibir.</p>
+                    </div>
                 )}
-                {/* Sempre renderiza o gráfico se houver dados, independente do estado de carregamento */}
                 {chartData.length > 0 && (
-                    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                    <ChartContainer
+                        config={chartConfig}
+                        className="w-full h-auto min-h-[280px] max-h-[450px] aspect-[4/3] sm:aspect-[16/9]" // Use w-full e h-full para preencher o pai, e um min-height
+                    >
                         <BarChart data={chartData}>
                             <CartesianGrid vertical={false} />
                             <XAxis
@@ -134,7 +142,9 @@ export default function ChartOverview() {
                                 axisLine={false}
                                 tickFormatter={(value: string) => {
                                     const maxLength = 10;
-                                    return value.length > maxLength ? value.slice(0, maxLength) + '...' : value;
+                                    return value.length > maxLength
+                                        ? value.slice(0, maxLength) + "..."
+                                        : value;
                                 }}
                             />
                             <ChartTooltip content={<ChartTooltipContent />} />
@@ -146,7 +156,6 @@ export default function ChartOverview() {
                         </BarChart>
                     </ChartContainer>
                 )}
-                {/* Se houver dados antigos e um erro durante o refresh, mostra o erro abaixo do gráfico */}
                 {chartData.length > 0 && error && (
                     <div className="text-sm text-red-500 mt-2 text-center">
                         <p>Falha ao atualizar: {error}</p>

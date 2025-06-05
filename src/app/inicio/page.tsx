@@ -30,10 +30,10 @@ function Page() {
     const handleModelsPage = () => {
         router.push('/inicio/documentos')
     }
- 
+
 
     return (
-        <main className="min-h-screen pb-10">
+        <main className="min-h-screen flex flex-col"> {/* Tornamos a main um flex container de coluna */}
             <header className="w-full h-20 bg-[#030430] flex justify-between items-center px-6 shadow-md">
                 <div className="flex items-center space-x-3">
                     <Logo />
@@ -41,7 +41,8 @@ function Page() {
                 <MenuDrawer />
             </header>
 
-            <div className="flex flex-col items-center justify-center mt-4">
+            {/* O conteúdo do topo (Boas-vindas e Logo) */}
+            <div className="flex flex-col items-center mt-4">
                 <p className="text-gray-600 text-xl font-bold text-center lg:text-2xl ">
                     Bem-vindo ao JurisControl,
                 </p>
@@ -58,8 +59,8 @@ function Page() {
                 />
             </div>
 
-
-            <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 space-y-4 md:space-y-0 mt-12 mx-5">
+            {/* Este é o container dos botões que será centralizado verticalmente */}
+            <div className="flex-grow flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-20 md:space-y-0 mx-5">
                 <Button
                     onClick={handleProcessPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
@@ -82,7 +83,6 @@ function Page() {
                 >
                     <FolderOpenIcon size={48} />
                     <p className="mt-2 text-lg font-semibold">Documentos</p>
-                    
                 </Button>
             </div>
         </main>
