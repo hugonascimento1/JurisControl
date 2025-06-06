@@ -7,11 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-
+import { toast, ToastContainer, ToastPosition } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { withAuth } from "@/utils/withAuth";
 
 const EditorTiny = dynamic(() => import('@/components/EditorTiny'), {
@@ -58,13 +59,13 @@ async function generateDocumentModel(description, apiKey) {
         console.log("HTML gerado pela IA (direto e limpo):", generatedHtml);
 
         if (!generatedHtml.trim()) {
-             console.warn("A IA retornou um HTML vazio ou inválido após a limpeza.");
-             return "A IA não conseguiu gerar um modelo. Tente refinar sua descrição.";
+            console.warn("A IA retornou um HTML vazio ou inválido após a limpeza.");
+            return "A IA não conseguiu gerar um modelo. Tente refinar sua descrição.";
         }
 
         const logoUrl = "https://juriscontrol.vercel.app/_next/image?url=%2Flogo-escritorio.png&w=1080&q=75";
         const logoHtml = `<p style="text-align: center; margin-bottom: 20px;"><img src="${logoUrl}" alt="Logo do Escritório" width="250" height="103" style="display: inline-block;"></p>`;
-        
+
         generatedHtml = logoHtml + generatedHtml;
 
         return generatedHtml;
@@ -82,27 +83,73 @@ function Page() {
     // estados para aba de upload de modelos
     const [text, setText] = useState('');
 
+    // ref para o conteúdo
+    const contentRef = useRef(null);
 
+    const toastOptions = {
+        position: "top-center" as ToastPosition,
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    }
+
+
+    // Função para geração de conteúdo IA
     const handleGenerate = async () => {
         if (!description.trim()) {
-            alert('Por favor, forneça uma descrição para gerar o documento.');
+            toast.warn('Por favor, forneça uma descrição para gerar o documento.', toastOptions);
+            console.warn('Por favor, forneça uma descrição para gerar o documento.');
+            
             return;
         }
 
         setIsLoading(true);
         const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-        
+
         const generatedResult = await generateDocumentModel(description, apiKey);
 
         if (generatedResult.startsWith('A IA não conseguiu gerar') || generatedResult.startsWith('Ocorreu um erro')) {
-            alert(generatedResult); 
-            setHtmlContent(''); 
+            console.warn(generatedResult);
+            toast.error(generatedResult, toastOptions);
+            setHtmlContent('');
         } else {
             setHtmlContent(generatedResult);
         }
-        
+
         setIsLoading(false);
     }
+
+    const handleDownload = () => {
+        if (!htmlContent) {
+            console.warn("Nenhum conteúdo para exportar.");
+            toast.warn("Nenhum conteúdo para exportar.");
+            return;
+        }
+
+        // Cria um div temporário invisível com o conteúdo
+        const hiddenElement = document.createElement("div");
+        hiddenElement.innerHTML = htmlContent;
+        hiddenElement.style.position = "absolute";
+        hiddenElement.style.left = "-9999px";
+        document.body.appendChild(hiddenElement);
+
+        const pdf = new jsPDF("p", "pt", "a4");
+
+        pdf.html(hiddenElement, {
+            callback: function (doc) {
+                doc.save("documento-gerado.pdf");
+                document.body.removeChild(hiddenElement); // limpa o DOM
+            },
+            x: 10,
+            y: 10,
+            width: 580,
+            windowWidth: 800,
+        });
+    };
 
     return (
         <div className="flex flex-col justify-center items-center mb-5">
@@ -117,7 +164,7 @@ function Page() {
                 nome="Gerar Documentos"
 
             />
-
+            <ToastContainer />
             <Tabs defaultValue="gere-com-ia" className="w-[98%] border-2 border-gray-300 pb-4 rounded-t-lg shadow-lg">
                 <TabsList className="flex flex-row bg-[#030430] h-11 rounded-t-lg w-full justify-start items-start">
                     <TabsTrigger value="gere-com-ia">Gere com IA</TabsTrigger>
@@ -157,8 +204,10 @@ function Page() {
                                 <CardTitle className="text-lg">Editor de Texto</CardTitle>
                             </CardHeader>
                             <CardContent className="flex flex-col justify-between gap-10 pb-1">
+                                {/* <div ref={contentRef} className="p-4 bg-white"> */}
                                 <EditorTiny value={htmlContent} onChange={(newHtml) => setHtmlContent(newHtml)} />
-                                {/* <Button className="justify-self-end w-full">Download</Button> */}
+                                {/* </div> */}
+                                <Button onClick={handleDownload} className="mt-4">Download</Button>
                             </CardContent>
                         </Card>
                     </div>
