@@ -14,6 +14,7 @@ import html2canvas from 'html2canvas';
 import { toast, ToastContainer, ToastPosition } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { withAuth } from "@/utils/withAuth";
+import html2pdf from 'html2pdf.js';
 
 const EditorTiny = dynamic(() => import('@/components/EditorTiny'), {
     ssr: false,
@@ -30,15 +31,31 @@ async function generateDocumentModel(description, apiKey) {
                 contents: [{
                     parts: [{
                         text: `
-                        Você é um criador de modelos de documentos para um escritório de advocacia. Gere um modelo de documento formatado em **HTML puro** com base na seguinte descrição: ${description}.
+                            Você é um criador de modelos de documentos para um escritório de advocacia. Gere um modelo de documento formatado em HTML puro com base na seguinte descrição: ${description}.
 
-                        O HTML gerado deve ser um fragmento de HTML (sem tags <html>, <head>, <body> completas, apenas o conteúdo interno).
-                        Ele deve começar com uma tag <div> principal que envolva todo o conteúdo.
-                        Esta <div> principal deve ter um estilo inline: 'font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #333;' para garantir uma boa legibilidade e cor de texto padrão.
+                            O HTML gerado deve ser um fragmento (sem as tags <html>, <head> ou <body> — apenas o conteúdo interno).
 
-                        O documento deve incluir títulos (use tags como <h2>, <h3>), parágrafos (<p>), e espaçamento adequado para um documento legal. Use a tag <b> para destacar informações importantes e <i> para citações ou referências.
+                            O conteúdo deve iniciar com uma <div> principal contendo todo o documento, com o seguinte estilo inline: 
+                            'font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #333;'.
 
-                        **É crucial que o HTML seja retornado sem marcadores de bloco de código (como \`\`\`html ou \`\`\`). Retorne apenas o HTML puro e bem-formado.** O documento deve ser entregue pronto para uso, limpo e com uma estrutura profissional.`
+                            Regras de formatação:
+
+                            - Use a tag <p> para todo o conteúdo textual, incluindo títulos e subtítulos.
+                            - Para títulos de seções ou destaques, use: "<p><b>Título ou Destaque</b></p>".
+                            - Para parágrafos normais, use <p>Texto aqui</p>.
+                            - Sempre que precisar de uma quebra de linha (sem novo parágrafo), use a tag <br>.
+                            - Use a tag <b> para destacar:
+                            - Títulos e subtítulos (mesmo que sejam simulados com <p><b>)
+                            - Termos importantes (como nomes das partes, “AÇÃO”, “REQUER”, “DOS FATOS”, valores etc.)
+                            - Qualquer elemento textual que precise aparecer em **negrito no PDF final**
+                            - Use a tag <i> para observações ou informações complementares.
+
+                            Evite instruções genéricas como “[espaço de 5 linhas]”, “(Doc. 01)”, “Documentos anexos: ...” ou notas explicativas destinadas à IA. O conteúdo deve parecer natural e profissional, como se tivesse sido redigido por um advogado experiente.
+
+                            **NÃO use markdown nem envolva o HTML com blocos de código (\`\`\`). Apenas o HTML puro, corretamente formatado.**
+
+                            O objetivo é gerar um HTML compatível tanto com editores como o TinyMCE quanto com exportadores de PDF, preservando a aparência profissional.
+`
                     }]
                 }],
             }),
@@ -103,7 +120,7 @@ function Page() {
         if (!description.trim()) {
             toast.warn('Por favor, forneça uma descrição para gerar o documento.', toastOptions);
             console.warn('Por favor, forneça uma descrição para gerar o documento.');
-            
+
             return;
         }
 
@@ -123,33 +140,74 @@ function Page() {
         setIsLoading(false);
     }
 
-    const handleDownload = () => {
-        if (!htmlContent) {
-            console.warn("Nenhum conteúdo para exportar.");
-            toast.warn("Nenhum conteúdo para exportar.");
-            return;
-        }
+    // const handleDownload = async () => {
+    //     if (!htmlContent) {
+    //         toast.warn("Nenhum conteúdo para exportar.", toastOptions);
+    //         return;
+    //     }
 
-        // Cria um div temporário invisível com o conteúdo
-        const hiddenElement = document.createElement("div");
-        hiddenElement.innerHTML = htmlContent;
-        hiddenElement.style.position = "absolute";
-        hiddenElement.style.left = "-9999px";
-        document.body.appendChild(hiddenElement);
+    //     // 1. Crie um elemento temporário para renderizar o HTML
+    //     const tempElement = document.createElement('div');
+    //     tempElement.innerHTML = htmlContent;
 
-        const pdf = new jsPDF("p", "pt", "a4");
+    //     // 2. Adicione os estilos CSS relevantes para o PDF
+    //     tempElement.style.cssText = `
+    //         font-family: Arial, sans-serif;
+    //         font-size: 12pt;
+    //         line-height: 1.5;
+    //         color: #333;
+    //         padding: 20mm; /* Simular margens A4 */
+    //         width: 210mm; /* Largura da página A4 */
+    //         box-sizing: border-box; /* Para que o padding não aumente a largura total */
+    //     `;
 
-        pdf.html(hiddenElement, {
-            callback: function (doc) {
-                doc.save("documento-gerado.pdf");
-                document.body.removeChild(hiddenElement); // limpa o DOM
-            },
-            x: 10,
-            y: 10,
-            width: 580,
-            windowWidth: 800,
-        });
-    };
+    //     const styleTag = document.createElement('style');
+    //     styleTag.textContent = `
+    //         p { margin-bottom: 1em; }
+    //         h1 { font-size: 24pt; margin-top: 1.5em; margin-bottom: 0.5em; }
+    //         h2 { font-size: 20pt; margin-top: 1.2em; margin-bottom: 0.4em; }
+    //         /* ... Adicione os outros estilos que você quer que apareçam no PDF ... */
+    //         img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+    //         table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+    //         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    //     `;
+    //     tempElement.prepend(styleTag);
+
+    //     // Ocultar o elemento, mas garantir que ele esteja no DOM e com layout
+    //     // Uma forma é posicionar fora da tela, mas com display: block
+    //     tempElement.style.position = 'absolute';
+    //     tempElement.style.top = '-9999px';
+    //     tempElement.style.left = '-9999px';
+    //     tempElement.style.zIndex = '-1'; // Certifique-se de que não interfira visualmente
+    //     document.body.appendChild(tempElement); // Anexar ao body para que html2canvas possa vê-lo
+
+    //     try {
+    //         // 3. Gerar o PDF usando html2pdf.js
+    //         await html2pdf()
+    //             .from(tempElement)
+    //             .set({
+    //                 margin: 10, // Margens em mm
+    //                 filename: 'documento-gerado.pdf',
+    //                 image: { type: 'jpeg', quality: 0.98 },
+    //                 html2canvas: {
+    //                     scale: 2, // Aumenta a resolução do "print"
+    //                     useCORS: true, // Permite carregar imagens de outros domínios
+    //                     allowTaint: true, // Pode ajudar com certas imagens
+    //                 },
+    //                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    //             })
+    //             .save();
+
+    //         toast.success("Documento gerado com sucesso!", toastOptions);
+
+    //     } catch (error) {
+    //         console.error('Erro ao gerar PDF:', error);
+    //         toast.error('Erro ao gerar PDF: ', toastOptions);
+    //     } finally {
+    //         // 4. Limpar o elemento temporário
+    //         document.body.removeChild(tempElement);
+    //     }
+    // };
 
     return (
         <div className="flex flex-col justify-center items-center mb-5">
@@ -207,7 +265,7 @@ function Page() {
                                 {/* <div ref={contentRef} className="p-4 bg-white"> */}
                                 <EditorTiny value={htmlContent} onChange={(newHtml) => setHtmlContent(newHtml)} />
                                 {/* </div> */}
-                                <Button onClick={handleDownload} className="mt-4">Download</Button>
+                                {/* <Button onClick={handleDownload} className="mt-4">Download</Button> */}
                             </CardContent>
                         </Card>
                     </div>

@@ -151,7 +151,7 @@ export default function LoginForm() {
                                     </Label>
                                     <Input
                                         className="peer block w-full rounded-md border-2 border-gray-500 py-[9px] text-sm outline-2 placeholder:text-gray-500"
-                                        type="text"
+                                        type="password"
                                         id="passwordAdvogado"
                                         name="password"
                                         placeholder="Insira sua senha"
@@ -212,7 +212,7 @@ export default function LoginForm() {
                                     </Label>
                                     <Input
                                         className="peer block w-full rounded-md border-2 border-gray-500 py-[9px] text-sm outline-2 placeholder:text-gray-500"
-                                        type="text"
+                                        type="password"
                                         id="passwordAdmin"
                                         name="password"
                                         placeholder="Insira sua senha"

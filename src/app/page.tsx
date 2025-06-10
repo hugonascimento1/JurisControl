@@ -26,6 +26,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import EquipeJuris from "@/../public/equipejuris.jpg"
+import ImgDeskMob from "@/../public/desktop-mobile.png"
 
 export default function Home() {
   const router = useRouter();
@@ -59,10 +61,11 @@ export default function Home() {
         </div>
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
           <Image
-            src={Desktopmobile}
-            alt="imagem sistema"
-            width={652}
-            height={400}
+            className=""
+            src={ImgDeskMob}
+            width={426}
+            height={175}
+            alt="logo escritorio"
           />
         </div>
       </div>
@@ -105,10 +108,9 @@ export default function Home() {
         <div className="w-full max-w-6xl mx-auto px-4 mt-10 flex flex-col md:flex-row items-center gap-10">
           {/* Imagem da equipe */}
           <div className="w-full md:w-1/2">
-            <img
-              src="/equipe-juriscontrol.jpg" // Coloque a imagem na pasta public
-              alt="Equipe do JurisControl"
-              className="rounded-lg shadow-md w-full object-cover"
+            <Image 
+              src={EquipeJuris}
+              alt="equipe juriscontrol"
             />
           </div>
 
@@ -131,76 +133,76 @@ export default function Home() {
         </div>
       </section>
 
-<section className="mt-12 px-12 flex flex-col justify-center items-center w-[92%]">
-  <div className="flex h-24 shrink-0 items-center justify-center rounded-lg bg-[#030430] px-4 mb-10 w-full">
-    <h2 className="text-2xl font-bold text-white">Escolha o melhor plano para você!</h2>
-  </div>
-
-  <div className="flex flex-row items-center md:justify-center gap-5 w-full overflow-x-auto">
-    
-    {/* JurisBasic */}
-    <Card className="max-w-[350px] min-w-[250px] shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-[#030430] font-bold">JurisBasic</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="text-xl font-bold">R$ 90,00 / mês</CardDescription>
-        <CardDescription className="text-base font-semibold">R$ 990,00 / ano (1 mês grátis!)</CardDescription>
-        <hr className="my-2 border-t-2 border-gray-300" />
-        <CardDescription className="text-base">✔ Até 2 advogados cadastrados</CardDescription>
-        <CardDescription className="text-base">✔ 50 processos ativos</CardDescription>
-        <CardDescription className="text-base">✔ 20 documentos gerados por IA/mês</CardDescription>
-        <CardDescription className="text-base">✔ 5 GB de armazenamento</CardDescription>
-        <hr className="my-2 border-t-2 border-gray-300" />
-        <div className="flex justify-center items-center mt-4">
-          <Button>Assinar Agora</Button>
+      <section className="mt-12 px-12 flex flex-col justify-center items-center w-[92%]">
+        <div className="flex h-24 shrink-0 items-center justify-center rounded-lg bg-[#030430] px-4 mb-10 w-full">
+          <h2 className="text-2xl font-bold text-white">Escolha o melhor plano para você!</h2>
         </div>
-      </CardContent>
-    </Card>
 
-    {/* JurisPro */}
-    <Card className="max-w-[350px] min-w-[250px] shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-[#030430] font-bold">JurisPro</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="text-xl font-bold">R$ 150,00 / mês</CardDescription>
-        <CardDescription className="text-base font-semibold">R$ 1.650,00 / ano (1 mês grátis!)</CardDescription>
-        <hr className="my-2 border-t-2 border-gray-300" />
-        <CardDescription className="text-base">✔ Até 5 advogados cadastrados</CardDescription>
-        <CardDescription className="text-base">✔ 200 processos ativos</CardDescription>
-        <CardDescription className="text-base">✔ 50 documentos gerados por IA/mês</CardDescription>
-        <CardDescription className="text-base">✔ 20 GB de armazenamento</CardDescription>
-        <hr className="my-2 border-t-2 border-gray-300" />
-        <div className="flex justify-center items-center mt-4">
-          <Button>Assinar Agora</Button>
-        </div>
-      </CardContent>
-    </Card>
+        <div className="flex flex-row items-center md:justify-center gap-5 w-full overflow-x-auto">
 
-    {/* JurisMaster */}
-    <Card className="max-w-[350px] min-w-[250px] shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-[#030430] font-bold">JurisMaster</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="text-xl font-bold">R$ 210,00 / mês</CardDescription>
-        <CardDescription className="text-base font-semibold">R$ 2.310,00 / ano (1 mês grátis!)</CardDescription>
-        <hr className="my-2 border-t-2 border-gray-300" />
-        <CardDescription className="text-base">✔ Cadastro ilimitado de advogados</CardDescription>
-        <CardDescription className="text-base">✔ Processos ativos ilimitados</CardDescription>
-        <CardDescription className="text-base">✔ Documentos por IA ilimitados</CardDescription>
-        <CardDescription className="text-base">✔ Armazenamento ilimitado</CardDescription>
-        <CardDescription className="text-base">✔ Consultoria gratuita para onboarding</CardDescription>
-        <hr className="my-2 border-t-2 border-gray-300" />
-        <div className="flex justify-center items-center mt-4">
-          <Button>Assinar Agora</Button>
+          {/* JurisBasic */}
+          <Card className="max-w-[350px] min-w-[250px] shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-[#030430] font-bold">JurisBasic</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-xl font-bold">R$ 90,00 / mês</CardDescription>
+              <CardDescription className="text-base font-semibold">R$ 990,00 / ano (1 mês grátis!)</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <CardDescription className="text-base">✔ Até 2 advogados cadastrados</CardDescription>
+              <CardDescription className="text-base">✔ 50 processos ativos</CardDescription>
+              <CardDescription className="text-base">✔ 20 documentos gerados por IA/mês</CardDescription>
+              <CardDescription className="text-base">✔ 5 GB de armazenamento</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <div className="flex justify-center items-center mt-4">
+                <Button>Assinar Agora</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* JurisPro */}
+          <Card className="max-w-[350px] min-w-[250px] shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-[#030430] font-bold">JurisPro</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-xl font-bold">R$ 150,00 / mês</CardDescription>
+              <CardDescription className="text-base font-semibold">R$ 1.650,00 / ano (1 mês grátis!)</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <CardDescription className="text-base">✔ Até 5 advogados cadastrados</CardDescription>
+              <CardDescription className="text-base">✔ 200 processos ativos</CardDescription>
+              <CardDescription className="text-base">✔ 50 documentos gerados por IA/mês</CardDescription>
+              <CardDescription className="text-base">✔ 20 GB de armazenamento</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <div className="flex justify-center items-center mt-4">
+                <Button>Assinar Agora</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* JurisMaster */}
+          <Card className="max-w-[350px] min-w-[250px] shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-[#030430] font-bold">JurisMaster</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-xl font-bold">R$ 210,00 / mês</CardDescription>
+              <CardDescription className="text-base font-semibold">R$ 2.310,00 / ano (1 mês grátis!)</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <CardDescription className="text-base">✔ Cadastro ilimitado de advogados</CardDescription>
+              <CardDescription className="text-base">✔ Processos ativos ilimitados</CardDescription>
+              <CardDescription className="text-base">✔ Documentos por IA ilimitados</CardDescription>
+              <CardDescription className="text-base">✔ Armazenamento ilimitado</CardDescription>
+              <CardDescription className="text-base">✔ Consultoria gratuita para onboarding</CardDescription>
+              <hr className="my-2 border-t-2 border-gray-300" />
+              <div className="flex justify-center items-center mt-4">
+                <Button>Assinar Agora</Button>
+              </div>
+            </CardContent>
+          </Card>
+
         </div>
-      </CardContent>
-    </Card>
-    
-  </div>
-</section>
+      </section>
 
 
 

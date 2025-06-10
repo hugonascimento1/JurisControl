@@ -22,18 +22,33 @@ export default function EditorTiny({ value, onChange }) {
     if (editorRef.current) {
       const content = editorRef.current.getContent({ format: 'html' });
 
-      // cria elemento oculto para renderizar o HTML
+      const style = `
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+          }
+          p {
+            margin: 8px 0;
+          }
+          h1, h2, h3, h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+          }
+        </style>
+      `;
+
       const elemento = document.createElement('div');
-      elemento.innerHTML = content;
+      elemento.innerHTML = style + content;
       elemento.style.padding = '20px';
-      elemento.style.fontFamily = 'Arial, sans-serif';
       document.body.appendChild(elemento);
 
       html2pdf()
         .from(elemento)
         .set({
           margin: 10,
-          filename: 'notificacao.pdf',
+          filename: 'documento.pdf',
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 2 },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -69,8 +84,8 @@ export default function EditorTiny({ value, onChange }) {
         content_css: false,
         setup: (editor) => {
           editor.ui.registry.addButton('downloadpdf', {
-            text: 'Download PDF',
-            icon: 'download',
+            text: 'Exportar PDF',
+            icon: 'export-pdf',
             onAction: () => gerarPDF(),
           });
         },
