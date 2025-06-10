@@ -15,13 +15,60 @@ import { toast, ToastContainer, ToastPosition } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { withAuth } from "@/utils/withAuth";
 import html2pdf from 'html2pdf.js';
-import { Anexo } from "@/types/anexos";
+// import { Anexo } from "@/types/anexos";
 import { getModelosByAdvogadoId, uploadAnexo } from "@/lib/baserow";
 import * as pdfjsLib from 'pdfjs-dist';
 
 const EditorTiny = dynamic(() => import('@/components/EditorTiny'), {
     ssr: false,
 });
+
+const PdfConverter = dynamic(() => import('@/components/PdfConverter'), { ssr: false });
+
+interface Anexo {
+    id: number;
+    nome_arquivo: string;
+    data_criacao: string;
+    url_modelo: string;
+}
+
+const fixedPdfModels: Anexo[] = [
+    {
+        id: 1,
+        nome_arquivo: 'modelo contrato',
+        data_criacao: '09/06/2025',
+        url_modelo: '/modelos-html/modelocontrato.html',
+    },
+    {
+        id: 2,
+        nome_arquivo: 'modelo peticao',
+        data_criacao: '09/06/2025',
+        url_modelo: '/modelos-html/modelopeticao.html',
+    },
+];
+
+const getModelosFixos = async (): Promise<Anexo[]> => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(fixedPdfModels);
+        }, 500); // Pequeno delay para simular um carregamento
+    });
+};
+
+// --- FUNÇÃO PARA CARREGAR O CONTEÚDO HTML DO ARQUIVO ---
+const fetchHtmlContent = async (url: string): Promise<string> => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar o modelo HTML: ${response.statusText}`);
+        }
+        const html = await response.text();
+        return html;
+    } catch (error) {
+        console.error('Erro ao buscar HTML:', error);
+        throw error;
+    }
+};
 
 async function generateDocumentModel(description, apiKey) {
     try {
@@ -101,11 +148,11 @@ function Page() {
     const [isLoading, setIsLoading] = useState(false);
 
     // estados para aba de upload de modelos
-    const [text, setText] = useState('');
-    const [modelos, setModelos] = useState<Anexo[]>([]);
-    const [selectedModelo, setSelectedModelo] = useState<Anexo | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [converting, setConverting] = useState(false);
+    const [editorContent, setEditorContent] = useState<string>(''); // Conteúdo do editor TinyMCE
+    const [modelos, setModelos] = useState<Anexo[]>([]); // Lista de modelos disponíveis
+    const [selectedModelo, setSelectedModelo] = useState<Anexo | null>(null); // Modelo selecionado
+    const [loadingModels, setLoadingModels] = useState<boolean>(false); // Carregando lista de modelos
+    const [loadingEditor, setLoadingEditor] = useState<boolean>(false); // Carregando conteúdo no editor
 
     const advogadoId = Number(sessionStorage.getItem('advogadoId'));
 
@@ -123,124 +170,42 @@ function Page() {
         theme: "colored",
     }
 
+    // Efeito para carregar os modelos fixos ao montar o componente
     useEffect(() => {
-        if (advogadoId) {
-            loadModelos();
-        }
-    }, [advogadoId]);
-
-    const loadModelos = async () => {
-        setLoading(true);
-        try {
-            const modelosData = await getModelosByAdvogadoId(advogadoId);
-            setModelos(modelosData);
-        } catch (error) {
-            toast.error('Erro ao carregar modelos', toastOptions);
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleGenerateModel = async () => {
-        if (!selectedModelo) {
-            toast.error('Selecione um modelo primeiro', toastOptions);
-            return;
-        }
-
-        setConverting(true);
-        try {
-            // Carregar PDF e converter para HTML
-            const htmlContent = await convertPdfToHtml(selectedModelo.anexo[0].url);
-            setText(htmlContent);
-            toast.success('Modelo carregado no editor!', toastOptions);
-        } catch (error) {
-            toast.error('Erro ao converter modelo', toastOptions);
-            console.error(error);
-        } finally {
-            setConverting(false);
-        }
-    };
-
-    const convertPdfToHtml = async (pdfUrl: string): Promise<string> => {
-        try {
-            // 1. Verifica se a URL é válida
-            if (!pdfUrl || !pdfUrl.startsWith('http')) {
-                throw new Error('URL do PDF inválida');
-            }
-
-            // 2. Tenta carregar o PDF via fetch para contornar CORS
-            let pdfData;
+        const loadFixedModels = async () => {
+            setLoadingModels(true);
             try {
-                const response = await fetch(pdfUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                pdfData = await response.arrayBuffer();
-            } catch (fetchError) {
-                console.error('Erro no fetch do PDF:', fetchError);
-                throw new Error('Não foi possível baixar o PDF');
+                const modelosData = await getModelosFixos();
+                setModelos(modelosData);
+            } catch (error) {
+                toast.error('Erro ao carregar modelos.', toastOptions);
+                console.error(error);
+            } finally {
+                setLoadingModels(false);
             }
+        };
 
-            // 3. Carrega o PDF com PDF.js
-            const pdf = await pdfjsLib.getDocument({
-                data: pdfData,
-                cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.10.377/cmaps/',
-                cMapPacked: true
-            }).promise;
+        loadFixedModels();
+    }, []);
 
-            // 4. Processa as páginas
-            let htmlContent = '';
-            for (let i = 1; i <= pdf.numPages; i++) {
-                try {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-
-                    // Processamento do texto (mesmo código anterior)
-                    const lines: { [key: number]: string[] } = {};
-                    // ... (código de processamento das linhas)
-
-                    htmlContent += lines; // Adicione o conteúdo processado
-                } catch (pageError) {
-                    console.error(`Erro na página ${i}:`, pageError);
-                    htmlContent += `<p>[Erro ao processar página ${i}]</p>`;
-                }
-            }
-
-            return htmlContent || '<p>Nenhum conteúdo extraído do PDF</p>';
-
-        } catch (error) {
-            console.error('Erro detalhado na conversão:', error);
-            // Retorna HTML vazio ou mensagem de erro no próprio editor
-            return `<p class="error">Erro na conversão:</p>`;
-        }
-    };
-
-    const handleUploadModelo = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !advogadoId) return;
-
-        if (file.size > 3 * 1024 * 1024) {
-            toast.error('O arquivo deve ter no máximo 3MB', toastOptions);
+    // Função para lidar com o clique no botão "Usar Modelo Selecionado"
+    const handleUseModel = async () => {
+        if (!selectedModelo) {
+            toast.error('Por favor, selecione um modelo primeiro.', toastOptions);
             return;
         }
 
-        if (file.type !== 'application/pdf') {
-            toast.error('Apenas arquivos PDF são permitidos', toastOptions);
-            return;
-        }
-
+        setLoadingEditor(true); // Inicia o loading do editor
         try {
-            setLoading(true);
-            await uploadAnexo(null, file, 'modelo', advogadoId);
-            toast.success('Modelo salvo com sucesso!', toastOptions);
-            loadModelos();
+            // Pega a URL do modelo HTML selecionado e faz a requisição
+            const html = await fetchHtmlContent(selectedModelo.url_modelo);
+            setEditorContent(html); // Carrega o HTML no editor
+            toast.success('Modelo carregado no editor com sucesso!', toastOptions);
         } catch (error) {
-            toast.error('Erro ao salvar modelo', toastOptions);
+            toast.error('Erro ao carregar o modelo no editor. Tente mais tarde', toastOptions);
             console.error(error);
         } finally {
-            setLoading(false);
-            e.target.value = '';
+            setLoadingEditor(false); // Finaliza o loading do editor
         }
     };
 
@@ -269,74 +234,7 @@ function Page() {
         setIsLoading(false);
     }
 
-    // const handleDownload = async () => {
-    //     if (!htmlContent) {
-    //         toast.warn("Nenhum conteúdo para exportar.", toastOptions);
-    //         return;
-    //     }
 
-    //     // 1. Crie um elemento temporário para renderizar o HTML
-    //     const tempElement = document.createElement('div');
-    //     tempElement.innerHTML = htmlContent;
-
-    //     // 2. Adicione os estilos CSS relevantes para o PDF
-    //     tempElement.style.cssText = `
-    //         font-family: Arial, sans-serif;
-    //         font-size: 12pt;
-    //         line-height: 1.5;
-    //         color: #333;
-    //         padding: 20mm; /* Simular margens A4 */
-    //         width: 210mm; /* Largura da página A4 */
-    //         box-sizing: border-box; /* Para que o padding não aumente a largura total */
-    //     `;
-
-    //     const styleTag = document.createElement('style');
-    //     styleTag.textContent = `
-    //         p { margin-bottom: 1em; }
-    //         h1 { font-size: 24pt; margin-top: 1.5em; margin-bottom: 0.5em; }
-    //         h2 { font-size: 20pt; margin-top: 1.2em; margin-bottom: 0.4em; }
-    //         /* ... Adicione os outros estilos que você quer que apareçam no PDF ... */
-    //         img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
-    //         table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
-    //         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    //     `;
-    //     tempElement.prepend(styleTag);
-
-    //     // Ocultar o elemento, mas garantir que ele esteja no DOM e com layout
-    //     // Uma forma é posicionar fora da tela, mas com display: block
-    //     tempElement.style.position = 'absolute';
-    //     tempElement.style.top = '-9999px';
-    //     tempElement.style.left = '-9999px';
-    //     tempElement.style.zIndex = '-1'; // Certifique-se de que não interfira visualmente
-    //     document.body.appendChild(tempElement); // Anexar ao body para que html2canvas possa vê-lo
-
-    //     try {
-    //         // 3. Gerar o PDF usando html2pdf.js
-    //         await html2pdf()
-    //             .from(tempElement)
-    //             .set({
-    //                 margin: 10, // Margens em mm
-    //                 filename: 'documento-gerado.pdf',
-    //                 image: { type: 'jpeg', quality: 0.98 },
-    //                 html2canvas: {
-    //                     scale: 2, // Aumenta a resolução do "print"
-    //                     useCORS: true, // Permite carregar imagens de outros domínios
-    //                     allowTaint: true, // Pode ajudar com certas imagens
-    //                 },
-    //                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    //             })
-    //             .save();
-
-    //         toast.success("Documento gerado com sucesso!", toastOptions);
-
-    //     } catch (error) {
-    //         console.error('Erro ao gerar PDF:', error);
-    //         toast.error('Erro ao gerar PDF: ', toastOptions);
-    //     } finally {
-    //         // 4. Limpar o elemento temporário
-    //         document.body.removeChild(tempElement);
-    //     }
-    // };
 
     return (
         <div className="flex flex-col justify-center items-center mb-5">
@@ -409,15 +307,15 @@ function Page() {
                             <CardContent className="flex-grow">
                                 <div className="flex flex-col gap-4 p-3">
                                     <CardDescription className="text-base text-gray-500">
-                                        Modelos salvos para uso rápido
+                                        Selecione um modelo pronto para usar no editor.
                                     </CardDescription>
 
-                                    {loading ? (
+                                    {loadingModels ? (
                                         <div className="flex justify-center py-8">
                                             <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
                                         </div>
                                     ) : modelos.length === 0 ? (
-                                        <p className="text-gray-500 text-center py-8">Nenhum modelo salvo</p>
+                                        <p className="text-gray-500 text-center py-8">Nenhum modelo disponível.</p>
                                     ) : (
                                         <ul className="space-y-3 max-h-[400px] overflow-y-auto">
                                             {modelos.map(modelo => (
@@ -429,7 +327,7 @@ function Page() {
                                                 >
                                                     <p className="font-medium">{modelo.nome_arquivo}</p>
                                                     <p className="text-sm text-gray-500">
-                                                        {new Date(modelo.data_upload).toLocaleDateString('pt-BR')}
+                                                        {new Date(modelo.data_criacao).toLocaleDateString('pt-BR')}
                                                     </p>
                                                 </li>
                                             ))}
@@ -437,27 +335,12 @@ function Page() {
                                     )}
 
                                     <div className="mt-auto">
-                                        <input
-                                            type="file"
-                                            accept=".pdf"
-                                            onChange={handleUploadModelo}
-                                            className="hidden"
-                                            id="upload-modelo"
-                                        />
-                                        <label
-                                            htmlFor="upload-modelo"
-                                            className="flex items-center justify-center gap-2 cursor-pointer bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                            Adicionar Novo Modelo
-                                        </label>
-
                                         <Button
                                             className="w-full mt-3"
-                                            onClick={handleGenerateModel}
-                                            disabled={!selectedModelo || converting}
+                                            onClick={handleUseModel} // Chama a nova função
+                                            disabled={!selectedModelo || loadingEditor} // Desabilita durante o carregamento do editor
                                         >
-                                            {converting ? (
+                                            {loadingEditor ? (
                                                 <Loader2 className="animate-spin mr-2 h-4 w-4" />
                                             ) : null}
                                             Usar Modelo Selecionado
@@ -472,7 +355,7 @@ function Page() {
                                 <CardTitle className="text-lg">Edição</CardTitle>
                             </CardHeader>
                             <CardContent className="flex flex-col justify-between gap-10">
-                                <EditorTiny value={text} onChange={(newText) => setText(newText)} />
+                                <EditorTiny value={editorContent} onChange={(newHtml: string) => setEditorContent(newHtml)} />
                             </CardContent>
                         </Card>
                     </div>
