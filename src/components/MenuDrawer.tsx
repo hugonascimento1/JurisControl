@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger, } from '@/components/ui/drawer';
 import { Button } from "@/components/ui/button";
-import { CalendarDaysIcon, FileTextIcon, FolderOpenIcon, HomeIcon, LogOutIcon, MenuIcon } from "lucide-react";
+import { CalendarDaysIcon, FileTextIcon, FolderOpenIcon, HomeIcon, LogOutIcon, MenuIcon, UserCircle2 } from "lucide-react";
 
 const MenuDrawer = () => {
     const router = useRouter();
@@ -52,6 +52,12 @@ const MenuDrawer = () => {
                         <Link href='/inicio/documentos' className="flex items-center gap-3 text-lg font-medium text-white hover:text-gray-500">
                             <FolderOpenIcon className="h-5 w-5" />
                             Documentos
+                        </Link>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                        <Link href='/inicio/perfil' className="flex items-center gap-3 text-lg font-medium text-white hover:text-gray-500">
+                            <UserCircle2 className="h-5 w-5" />
+                            Perfil
                         </Link>
                     </DrawerClose>
                 </div>

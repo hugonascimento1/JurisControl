@@ -316,7 +316,7 @@ function Page() {
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectGroup>
-                                                            <SelectItem value="Criado">Criado</SelectItem>
+                                                            <SelectItem value="Distribuído">Distribuído</SelectItem>
                                                             <SelectItem value="Em Andamento">Em Andamento</SelectItem>
                                                             <SelectItem value="Finalizado">Finalizado</SelectItem>
                                                         </SelectGroup>

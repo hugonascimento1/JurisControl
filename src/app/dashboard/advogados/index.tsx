@@ -475,7 +475,7 @@ function Page() {
                               placeholder="email do advogado"
                             />
                           </div>
-                          <div className="flex flex-col gap-2">
+                          {/* <div className="flex flex-col gap-2">
                             <Label className="text-lg font-semibold text-[#030430]">Senha</Label>
                             <Input
                               className=""
@@ -485,7 +485,7 @@ function Page() {
                               onChange={(e) => setEditaradvogadoSenha(e.target.value)}
                               placeholder="senha para o advogado"
                             />
-                          </div>
+                          </div> */}
                           <div className="flex flex-col gap-2">
                             <Label className="text-lg font-semibold text-[#030430]">OAB</Label>
                             <Input
