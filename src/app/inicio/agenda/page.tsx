@@ -340,8 +340,14 @@ function Page() {
                     setEditarTitulo(tarefaSelecionada.titulo);
                     setEditarDescricao(tarefaSelecionada.descricao);
                     setEditarData(tarefaSelecionada.data);
-                    //setModalTarefa(true); // Abre o modal de edição
-                  }} 
+                    setModalTarefa(false); // Abre o modal de edição
+                  }}
+                  onEditarTarefa={handleEditarTarefa}
+                  onExcluirTarefa={handleExcluirTarefa}
+                  setEditarTitulo={setEditarTitulo}
+                  setEditarDescricao={setEditarDescricao}
+                  setEditarData={setEditarData}
+                  setModalTarefa={setModalTarefa} // Passa o setter para o estado do modal
                 />
             </div>
           </CardContent>
