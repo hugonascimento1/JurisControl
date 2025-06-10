@@ -13,8 +13,6 @@ import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { FullCalendario } from "@/components/FullCalendario";
 import { withAuth } from "@/utils/withAuth";
-import { set } from "react-hook-form";
-import { useParams } from "next/navigation";
 import router from "next/router";
 
 interface AgendaTarefa {
@@ -265,6 +263,7 @@ function Page() {
       <ToastContainer />
 
       <div className="flex flex-col-reverse md:flex-row justify-center items-center gap-2 mx-5 mt-1 mb-5">
+        {/*Card Adicionar Tarefa*/}
         <Card className="w-full md:w-1/3 flex flex-col h-[610px]">
           <CardHeader className="bg-[#030430] text-white mb-5 rounded-t-lg">
             <CardTitle className="font-semibold">Adicionar Tarefa</CardTitle>
@@ -324,6 +323,7 @@ function Page() {
           </CardContent>
         </Card>
 
+        {/*Card Calendário*/}
         <Card className="w-full md:w-2/3 h-[610px]">
           <CardHeader className="bg-[#030430] text-white mb-5 rounded-t-lg">
             <CardTitle>Calendário</CardTitle>
@@ -339,9 +339,12 @@ function Page() {
                     setEditarData(tarefaSelecionada.data);
                     setModalTarefa(false); // Abre o modal de edição
                   }}
+                  // Passa os métodos "PUT" e "DELETE" com props
                   onEditarTarefa={handleEditarTarefa}
                   onExcluirTarefa={handleExcluirTarefa}
-                  setEditarTitulo={setEditarTitulo}
+
+                  // Passa os valores atuais dos campos
+                  setEditarTitulo={setEditarTitulo} 
                   setEditarDescricao={setEditarDescricao}
                   setEditarData={setEditarData}
                   setModalTarefa={setModalTarefa} // Passa o setter para o estado do modal

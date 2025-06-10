@@ -5,18 +5,12 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list';
 import { EventContentArg } from "@fullcalendar/core/index.js";
-import { on } from "events";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { FileText } from 'lucide-react';
 
 interface AgendaTarefa {
@@ -27,6 +21,7 @@ interface AgendaTarefa {
   advogadoId: number;
 }
 
+// Interface para as props
 interface FullCalendarioProps {
     tarefas: AgendaTarefa[];
     onSelectTarefa: (tarefa: AgendaTarefa) => void;
@@ -42,9 +37,9 @@ interface FullCalendarioProps {
 export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcluirTarefa, setEditarTitulo, setEditarDescricao, setEditarData, setModalTarefa }: FullCalendarioProps) {
     
     const [tarefa, setTarefa] = React.useState<AgendaTarefa | null>(null);
-    //const [modalTarefa, setModalTarefa] = React.useState(false);
     const [confirmarExclusao, setConfirmarExclusao] = React.useState(false);
 
+    // Transforma as tarefas em um array de eventos do FullCalendar
     const events = tarefas.map((tarefa) => ({
         id: String(tarefa.id),
         title: tarefa.titulo,
@@ -56,14 +51,16 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
         },
     }));
 
+    // Formatar a data para mostrar no modal de editar
     function formatDateInput(date: Date) {
         return date.toISOString().split('T')[0]; // Retorna apenas 'YYYY-MM-DD'
     }
 
     // Função que renderiza o conteúdo da TAREFA
     function renderEventContent(eventInfo: EventContentArg) {
-        const tarefaId = Number(eventInfo.event.id);
-        const tarefaSelecionada = tarefas.find(t => t.id === tarefaId);
+        
+        const tarefaId = Number(eventInfo.event.id); // ID da tarefa específica
+        const tarefaSelecionada = tarefas.find(t => t.id === tarefaId); // Busca o conteúdo da tarefa pelo seu ID
 
         if (!tarefaSelecionada) return null;
 
@@ -71,21 +68,18 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger>
+                        {/*Modal para editar a tarefa*/}
                         <Dialog>
                             <DialogTrigger>
-                                {/* <div style={{ backgroundColor: 'white' }}>
-                                    <b className="text-black">{eventInfo.event.title}</b>
-                                    <p className="text-black whitespace-break-spaces">{eventInfo.event.extendedProps.description}</p>
-                                    <p className="text-black">{eventInfo.event.start ? formatDate(eventInfo.event.start.toISOString()) : 'N/A'}</p>
-                                </div> */}
                                 <div
+                                    className="border-[#030430] border-2 rounded-sm bg-white p-0.5"
                                     onClick={() => {
                                         setTarefa(tarefaSelecionada);
-                                        onSelectTarefa(tarefaSelecionada); // Atualiza o estado tarefa na página Agenda
+                                        onSelectTarefa(tarefaSelecionada);
                                         setEditarTitulo(tarefaSelecionada.titulo);
                                         setEditarDescricao(tarefaSelecionada.descricao);
-                                        setEditarData(new Date(tarefaSelecionada.data)); // Formata a data
-                                        setModalTarefa(true); // Abre o modal
+                                        setEditarData(new Date(tarefaSelecionada.data));
+                                        setModalTarefa(true);
                                     }}
                                 >
                                     <FileText className="text-[#030430]" />
@@ -125,6 +119,8 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
                                         type="submit"
                                         onClick={onEditarTarefa}
                                     >Editar</Button>
+
+                                    {/*Modal para confirmação de exclusão*/}
                                     <Dialog open={confirmarExclusao} onOpenChange={setConfirmarExclusao}>
                                         <DialogTrigger>
                                             <Button className="mt-4" >Excluir</Button>
@@ -156,20 +152,6 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
         );
     }
 
-    // Função que formata a data para o padrão brasileiro
-    function formatDate(dateString: string) {
-        const date = new Date(dateString);
-        const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            //hour: '2-digit',
-            //minute: '2-digit',
-        };
-        return date.toLocaleDateString('pt-BR', options);
-    }
-
-
     return (
         <div style={{ height: '100%' }}>
             <FullCalendar
@@ -193,6 +175,7 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                 }}
 
+                // Botões do calendário
                 buttonText={{
                     today: 'Hoje',
                     month: 'Mês',
@@ -220,7 +203,7 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
 
                 monthStartFormat={{ year: 'numeric', month: 'long' }}
                 titleFormat={{ year: 'numeric', month: 'long' }}
-                allDayText="Dia inteiro"
+                allDayText=""
                 noEventsContent='Não há eventos nesse período'
                 height={500}
 
@@ -249,24 +232,25 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
                 }
 
                 /* Destaca a célula do dia com tarefa */
-                    .fc-daygrid-day.has-task {
+                .fc-daygrid-day.has-task {
                     background-color: #cce4ff !important; /* azul claro */
                 }
+
                     @media (max-width: 768px) {
                         .fc-header-toolbar {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 10px
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 10px
                         }
                         .fc-header-toolbar .fc-toolbar-chunk:first-child {
-                        order: 1;
+                            order: 1;
                         }
                         .fc-header-toolbar .fc-toolbar-chunk:nth-child(2) {
-                        order: 0;
+                            order: 0;
                         }
                         .fc-header-toolbar .fc-toolbar-chunk:last-child {
-                        order: 2;
+                            order: 2;
                         }
                     }
                 `}
