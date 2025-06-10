@@ -200,9 +200,9 @@ function Page() {
             // Pega a URL do modelo HTML selecionado e faz a requisição
             const html = await fetchHtmlContent(selectedModelo.url_modelo);
             setEditorContent(html); // Carrega o HTML no editor
-            toast.success('Modelo HTML carregado no editor com sucesso!', toastOptions);
+            toast.success('Modelo carregado no editor com sucesso!', toastOptions);
         } catch (error) {
-            toast.error('Erro ao carregar o modelo no editor. Verifique o arquivo HTML.', toastOptions);
+            toast.error('Erro ao carregar o modelo no editor. Tente mais tarde', toastOptions);
             console.error(error);
         } finally {
             setLoadingEditor(false); // Finaliza o loading do editor
