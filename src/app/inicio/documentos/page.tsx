@@ -15,7 +15,7 @@ import { toast, ToastContainer, ToastPosition } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { withAuth } from "@/utils/withAuth";
 import html2pdf from 'html2pdf.js';
-import { Anexo } from "@/types/anexos";
+// import { Anexo } from "@/types/anexos";
 import { getModelosByAdvogadoId, uploadAnexo } from "@/lib/baserow";
 import * as pdfjsLib from 'pdfjs-dist';
 
@@ -24,6 +24,33 @@ const EditorTiny = dynamic(() => import('@/components/EditorTiny'), {
 });
 
 const PdfConverter = dynamic(() => import('@/components/PdfConverter'), { ssr: false });
+
+interface Anexo {
+    id: number;
+    nome_arquivo: string;
+    anexo: { url: string }[];
+}
+
+const fixedPdfModels: Anexo[] = [
+    {
+        id: 1,
+        nome_arquivo: 'modelo contrato',
+        anexo: [{ url: '/pdfs/modelocontrato.pdf' }], // Caminho relativo para public/pdfs
+    },
+    {
+        id: 2,
+        nome_arquivo: 'modelo peticao',
+        anexo: [{ url: '/pdfs/modelopeticao.pdf' }], // Caminho relativo para public/pdfs
+    },
+];
+
+const getModelosFixos = async (): Promise<Anexo[]> => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(fixedPdfModels);
+        }, 500); // Pequeno delay para simular um carregamento
+    });
+};
 
 async function generateDocumentModel(description, apiKey) {
     try {
@@ -108,6 +135,7 @@ function Page() {
     const [selectedModelo, setSelectedModelo] = useState<Anexo | null>(null);
     const [loading, setLoading] = useState(false);
     const [converting, setConverting] = useState(false);
+    const [triggerConversion, setTriggerConversion] = useState<boolean>(false);
 
     const advogadoId = Number(sessionStorage.getItem('advogadoId'));
 
@@ -126,10 +154,21 @@ function Page() {
     }
 
     useEffect(() => {
-        if (advogadoId) {
-            loadModelos();
-        }
-    }, [advogadoId]);
+        const loadFixedModels = async () => {
+            setLoading(true);
+            try {
+                const modelosData = await getModelosFixos();
+                setModelos(modelosData);
+            } catch (error) {
+                toast.error('Erro ao carregar modelos.', toastOptions);
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadFixedModels();
+    }, []);
 
     const loadModelos = async () => {
         setLoading(true);
@@ -144,40 +183,29 @@ function Page() {
         }
     };
 
-    const handleGenerateModel = async () => {
+    const handleGenerateModel = () => {
         if (!selectedModelo) {
-            toast.error('Selecione um modelo primeiro', toastOptions);
+            toast.error('Por favor, selecione um modelo primeiro.', toastOptions);
             return;
         }
-
-        setConverting(true);
-        // try {
-        //     // Carregar PDF e converter para HTML
-        //     const htmlContent = await convertPdfToHtml(selectedModelo.anexo[0].url);
-        //     setText(htmlContent);
-        //     toast.success('Modelo carregado no editor!', toastOptions);
-        // } catch (error) {
-        //     toast.error('Erro ao converter modelo', toastOptions);
-        //     console.error(error);
-        // } finally {
-        //     setConverting(false);
-        // }
+        // Ativa o trigger para que o PdfConverter inicie a conversão
+        setTriggerConversion(true);
     };
 
     const handlePdfConversionComplete = (html: string) => {
         setText(html);
         toast.success('Modelo carregado no editor!', toastOptions);
-        setConverting(false); // Desativa o estado de conversão
+        setTriggerConversion(false);
     };
 
     const handlePdfConversionError = (error: string) => {
         toast.error(error, toastOptions);
         console.error(error);
-        setConverting(false); // Desativa o estado de conversão mesmo em erro
+        setTriggerConversion(false);
     };
 
-    
-    
+
+
 
     // const convertPdfToHtml = async (pdfUrl: string): Promise<string> => {
     //     try {
@@ -233,33 +261,33 @@ function Page() {
     //     }
     // };
 
-    const handleUploadModelo = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !advogadoId) return;
+    // const handleUploadModelo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0];
+    //     if (!file || !advogadoId) return;
 
-        if (file.size > 3 * 1024 * 1024) {
-            toast.error('O arquivo deve ter no máximo 3MB', toastOptions);
-            return;
-        }
+    //     if (file.size > 3 * 1024 * 1024) {
+    //         toast.error('O arquivo deve ter no máximo 3MB', toastOptions);
+    //         return;
+    //     }
 
-        if (file.type !== 'application/pdf') {
-            toast.error('Apenas arquivos PDF são permitidos', toastOptions);
-            return;
-        }
+    //     if (file.type !== 'application/pdf') {
+    //         toast.error('Apenas arquivos PDF são permitidos', toastOptions);
+    //         return;
+    //     }
 
-        try {
-            setLoading(true);
-            await uploadAnexo(null, file, 'modelo', advogadoId);
-            toast.success('Modelo salvo com sucesso!', toastOptions);
-            loadModelos();
-        } catch (error) {
-            toast.error('Erro ao salvar modelo', toastOptions);
-            console.error(error);
-        } finally {
-            setLoading(false);
-            e.target.value = '';
-        }
-    };
+    //     try {
+    //         setLoading(true);
+    //         await uploadAnexo(null, file, 'modelo', advogadoId);
+    //         toast.success('Modelo salvo com sucesso!', toastOptions);
+    //         loadModelos();
+    //     } catch (error) {
+    //         toast.error('Erro ao salvar modelo', toastOptions);
+    //         console.error(error);
+    //     } finally {
+    //         setLoading(false);
+    //         e.target.value = '';
+    //     }
+    // };
 
     // Função para geração de conteúdo IA
     const handleGenerate = async () => {
@@ -286,7 +314,7 @@ function Page() {
         setIsLoading(false);
     }
 
-    
+
 
     return (
         <div className="flex flex-col justify-center items-center mb-5">
@@ -359,16 +387,19 @@ function Page() {
                             <CardContent className="flex-grow">
                                 <div className="flex flex-col gap-4 p-3">
                                     <CardDescription className="text-base text-gray-500">
-                                        Modelos salvos para uso rápido
+                                        Selecione um modelo pronto para usar no editor.
                                     </CardDescription>
 
                                     {loading ? (
+                                        // Indicador de carregamento enquanto os modelos são buscados
                                         <div className="flex justify-center py-8">
                                             <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
                                         </div>
                                     ) : modelos.length === 0 ? (
-                                        <p className="text-gray-500 text-center py-8">Nenhum modelo salvo</p>
+                                        // Mensagem se não houver modelos
+                                        <p className="text-gray-500 text-center py-8">Nenhum modelo disponível.</p>
                                     ) : (
+                                        // Lista de modelos disponíveis
                                         <ul className="space-y-3 max-h-[400px] overflow-y-auto">
                                             {modelos.map(modelo => (
                                                 <li
@@ -378,34 +409,17 @@ function Page() {
                                                     onClick={() => setSelectedModelo(modelo)}
                                                 >
                                                     <p className="font-medium">{modelo.nome_arquivo}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        {new Date(modelo.data_upload).toLocaleDateString('pt-BR')}
-                                                    </p>
                                                 </li>
                                             ))}
                                         </ul>
                                     )}
 
                                     <div className="mt-auto">
-                                        <input
-                                            type="file"
-                                            accept=".pdf"
-                                            onChange={handleUploadModelo}
-                                            className="hidden"
-                                            id="upload-modelo"
-                                        />
-                                        <label
-                                            htmlFor="upload-modelo"
-                                            className="flex items-center justify-center gap-2 cursor-pointer bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                            Adicionar Novo Modelo
-                                        </label>
-
+                                        {/* Botão para usar o modelo selecionado */}
                                         <Button
                                             className="w-full mt-3"
                                             onClick={handleGenerateModel}
-                                            disabled={!selectedModelo || converting}
+                                            disabled={!selectedModelo || converting} // Desabilita se nenhum modelo estiver selecionado ou se a conversão estiver em andamento
                                         >
                                             {converting ? (
                                                 <Loader2 className="animate-spin mr-2 h-4 w-4" />
@@ -432,9 +446,10 @@ function Page() {
             {selectedModelo && (
                 <PdfConverter
                     pdfUrl={selectedModelo.anexo[0]?.url || null}
+                    shouldConvert={triggerConversion} // Dispara a conversão
                     onConversionComplete={handlePdfConversionComplete}
                     onError={handlePdfConversionError}
-                    onConvertingChange={setConverting}
+                    onConvertingChange={setConverting} // Atualiza o estado 'converting'
                 />
             )}
         </div>
@@ -444,70 +459,70 @@ function Page() {
 export default withAuth(['advogado'])(Page);
 
 // const handleDownload = async () => {
-    //     if (!htmlContent) {
-    //         toast.warn("Nenhum conteúdo para exportar.", toastOptions);
-    //         return;
-    //     }
+//     if (!htmlContent) {
+//         toast.warn("Nenhum conteúdo para exportar.", toastOptions);
+//         return;
+//     }
 
-    //     // 1. Crie um elemento temporário para renderizar o HTML
-    //     const tempElement = document.createElement('div');
-    //     tempElement.innerHTML = htmlContent;
+//     // 1. Crie um elemento temporário para renderizar o HTML
+//     const tempElement = document.createElement('div');
+//     tempElement.innerHTML = htmlContent;
 
-    //     // 2. Adicione os estilos CSS relevantes para o PDF
-    //     tempElement.style.cssText = `
-    //         font-family: Arial, sans-serif;
-    //         font-size: 12pt;
-    //         line-height: 1.5;
-    //         color: #333;
-    //         padding: 20mm; /* Simular margens A4 */
-    //         width: 210mm; /* Largura da página A4 */
-    //         box-sizing: border-box; /* Para que o padding não aumente a largura total */
-    //     `;
+//     // 2. Adicione os estilos CSS relevantes para o PDF
+//     tempElement.style.cssText = `
+//         font-family: Arial, sans-serif;
+//         font-size: 12pt;
+//         line-height: 1.5;
+//         color: #333;
+//         padding: 20mm; /* Simular margens A4 */
+//         width: 210mm; /* Largura da página A4 */
+//         box-sizing: border-box; /* Para que o padding não aumente a largura total */
+//     `;
 
-    //     const styleTag = document.createElement('style');
-    //     styleTag.textContent = `
-    //         p { margin-bottom: 1em; }
-    //         h1 { font-size: 24pt; margin-top: 1.5em; margin-bottom: 0.5em; }
-    //         h2 { font-size: 20pt; margin-top: 1.2em; margin-bottom: 0.4em; }
-    //         /* ... Adicione os outros estilos que você quer que apareçam no PDF ... */
-    //         img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
-    //         table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
-    //         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    //     `;
-    //     tempElement.prepend(styleTag);
+//     const styleTag = document.createElement('style');
+//     styleTag.textContent = `
+//         p { margin-bottom: 1em; }
+//         h1 { font-size: 24pt; margin-top: 1.5em; margin-bottom: 0.5em; }
+//         h2 { font-size: 20pt; margin-top: 1.2em; margin-bottom: 0.4em; }
+//         /* ... Adicione os outros estilos que você quer que apareçam no PDF ... */
+//         img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+//         table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+//         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+//     `;
+//     tempElement.prepend(styleTag);
 
-    //     // Ocultar o elemento, mas garantir que ele esteja no DOM e com layout
-    //     // Uma forma é posicionar fora da tela, mas com display: block
-    //     tempElement.style.position = 'absolute';
-    //     tempElement.style.top = '-9999px';
-    //     tempElement.style.left = '-9999px';
-    //     tempElement.style.zIndex = '-1'; // Certifique-se de que não interfira visualmente
-    //     document.body.appendChild(tempElement); // Anexar ao body para que html2canvas possa vê-lo
+//     // Ocultar o elemento, mas garantir que ele esteja no DOM e com layout
+//     // Uma forma é posicionar fora da tela, mas com display: block
+//     tempElement.style.position = 'absolute';
+//     tempElement.style.top = '-9999px';
+//     tempElement.style.left = '-9999px';
+//     tempElement.style.zIndex = '-1'; // Certifique-se de que não interfira visualmente
+//     document.body.appendChild(tempElement); // Anexar ao body para que html2canvas possa vê-lo
 
-    //     try {
-    //         // 3. Gerar o PDF usando html2pdf.js
-    //         await html2pdf()
-    //             .from(tempElement)
-    //             .set({
-    //                 margin: 10, // Margens em mm
-    //                 filename: 'documento-gerado.pdf',
-    //                 image: { type: 'jpeg', quality: 0.98 },
-    //                 html2canvas: {
-    //                     scale: 2, // Aumenta a resolução do "print"
-    //                     useCORS: true, // Permite carregar imagens de outros domínios
-    //                     allowTaint: true, // Pode ajudar com certas imagens
-    //                 },
-    //                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    //             })
-    //             .save();
+//     try {
+//         // 3. Gerar o PDF usando html2pdf.js
+//         await html2pdf()
+//             .from(tempElement)
+//             .set({
+//                 margin: 10, // Margens em mm
+//                 filename: 'documento-gerado.pdf',
+//                 image: { type: 'jpeg', quality: 0.98 },
+//                 html2canvas: {
+//                     scale: 2, // Aumenta a resolução do "print"
+//                     useCORS: true, // Permite carregar imagens de outros domínios
+//                     allowTaint: true, // Pode ajudar com certas imagens
+//                 },
+//                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+//             })
+//             .save();
 
-    //         toast.success("Documento gerado com sucesso!", toastOptions);
+//         toast.success("Documento gerado com sucesso!", toastOptions);
 
-    //     } catch (error) {
-    //         console.error('Erro ao gerar PDF:', error);
-    //         toast.error('Erro ao gerar PDF: ', toastOptions);
-    //     } finally {
-    //         // 4. Limpar o elemento temporário
-    //         document.body.removeChild(tempElement);
-    //     }
-    // };
+//     } catch (error) {
+//         console.error('Erro ao gerar PDF:', error);
+//         toast.error('Erro ao gerar PDF: ', toastOptions);
+//     } finally {
+//         // 4. Limpar o elemento temporário
+//         document.body.removeChild(tempElement);
+//     }
+// };
