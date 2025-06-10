@@ -29,6 +29,7 @@ interface AdvogadoData {
     id: number;
     nome: string;
     email: string;
+    senha: string;
     registroOAB: string;
 }
 
@@ -38,8 +39,10 @@ function Page() {
 
     const [editarNome, setEditarNome] = useState<string>('');
     const [editarEmail, setEditarEmail] = useState<string>('');
-    const [editarSenha, setEditarSenha] = useState<string>('');
+    // const [editarSenha, setEditarSenha] = useState<string>('');
     const [editarOAB, setEditarOAB] = useState<string>('');
+    const [senhaCriptografadaOriginal, setSenhaCriptografadaOriginal] = useState<string>('');
+    const [novaSenhaDigitada, setNovaSenhaDigitada] = useState<string>('');
 
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchingData, setFetchingData] = useState<boolean>(true);
@@ -79,11 +82,12 @@ function Page() {
                 );
 
                 if (response.status === 200) {
-                    const { nome, email, registroOAB } = response.data;
+                    const { nome, email,senha, registroOAB } = response.data;
                     setEditarNome(nome);
                     setEditarEmail(email);
                     setEditarOAB(registroOAB);
-                    setEditarSenha('');
+                    setSenhaCriptografadaOriginal(senha);
+                    setNovaSenhaDigitada('');
                 } else {
                     toast.error('Erro ao carregar dados do perfil.', toastOptions);
                 }
@@ -118,11 +122,8 @@ function Page() {
                 nome: editarNome,
                 email: editarEmail,
                 registroOAB: editarOAB,
+                senha: novaSenhaDigitada !== '' ? novaSenhaDigitada : senhaCriptografadaOriginal,
             };
-
-            if (editarSenha) {
-                payload.senha = editarSenha;
-            }
 
             const response = await axios.put(
                 `https://backendjuriscontrol.onrender.com/api/atualizar-advogado/${advogadoId}`,
@@ -136,10 +137,7 @@ function Page() {
 
             if (response.status === 200) {
                 toast.success('Perfil atualizado com sucesso!', toastOptions);
-                // MUDANÇA AQUI: ATUALIZE sessionStorage também se for a fonte da verdade
                 sessionStorage.setItem('advogadoNome', editarNome);
-                sessionStorage.setItem('advogadoEmail', editarEmail);
-                sessionStorage.setItem('advogadoOAB', editarOAB);
             } else {
                 toast.error('Erro ao atualizar perfil.', toastOptions);
             }
@@ -216,11 +214,11 @@ function Page() {
                         <Input
                             id="senha"
                             type="password"
-                            value={editarSenha}
-                            onChange={(e) => setEditarSenha(e.target.value)}
+                            value={novaSenhaDigitada}
+                            onChange={(e) => setNovaSenhaDigitada(e.target.value)}
                             placeholder="********"
                         />
-                        <p className="text-sm text-gray-500 mt-1">Preencha este campo apenas se desejar alterar sua senha.</p>
+                        <p className="text-sm text-gray-500 mt-1">Sua senha atual não é exibida. Preencha este campo apenas se desejar alterá-la.</p>
                     </div>
 
                     <div>
