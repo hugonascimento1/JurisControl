@@ -25,6 +25,8 @@ export interface Anexo {
     };
   }[];
   data_upload: string;
+  advogado_id?: number;
+  tipo_anexo?: string;
   created_at?: string;
 }
 

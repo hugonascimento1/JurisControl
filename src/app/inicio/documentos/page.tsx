@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon, Loader2, Plus } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -15,6 +15,9 @@ import { toast, ToastContainer, ToastPosition } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { withAuth } from "@/utils/withAuth";
 import html2pdf from 'html2pdf.js';
+import { Anexo } from "@/types/anexos";
+import { getModelosByAdvogadoId, uploadAnexo } from "@/lib/baserow";
+import * as pdfjsLib from 'pdfjs-dist';
 
 const EditorTiny = dynamic(() => import('@/components/EditorTiny'), {
     ssr: false,
@@ -99,6 +102,12 @@ function Page() {
 
     // estados para aba de upload de modelos
     const [text, setText] = useState('');
+    const [modelos, setModelos] = useState<Anexo[]>([]);
+    const [selectedModelo, setSelectedModelo] = useState<Anexo | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [converting, setConverting] = useState(false);
+
+    const advogadoId = Number(sessionStorage.getItem('advogadoId'));
 
     // ref para o conteúdo
     const contentRef = useRef(null);
@@ -114,6 +123,126 @@ function Page() {
         theme: "colored",
     }
 
+    useEffect(() => {
+        if (advogadoId) {
+            loadModelos();
+        }
+    }, [advogadoId]);
+
+    const loadModelos = async () => {
+        setLoading(true);
+        try {
+            const modelosData = await getModelosByAdvogadoId(advogadoId);
+            setModelos(modelosData);
+        } catch (error) {
+            toast.error('Erro ao carregar modelos', toastOptions);
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGenerateModel = async () => {
+        if (!selectedModelo) {
+            toast.error('Selecione um modelo primeiro', toastOptions);
+            return;
+        }
+
+        setConverting(true);
+        try {
+            // Carregar PDF e converter para HTML
+            const htmlContent = await convertPdfToHtml(selectedModelo.anexo[0].url);
+            setText(htmlContent);
+            toast.success('Modelo carregado no editor!', toastOptions);
+        } catch (error) {
+            toast.error('Erro ao converter modelo', toastOptions);
+            console.error(error);
+        } finally {
+            setConverting(false);
+        }
+    };
+
+    const convertPdfToHtml = async (pdfUrl: string): Promise<string> => {
+        try {
+            // 1. Verifica se a URL é válida
+            if (!pdfUrl || !pdfUrl.startsWith('http')) {
+                throw new Error('URL do PDF inválida');
+            }
+
+            // 2. Tenta carregar o PDF via fetch para contornar CORS
+            let pdfData;
+            try {
+                const response = await fetch(pdfUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                pdfData = await response.arrayBuffer();
+            } catch (fetchError) {
+                console.error('Erro no fetch do PDF:', fetchError);
+                throw new Error('Não foi possível baixar o PDF');
+            }
+
+            // 3. Carrega o PDF com PDF.js
+            const pdf = await pdfjsLib.getDocument({
+                data: pdfData,
+                cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.10.377/cmaps/',
+                cMapPacked: true
+            }).promise;
+
+            // 4. Processa as páginas
+            let htmlContent = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                try {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+
+                    // Processamento do texto (mesmo código anterior)
+                    const lines: { [key: number]: string[] } = {};
+                    // ... (código de processamento das linhas)
+
+                    htmlContent += lines; // Adicione o conteúdo processado
+                } catch (pageError) {
+                    console.error(`Erro na página ${i}:`, pageError);
+                    htmlContent += `<p>[Erro ao processar página ${i}]</p>`;
+                }
+            }
+
+            return htmlContent || '<p>Nenhum conteúdo extraído do PDF</p>';
+
+        } catch (error) {
+            console.error('Erro detalhado na conversão:', error);
+            // Retorna HTML vazio ou mensagem de erro no próprio editor
+            return `<p class="error">Erro na conversão:</p>`;
+        }
+    };
+
+    const handleUploadModelo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !advogadoId) return;
+
+        if (file.size > 3 * 1024 * 1024) {
+            toast.error('O arquivo deve ter no máximo 3MB', toastOptions);
+            return;
+        }
+
+        if (file.type !== 'application/pdf') {
+            toast.error('Apenas arquivos PDF são permitidos', toastOptions);
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await uploadAnexo(null, file, 'modelo', advogadoId);
+            toast.success('Modelo salvo com sucesso!', toastOptions);
+            loadModelos();
+        } catch (error) {
+            toast.error('Erro ao salvar modelo', toastOptions);
+            console.error(error);
+        } finally {
+            setLoading(false);
+            e.target.value = '';
+        }
+    };
 
     // Função para geração de conteúdo IA
     const handleGenerate = async () => {
@@ -273,25 +402,67 @@ function Page() {
 
                 <TabsContent value="modelos-prontos" className="flex justify-center px-2 py-0 mt-0">
                     <div className="flex flex-col md:flex-row w-full gap-4 mt-0">
-                        <h1>Em desenvolvimento</h1>
-                        {/* <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
+                        <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
-                                <CardTitle className="text-lg">Faça upload do modelo</CardTitle>
+                                <CardTitle className="text-lg">Modelos de Documentos</CardTitle>
                             </CardHeader>
                             <CardContent className="flex-grow">
                                 <div className="flex flex-col gap-4 p-3">
                                     <CardDescription className="text-base text-gray-500">
-                                        Faça o upload do modelo que você deseja usar
+                                        Modelos salvos para uso rápido
                                     </CardDescription>
 
-                                    <ul className="my-3 gap-2">
-                                        <p className="text-gray-400">modelo-procuracao.pdf</p>
-                                        <p className="text-gray-400">modelo-procuracao.pdf</p>
-                                        <p className="text-gray-400">modelo-procuracao.pdf</p>
-                                    </ul>
+                                    {loading ? (
+                                        <div className="flex justify-center py-8">
+                                            <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+                                        </div>
+                                    ) : modelos.length === 0 ? (
+                                        <p className="text-gray-500 text-center py-8">Nenhum modelo salvo</p>
+                                    ) : (
+                                        <ul className="space-y-3 max-h-[400px] overflow-y-auto">
+                                            {modelos.map(modelo => (
+                                                <li
+                                                    key={modelo.id}
+                                                    className={`p-3 border rounded cursor-pointer ${selectedModelo?.id === modelo.id ? 'bg-blue-50 border-blue-500' : ''
+                                                        }`}
+                                                    onClick={() => setSelectedModelo(modelo)}
+                                                >
+                                                    <p className="font-medium">{modelo.nome_arquivo}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {new Date(modelo.data_upload).toLocaleDateString('pt-BR')}
+                                                    </p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
 
+                                    <div className="mt-auto">
+                                        <input
+                                            type="file"
+                                            accept=".pdf"
+                                            onChange={handleUploadModelo}
+                                            className="hidden"
+                                            id="upload-modelo"
+                                        />
+                                        <label
+                                            htmlFor="upload-modelo"
+                                            className="flex items-center justify-center gap-2 cursor-pointer bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                            Adicionar Novo Modelo
+                                        </label>
 
-                                    <Button onClick={handleGenerate}>Usar modelo</Button>
+                                        <Button
+                                            className="w-full mt-3"
+                                            onClick={handleGenerateModel}
+                                            disabled={!selectedModelo || converting}
+                                        >
+                                            {converting ? (
+                                                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                                            ) : null}
+                                            Usar Modelo Selecionado
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -302,9 +473,8 @@ function Page() {
                             </CardHeader>
                             <CardContent className="flex flex-col justify-between gap-10">
                                 <EditorTiny value={text} onChange={(newText) => setText(newText)} />
-                                <Button className="justify-self-end w-full">Download</Button> 
                             </CardContent>
-                        </Card> */}
+                        </Card>
                     </div>
                 </TabsContent>
             </Tabs>

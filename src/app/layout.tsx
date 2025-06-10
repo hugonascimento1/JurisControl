@@ -17,7 +17,7 @@ const MontserratItalicVariableFont = localFont({
 
 export const metadata: Metadata = {
   title: "JurisControl",
-  description: "O primeiro e mais completo sistema de câmara de arbitragem",
+  description: "Aqui, tudo gira em torno da eficiência. Simplificando o complexo, estamos prontos para ajudar.",
   icons: "/logo-icone.svg",
 };
 

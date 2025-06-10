@@ -28,7 +28,23 @@ export const getAnexosByProcessoId = async (processoId: number): Promise<Anexo[]
   }
 };
 
-export const uploadAnexo = async (processoId: number, file: File): Promise<Anexo> => {
+export const getModelosByAdvogadoId = async (advogadoId: number): Promise<Anexo[]> => {
+  try {
+    const response = await baserowApi.get(`/database/rows/table/${ANEXOS_TABLE_ID}/`, {
+      params: {
+        user_field_names: true,
+        filter__advogado_id__equal: advogadoId,
+        filter__tipo_anexo__equal: 'modelo'
+      }
+    });
+    return response.data.results;
+  } catch (error) {
+    console.error('Erro ao buscar modelos:', error);
+    throw error;
+  }
+};
+
+export const uploadAnexo = async (processoId: number | null, file: File, tipoAnexo: string = 'documento', advogadoId?: number): Promise<Anexo> => {
   try {
     // 1. Faz o upload do arquivo para o storage do Baserow
     const formData = new FormData();
@@ -60,8 +76,20 @@ export const uploadAnexo = async (processoId: number, file: File): Promise<Anexo
         mime_type: file.type,
         uploaded_at: new Date().toISOString()
       }],
+      tipo_anexo: tipoAnexo,
+      advogado_id: advogadoId,
       data_upload: new Date().toISOString()
     };
+
+    // Adiciona advogado_id se for modelo
+    if (tipoAnexo === 'modelo' && advogadoId) {
+      payload.advogado_id = advogadoId;
+    }
+    
+    // Adiciona processo_id se for documento
+    if (tipoAnexo === 'documento' && processoId) {
+      payload.processo_id = processoId;
+    }
 
     // 4. Envia para a tabela do Baserow
     const recordResponse = await axios.post(
