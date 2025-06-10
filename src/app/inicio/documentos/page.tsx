@@ -257,13 +257,13 @@ function Page() {
                 </TabsList>
                 <TabsContent value="gere-com-ia" className="flex justify-center px-2">
                     <div className="flex flex-col md:flex-row w-full gap-4">
-                        <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
+                        <Card className="w-full md:w-1/3 h-full min:h-[500px] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
                                 <CardTitle className="text-lg">Descreva e Gere</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex-grow">
-                                <div className="flex flex-col gap-4 p-3">
-                                    <CardDescription className="text-base text-gray-500">
+                            <CardContent className="flex-grow h-full min:h-[500px]">
+                                <div className="flex flex-col gap-4 p-3 h-full">
+                                    <CardDescription className="text-base text-gray-500 h-full">
                                         Forneça uma descrição detalhada o modelo de documento que você precisa.
                                         Quanto mais específico você for, mais precisa será a geração do
                                         modelo pela IA.
@@ -284,15 +284,12 @@ function Page() {
                             </CardContent>
                         </Card>
 
-                        <Card className="w-full md:w-4/6 h-[calc(100vh-200px)] flex flex-col">
+                        <Card className="w-full md:w-4/6 h-full min:h-[500px] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
                                 <CardTitle className="text-lg">Editor de Texto</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex flex-col justify-between gap-10 pb-1">
-                                {/* <div ref={contentRef} className="p-4 bg-white"> */}
+                            <CardContent className="h-full min:h-[500px]">
                                 <EditorTiny value={htmlContent} onChange={(newHtml) => setHtmlContent(newHtml)} />
-                                {/* </div> */}
-                                {/* <Button onClick={handleDownload} className="mt-4">Download</Button> */}
                             </CardContent>
                         </Card>
                     </div>
@@ -300,11 +297,11 @@ function Page() {
 
                 <TabsContent value="modelos-prontos" className="flex justify-center px-2 py-0 mt-0">
                     <div className="flex flex-col md:flex-row w-full gap-4 mt-0">
-                        <Card className="w-full md:w-1/3 h-[calc(100vh-200px)] flex flex-col">
+                        <Card className="w-full md:w-1/3 h-full min:h-[500px] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
                                 <CardTitle className="text-lg">Modelos de Documentos</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex-grow">
+                            <CardContent className="flex-grow h-full min:h-[500px]">
                                 <div className="flex flex-col gap-4 p-3">
                                     <CardDescription className="text-base text-gray-500">
                                         Selecione um modelo pronto para usar no editor.
@@ -350,11 +347,11 @@ function Page() {
                             </CardContent>
                         </Card>
 
-                        <Card className="w-full md:w-4/6 h-[calc(100vh-200px)] flex flex-col">
+                        <Card className="w-full md:w-4/6 h-full min:h-[500px] flex flex-col">
                             <CardHeader className="bg-[#030430] h-14 justify-center text-white rounded-t-lg mb-3">
                                 <CardTitle className="text-lg">Edição</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex flex-col justify-between gap-10">
+                            <CardContent className="h-full min:h-[500px]">
                                 <EditorTiny value={editorContent} onChange={(newHtml: string) => setEditorContent(newHtml)} />
                             </CardContent>
                         </Card>
