@@ -1,3 +1,5 @@
+'use client';
+
 import * as pdfjsLib from 'pdfjs-dist';
 
 export const convertPdfToHtml = async (pdfUrl: string): Promise<string> => {

@@ -68,7 +68,7 @@ export default function EditorTiny({ value, onChange }) {
       onEditorChange={onChange}
       init={{
         height: 430,
-        language: 'pt_BR',
+        // language: 'pt_BR',
         menubar: 'file edit insert format tools',
         plugins: [
           'link',
