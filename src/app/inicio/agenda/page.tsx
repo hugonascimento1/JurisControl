@@ -27,9 +27,6 @@ interface AgendaTarefa {
 
 function Page() {
 
-  //const params = useParams()
-  //const id = params.id as string // Isso pegará o ID da URL
-
   // Criar Tarefa
   const [advogadoId, setAdvogadoId] = useState<string | null>(null)
   const [tarefas, setTarefas] = useState<AgendaTarefa[]>([]);

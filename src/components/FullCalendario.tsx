@@ -30,8 +30,8 @@ interface AgendaTarefa {
 interface FullCalendarioProps {
     tarefas: AgendaTarefa[];
     onSelectTarefa: (tarefa: AgendaTarefa) => void;
-    onEditarTarefa: (e: React.FormEvent) => Promise<void>; // Função para editar
-    onExcluirTarefa: (tarefaId: number) => Promise<void>; // Função para deletar
+    onEditarTarefa: (e: React.FormEvent) => Promise<void>; // Função de editar
+    onExcluirTarefa: (tarefaId: number) => Promise<void>; // Função de deletar
     // Adicione os setters para os estados de edição aqui
     setEditarTitulo: (titulo: string) => void;
     setEditarDescricao: (descricao: string) => void;
