@@ -16,7 +16,7 @@ import axios, { AxiosError } from "axios";
 
 import { useAdministradoresStore } from "@/store/administradoresStore";
 
-const itemsPag = 5;
+const itemsPag = 6;
 
 interface AdministradorLista {
     id: number;
@@ -331,7 +331,7 @@ function Page() {
         <div>
             {/* <NavBar nome={"Advogados"}  botaoVoltar /> */}
 
-            <div className="m-2">
+            <div className="mt-2">
                 <div className="m-2 mb-6 flex justify-between">
                     <div className="flex items-center space-x-2">
                         <Search className=" text-gray-500" />

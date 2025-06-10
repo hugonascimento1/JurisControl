@@ -54,12 +54,12 @@ const MenuDrawer = () => {
                             Documentos
                         </Link>
                     </DrawerClose>
-                    <DrawerClose asChild>
+                    {/* <DrawerClose asChild>
                         <Link href='/inicio/perfil' className="flex items-center gap-3 text-lg font-medium text-white hover:text-gray-500">
                             <UserCircle2 className="h-5 w-5" />
                             Perfil
                         </Link>
-                    </DrawerClose>
+                    </DrawerClose> */}
                 </div>
                 <DrawerFooter className="p-4 border-t border-gray-200">
                     <DrawerClose asChild>

@@ -11,12 +11,12 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { withAuth } from "@/utils/withAuth";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast, ToastPosition } from "react-toastify";
+import { toast, ToastContainer, ToastPosition } from "react-toastify";
 import axios, { AxiosError } from "axios";
 
 import { useAdvogadosStore } from "@/store/advogadosStore";
 
-const itemsPag = 5;
+const itemsPag = 6;
 
 interface AdvogadoLista {
   id: number;
@@ -176,10 +176,17 @@ function Page() {
 
       if (response.status === 201 || response.status === 200) {
         toast.success('Advogado cadastrado com sucesso!', toastOptions);
+        
+        
+        setNovoAdvogadoNome('');
+        setNovoAdvogadoEmail('');
+        setNovoAdvogadoSenha('');
+        setNovoAdvogadoOAB('');
         setCadastrarDialogOpen(false);
         fetchListaAdvogados(true);
       } else {
         toast.error('Erro ao cadastrar advogado.', toastOptions);
+        setCadastrarDialogOpen(true);
       }
     } catch (error: any) {
       let errorMessage = 'Erro ao cadastrar advogado.';
@@ -299,7 +306,7 @@ function Page() {
       return advogados;
     }
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return advogados.filter(adv => 
+    return advogados.filter(adv =>
       adv.nome.toLowerCase().includes(lowerCaseSearchTerm) ||
       adv.email.toLowerCase().includes(lowerCaseSearchTerm) ||
       adv.registroOAB.toLowerCase().includes(lowerCaseSearchTerm)
@@ -324,6 +331,7 @@ function Page() {
       {/* <NavBar nome={"Advogados"}  botaoVoltar /> */}
 
       <div className="m-2">
+        <ToastContainer />
         <div className="m-2 mb-6 flex justify-between">
           <div className="flex items-center space-x-2">
             <Search className=" text-gray-500" />

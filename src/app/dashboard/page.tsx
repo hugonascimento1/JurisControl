@@ -246,11 +246,11 @@ function Page() {
                             </section>
                         </TabsContent>
 
-                        <TabsContent value="advogados" className="mt-0">
+                        <TabsContent value="advogados" className="mt-1">
                             <Advogados />
                         </TabsContent>
 
-                        <TabsContent value="administradores" className="mt-0">
+                        <TabsContent value="administradores" className="mt-1">
                             <Administradores />
                         </TabsContent>
                     </Tabs>
