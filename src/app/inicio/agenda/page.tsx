@@ -99,17 +99,6 @@ function Page() {
       return;
     }
 
-    //console.log({...novaTarefa, advogadoId: Number(advogadoId)});
-    console.log("Payload de nova tarefa:", {
-      ...novaTarefa, // A data formatada
-      advogadoId: Number(advogadoId)
-    });
-    console.log("Advogado ID no frontend:", advogadoId);
-    console.log("Advogado ID (Number) no frontend:", Number(advogadoId));
-
-    // Formata a data para o formato esperado pelo backend (LocalDateTime)
-    //const dataFormatada = new Date(novaTarefa.data).toISOString().slice(0, 19);
-
     try {
       const tarefaParaEnviar = {
         titulo: novaTarefa.titulo,
@@ -132,7 +121,10 @@ function Page() {
       );
 
       // Atualiza a lista de tarefas
-      setTarefas(prev => [response.data, ...prev]);
+      setTarefas((prev) => {
+        const novaLista = [response.data, ...prev];
+        return [...novaLista]; // Garante nova referência
+      });
 
       // Reseta o formulário
       setNovaTarefa({
@@ -173,7 +165,7 @@ function Page() {
     };
 
     try {
-      const response = await axios.put(
+      await axios.put(
         `https://backendjuriscontrol.onrender.com/api/atualizar-tarefa/${tarefa.id}`,
         data,
         {
@@ -184,15 +176,15 @@ function Page() {
         }
       );
 
-      // const response = await axios.get<AgendaTarefa>(
-      //   `https://backendjuriscontrol.onrender.com/api/buscar-tarefa/${tarefa.id}`,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${authToken}`,
-      //       'Content-Type': 'application/json'
-      //     }
-      //   }
-      // );
+      const response = await axios.get<AgendaTarefa>(
+        `https://backendjuriscontrol.onrender.com/api/buscar-tarefa/${tarefa.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       toast.success("Tarefa editada com sucesso!", toastOptions);
 
@@ -204,7 +196,7 @@ function Page() {
         titulo: "",
         descricao: "",
         data: new Date(),
-        advogadoId: Number()
+        advogadoId: Number(advogadoId)
       });
 
       setModalTarefa(false);

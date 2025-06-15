@@ -144,6 +144,9 @@ export default function Home() {
           <Card className="max-w-[350px] min-w-[250px] shadow-lg">
             <CardHeader>
               <CardTitle className="text-[#030430] font-bold">JurisBasic</CardTitle>
+              <CardDescription>
+                Ideal para escritórios iniciantes
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-xl font-bold">R$ 90,00 / mês</CardDescription>
@@ -164,6 +167,9 @@ export default function Home() {
           <Card className="max-w-[350px] min-w-[250px] shadow-lg">
             <CardHeader>
               <CardTitle className="text-[#030430] font-bold">JurisPro</CardTitle>
+              <CardDescription>
+                Ideal para escritórios intermediários
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-xl font-bold">R$ 150,00 / mês</CardDescription>

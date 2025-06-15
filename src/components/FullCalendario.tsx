@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useRef, useState } from "react"
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -130,10 +130,14 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
                                             <DialogDescription>
                                                 Tem certeza que deseja excluir este processo e todos os seus anexos e movimentos?
                                             </DialogDescription>
-                                            <Button variant="outline">Cancelar</Button>
+                                            <Button variant="outline" onClick={() => setConfirmarExclusao(false)}>Cancelar</Button>
                                             <Button
                                                 variant="destructive"
-                                                onClick={() => {onExcluirTarefa(tarefaId); setModalTarefa(false); setConfirmarExclusao(false);}}
+                                                onClick={() => {
+                                                    onExcluirTarefa(tarefaId);
+                                                    setConfirmarExclusao(false);
+                                                    setModalTarefa(false); 
+                                                }}
                                             >
                                                 Confirmar Exclusão
                                             </Button>
@@ -152,9 +156,45 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
         );
     }
 
+    const calendarRef = useRef<any>(null);
+    
+    // Função que aplica as classes
+    const applyTaskClasses = () => {
+        // Remove as classes anteriores
+        document.querySelectorAll('.fc-daygrid-day.has-task').forEach(el => {
+            el.classList.remove('has-task');
+        });
+
+        document.querySelectorAll('.fc-timegrid-col.has-task').forEach(el => {
+            el.classList.remove('has-task');
+        });
+
+        // Reaplica com base nas tarefas atuais
+        tarefas.forEach(tarefa => {
+            const date = new Date(tarefa.data).toISOString().split('T')[0];
+
+            const dayGridCell = document.querySelector(`.fc-daygrid-day[data-date="${date}"]`);
+            if (dayGridCell) dayGridCell.classList.add('has-task');
+
+            document.querySelectorAll(`.fc-timegrid-col[data-date="${date}"]`).forEach(el => {
+                el.classList.add('has-task');
+            });
+        });
+    };
+
+    // Executa quando as tarefas mudam
+    useEffect(() => {
+        applyTaskClasses();
+    }, [tarefas]);
+
     return (
         <div style={{ height: '100%' }}>
             <FullCalendar
+                ref={calendarRef}
+                datesSet={() => {
+                    // Pequeno timeout para garantir que o DOM foi atualizado
+                    setTimeout(applyTaskClasses, 50);
+                }}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
                 initialView="dayGridMonth"
                 locale={'pt'}
@@ -172,7 +212,7 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
                 headerToolbar={{
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                    right: 'dayGridMonth,listWeek' //timeGridWeek,timeGridDay
                 }}
 
                 // Botões do calendário
@@ -203,24 +243,9 @@ export function FullCalendario({ tarefas, onSelectTarefa, onEditarTarefa, onExcl
 
                 monthStartFormat={{ year: 'numeric', month: 'long' }}
                 titleFormat={{ year: 'numeric', month: 'long' }}
-                allDayText=""
+                allDayText="Tarefa(s):"
                 noEventsContent='Não há eventos nesse período'
                 height={500}
-
-                eventDidMount={(info) => {
-                    const dateStr = info.event.startStr.split('T')[0];
-                    
-                    // aplica no timeGrid (semanal e diário)
-                    document.querySelectorAll(`.fc-timegrid-col[data-date="${dateStr}"]`).forEach(el => {
-                        el.classList.add('has-task');
-                    });
-
-                    // aplica no dayGrid (mensal)
-                    const dayGridCell = document.querySelector(`.fc-daygrid-day[data-date="${dateStr}"]`);
-                    if (dayGridCell) {
-                        dayGridCell.classList.add('has-task');
-                    }
-                }}
 
                 />
             <style>
