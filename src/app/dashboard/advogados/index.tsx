@@ -176,8 +176,8 @@ function Page() {
 
       if (response.status === 201 || response.status === 200) {
         toast.success('Advogado cadastrado com sucesso!', toastOptions);
-        
-        
+
+
         setNovoAdvogadoNome('');
         setNovoAdvogadoEmail('');
         setNovoAdvogadoSenha('');
@@ -204,7 +204,7 @@ function Page() {
     setEditandoAdvogado(advogado);
     setEditaradvogadoNome(advogado.nome);
     setEditaradvogadoEmail(advogado.email);
-    setEditaradvogadoSenha(advogado.senha);
+    setEditaradvogadoSenha('');
     setEditaradvogadoOAB(advogado.registroOAB);
     setEditarDialogOpen(true);
   };
@@ -224,18 +224,25 @@ function Page() {
 
     setLoading(true);
     try {
-      const response = await axios.put(
-        `https://backendjuriscontrol.onrender.com/api/atualizar-advogado/${editandoAdvogado.id}`,
-        {
-          nome: editarAdvogadoNome,
-          email: editarAdvogadoEmail,
-          senha: editarAdvogadoSenha,
-          registroOAB: editarAdvogadoOAB,
-        },
+      // Estrutura idêntica ao Swagger
+      const payload = {
+        id: 0, // Mantém como no Swagger
+        nome: editarAdvogadoNome,
+        email: editarAdvogadoEmail,
+        senha: editarAdvogadoSenha || "string", // Usa "string" quando não há nova senha
+        registroOAB: editarAdvogadoOAB
+      };
+
+      // Usa PATCH e URL correta (note "atualiar")
+      const response = await axios.patch(
+        `https://backendjuriscontrol.onrender.com/api/atualiar-advogado-parcial/${editandoAdvogado.id}`,
+        payload,
         {
           headers: {
-            Authorization: `Bearer ${authTokenAdm}`,
-          },
+            'Authorization': `Bearer ${authTokenAdm}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+          }
         }
       );
 
@@ -248,6 +255,7 @@ function Page() {
         toast.error('Erro ao atualizar advogado.', toastOptions);
       }
     } catch (error: any) {
+      console.error('Erro completo:', error);
       let errorMessage = 'Erro ao atualizar advogado.';
       if (error instanceof AxiosError) {
         errorMessage = error.response?.data?.message || errorMessage;
@@ -469,7 +477,8 @@ function Page() {
                               name="advogadoNome"
                               value={editarAdvogadoNome}
                               onChange={(e) => setEditaradvogadoNome(e.target.value)}
-                              placeholder="nome do advogado"
+                              placeholder="Nome do advogado"
+                              required
                             />
                           </div>
                           <div className="flex flex-col gap-2">
@@ -480,20 +489,21 @@ function Page() {
                               name="advogadoEmail"
                               value={editarAdvogadoEmail}
                               onChange={(e) => setEditaradvogadoEmail(e.target.value)}
-                              placeholder="email do advogado"
+                              placeholder="Email do advogado"
+                              required
                             />
                           </div>
-                          {/* <div className="flex flex-col gap-2">
-                            <Label className="text-lg font-semibold text-[#030430]">Senha</Label>
+                          <div className="flex flex-col gap-2">
+                            <Label className="text-lg font-semibold text-[#030430]">Nova Senha (opcional)</Label>
                             <Input
                               className=""
-                              type="text"
+                              type=""
                               name="advogadoSenha"
                               value={editarAdvogadoSenha}
                               onChange={(e) => setEditaradvogadoSenha(e.target.value)}
-                              placeholder="senha para o advogado"
+                              placeholder="Deixe em branco para manter a atual"
                             />
-                          </div> */}
+                          </div>
                           <div className="flex flex-col gap-2">
                             <Label className="text-lg font-semibold text-[#030430]">OAB</Label>
                             <Input
@@ -502,13 +512,14 @@ function Page() {
                               name="advogadoOAB"
                               value={editarAdvogadoOAB}
                               onChange={(e) => setEditaradvogadoOAB(e.target.value)}
-                              placeholder="oab do advogado"
+                              placeholder="OAB do advogado"
+                              required
                             />
                           </div>
                           <div className="flex flex-row gap-2 justify-end items-end">
                             <Button variant="outline" className="w-24" onClick={() => setEditarDialogOpen(false)}>Cancelar</Button>
                             <Button className="w-24" onClick={handleUpdateAdvogado} disabled={loading}>
-                              {loading ? <Loader2 className="animate-spin h-6 w-6" /> : 'Editar'}
+                              {loading ? <Loader2 className="animate-spin h-6 w-6" /> : 'Salvar'}
                             </Button>
                           </div>
                         </DialogContent>

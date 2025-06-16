@@ -123,7 +123,7 @@ function Page() {
             }
 
             const response = await axios.patch(
-                `https://backendjuriscontrol.onrender.com/api/atualizar-advogado-parcial/${advogadoId}`,
+                `https://backendjuriscontrol.onrender.com/api/atualiar-advogado-parcial/${advogadoId}`,
                 updates,
                 {
                     headers: {
@@ -174,7 +174,7 @@ function Page() {
         setLoading(true);
         try {
             const response = await axios.patch(
-                `https://backendjuriscontrol.onrender.com/api/atualizar-advogado-parcial/${advogadoId}`,
+                `https://backendjuriscontrol.onrender.com/api/atualiar-advogado-parcial/${advogadoId}`,
                 { senha: novaSenha },
                 {
                     headers: {
