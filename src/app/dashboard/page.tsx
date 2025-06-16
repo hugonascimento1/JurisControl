@@ -132,8 +132,8 @@ function Page() {
                             <button
                                 onClick={() => setActiveTab("dashboard")}
                                 className={`w-full flex items-center text-sm p-3 rounded-md transition-colors ${activeTab === "dashboard"
-                                        ? "bg-emerald-600 text-white"
-                                        : "hover:bg-gray-700 text-gray-200"
+                                    ? "bg-emerald-600 text-white"
+                                    : "hover:bg-gray-700 text-gray-200"
                                     }`}
                             >
                                 <HomeIcon className="mr-3 h-5 w-5" /> Dashboard
@@ -143,8 +143,8 @@ function Page() {
                             <button
                                 onClick={() => setActiveTab("advogados")}
                                 className={`w-full flex items-center text-sm p-3 rounded-md transition-colors ${activeTab === "advogados"
-                                        ? "bg-emerald-600 text-white"
-                                        : "hover:bg-gray-700 text-gray-200"
+                                    ? "bg-emerald-600 text-white"
+                                    : "hover:bg-gray-700 text-gray-200"
                                     }`}
                             >
                                 <UsersRoundIcon className="mr-3 h-5 w-5" /> Advogados
@@ -154,8 +154,8 @@ function Page() {
                             <button
                                 onClick={() => setActiveTab("administradores")}
                                 className={`w-full flex items-center text-sm p-3 rounded-md transition-colors ${activeTab === "administradores"
-                                        ? "bg-emerald-600 text-white"
-                                        : "hover:bg-gray-700 text-gray-200"
+                                    ? "bg-emerald-600 text-white"
+                                    : "hover:bg-gray-700 text-gray-200"
                                     }`}
                             >
                                 <UserCog className="mr-3 h-5 w-5" /> Adm
@@ -184,11 +184,14 @@ function Page() {
                 </div>
 
                 {/* Este div flex-1 vai garantir que o conteúdo principal ocupe o restante da altura */}
-                <div className="flex-1 px-6 py-4 overflow-y-auto"> {/* Adicionado overflow-y-auto */}
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col"> {/* Adicionei flex flex-col e h-full */}
+                {/* Remova o overflow-y-auto daqui se quiser que a rolagem aconteça dentro do TabsContent */}
+                <div className="flex-1 px-6 py-4"> {/* Removi overflow-y-auto aqui */}
+                    {/* Adicionei w-full e removemos h-full, pois o conteúdo vai definir a altura */}
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col h-full">
                         {/* Dashboard */}
-                        <TabsContent value="dashboard" className="mt-0 flex-1 flex flex-col"> {/* flex-1 para ocupar o restante do espaço e flex-col */}
-                            <section className="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-1 sm:grid-cols-2 gap-4 p-0"> {/* Ajustei para 1 coluna em telas pequenas e 2 em sm */}
+                        {/* Mantive flex-1 e flex-col aqui, pois os gráficos já estavam funcionando bem */}
+                        <TabsContent value="dashboard" className="mt-0 flex-1 flex flex-col">
+                            <section className="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-1 sm:grid-cols-2 gap-4 p-0">
                                 <Card>
                                     <CardHeader>
                                         <div className="flex items-center justify-start">
@@ -227,10 +230,9 @@ function Page() {
                                     </CardContent>
                                 </Card>
 
-                                {/* Ajuste o card da imagem para ser mais flexível, especialmente em telas maiores */}
-                                <Card className="flex items-center justify-center p-4"> {/* Adicionei flex, items-center, justify-center e p-4 */}
+                                <Card className="flex items-center justify-center p-4">
                                     <Image
-                                        className="max-w-full h-auto" // Garante que a imagem não ultrapasse a largura do card
+                                        className="max-w-full h-auto"
                                         src="/logo-escritorio.png"
                                         width={426}
                                         height={175}
@@ -239,18 +241,21 @@ function Page() {
                                 </Card>
                             </section>
 
-                            {/* Este section agora é um flex container que ocupa o espaço restante */}
-                            <section className="mt-4 flex-1 flex flex-col lg:flex-row gap-4"> {/* flex-1 para ocupar espaço e flex-col para empilhar em telas menores */}
+                            <section className="mt-4 flex-1 flex flex-col lg:flex-row gap-4">
                                 <ChartOverview />
                                 <ChartPieLabelCustom />
                             </section>
                         </TabsContent>
 
-                        <TabsContent value="advogados" className="mt-1">
+                        {/* Advogados */}
+                        {/* Adicionado w-full para garantir que a aba ocupe toda a largura */}
+                        <TabsContent value="advogados" className="mt-1 w-full h-full overflow-auto"> {/* Adicionei w-full e overflow-auto */}
                             <Advogados />
                         </TabsContent>
 
-                        <TabsContent value="administradores" className="mt-1">
+                        {/* Administradores */}
+                        {/* Adicionado w-full para garantir que a aba ocupe toda a largura */}
+                        <TabsContent value="administradores" className="mt-1 w-full h-full overflow-auto"> {/* Adicionei w-full e overflow-auto */}
                             <Administradores />
                         </TabsContent>
                     </Tabs>

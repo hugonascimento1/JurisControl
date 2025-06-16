@@ -1,6 +1,6 @@
 'use client'
 
-import { FileTextIcon, CalendarDaysIcon, FilePlus2, MenuIcon, FolderOpenIcon } from "lucide-react";
+import { FileTextIcon, CalendarDaysIcon, FilePlus2, MenuIcon, FolderOpenIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/components/logo-text-icon";
@@ -13,21 +13,26 @@ import MenuDrawer from "@/components/MenuDrawer";
 function Page() {
     const router = useRouter();
     const [advogadoNome, setAdvogadoNome] = useState<string | null>(null);
+    const [loadingProcessos, setLoadingProcessos] = useState(false);
+    const [loadingAgenda, setLoadingAgenda] = useState(false);
+    const [loadingDocumentos, setLoadingDocumentos] = useState(false);
 
     useEffect(() => {
         setAdvogadoNome(sessionStorage.getItem('advogadoNome'));
     }, []);
 
     const handleProcessPage = () => {
+        setLoadingProcessos(true);
         router.push('/inicio/processos');
     }
 
     const handleAgendaPage = () => {
+        setLoadingAgenda(true);
         router.push('/inicio/agenda')
-        // router.push('/agenda')
     }
 
     const handleModelsPage = () => {
+        setLoadingDocumentos(true);
         router.push('/inicio/documentos')
     }
 
@@ -65,24 +70,57 @@ function Page() {
                     onClick={handleProcessPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
-                    <FileTextIcon size={48} className="w-12 h-12" />
-                    <p className="mt-2 text-lg font-semibold">Processos</p>
+                    {/* <FileTextIcon size={48} className="w-12 h-12" />
+                    <p className="mt-2 text-lg font-semibold">Processos</p> */}
+                    {loadingProcessos ? (
+                        <>
+                            <Loader2 className="animate-spin w-5 md:w-6" />
+                            <span>Carregando...</span>
+                        </>
+                    ) : (
+                        <>
+                            <FileTextIcon size={48} className="w-12 h-12" />
+                            <p className="mt-2 text-lg font-semibold">Processos</p>
+                        </>
+                    )}
                 </Button>
 
                 <Button
                     onClick={handleAgendaPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
-                    <CalendarDaysIcon size={48} />
-                    <p className="mt-2 text-lg font-semibold">Agenda</p>
+                    {/* <CalendarDaysIcon size={48} />
+                    <p className="mt-2 text-lg font-semibold">Agenda</p> */}
+                    {loadingAgenda ? (
+                        <>
+                            <Loader2 className="animate-spin w-5 md:w-6" />
+                            <span>Carregando...</span>
+                        </>
+                    ) : (
+                        <>
+                            <CalendarDaysIcon size={48} />
+                            <p className="mt-2 text-lg font-semibold">Agenda</p>
+                        </>
+                    )}
                 </Button>
 
                 <Button
                     onClick={handleModelsPage}
                     className="w-3/4 sm:w-60 h-32 sm:h-40 bg-[#030430] text-white flex flex-col items-center justify-center rounded-lg shadow-lg cursor-pointer"
                 >
-                    <FolderOpenIcon size={48} />
-                    <p className="mt-2 text-lg font-semibold">Documentos</p>
+                    {/* <FolderOpenIcon size={48} />
+                    <p className="mt-2 text-lg font-semibold">Documentos</p> */}
+                    {loadingDocumentos ? (
+                        <>
+                            <Loader2 className="animate-spin w-5 md:w-6" />
+                            <span>Carregando...</span>
+                        </>
+                    ) : (
+                        <>
+                            <FolderOpenIcon size={48} />
+                            <p className="mt-2 text-lg font-semibold">Documentos</p>
+                        </>
+                    )}
                 </Button>
             </div>
         </main>

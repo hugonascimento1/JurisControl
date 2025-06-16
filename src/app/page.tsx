@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightIcon, Lock, MessageCircleQuestion } from "lucide-react";
+import { ArrowRightIcon, Loader2, Lock, MessageCircleQuestion } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ScaleIcon } from "lucide-react";
@@ -33,8 +33,10 @@ export default function Home() {
   const router = useRouter();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleLoginPage = () => {
+    setLoading(true);
     router.push("/login");
   };
 
@@ -52,11 +54,21 @@ export default function Home() {
           </p>
           <Button
             // href="/login"
+            disabled={loading}
             onClick={handleLoginPage}
             className="flex items-center gap-5 h-12 self-start rounded-lg bg-[#030430] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 md:text-base"
           >
-            <span>Entrar</span>
-            <ArrowRightIcon className="w-5 md:w-6" />
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin w-5 md:w-6" />
+                <span>Carregando...</span>
+              </>
+            ) : (
+              <>
+                <span>Entrar</span>
+                <ArrowRightIcon className="w-5 md:w-6" />
+              </>
+            )}
           </Button>
         </div>
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
